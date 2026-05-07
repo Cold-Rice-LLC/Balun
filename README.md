@@ -1,6 +1,6 @@
 # Balun
 
-Monorepo containing a Nuxt 4 frontend and a Sanity Studio CMS.
+Monorepo containing a Nuxt 4 frontend and a Sanity Studio CMS. Headless Shopify integration.
 
 ## Structure
 
