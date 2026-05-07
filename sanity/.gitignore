@@ -1,0 +1,16 @@
+# Compiled Sanity Studio
+/dist
+
+# Temporary Sanity runtime
+/.sanity
+
+# Coverage
+/coverage
+
+# Typescript
+*.tsbuildinfo
+
+# Local-only files
+*.local
+/.pnp
+.pnp.js

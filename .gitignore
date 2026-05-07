@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# Misc
+.DS_Store
+*.pem
+
+# Editor
+.fleet
+.idea
+.vscode/
