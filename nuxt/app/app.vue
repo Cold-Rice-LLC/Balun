@@ -1,8 +1,8 @@
 <template>
   <NuxtRouteAnnouncer />
-  <NuxtLoadingIndicator color="#ff1b18" />
+  <NuxtLoadingIndicator color="#ff0000" />
 
   <NuxtLayout>
-    <NuxtPage :page-key="(route) => route.path" />
+    <NuxtPage />
   </NuxtLayout>
 </template>
