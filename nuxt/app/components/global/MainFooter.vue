@@ -40,9 +40,7 @@
 </template>
 
 <script setup>
-import { siteSettingsQuery } from '~/utils/queries'
-
-const { data: settings } = await useSanityQuery(siteSettingsQuery)
+const { data: settings } = await useSiteSettings()
 
 const primaryLinks = computed(() => settings.value?.footerPrimaryLinks ?? [])
 const secondaryLinks = computed(() => settings.value?.footerSecondaryLinks ?? [])
