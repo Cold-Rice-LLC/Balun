@@ -36,3 +36,16 @@ export const feedQuery = groq`{
 export const liveQuery = groq`*[_type == "livePage"][0]{
   title
 }`
+
+// Shared nav-link projection — used by both footer link lists.
+const navLinkProjection = `
+  label,
+  linkType,
+  internalPath,
+  externalUrl
+`
+
+export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]{
+  footerPrimaryLinks[]{${navLinkProjection}},
+  footerSecondaryLinks[]{${navLinkProjection}}
+}`

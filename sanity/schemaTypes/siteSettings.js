@@ -23,5 +23,19 @@ export default {
       title: 'OG Image',
       description: 'An image used for Open Graph metadata. Can be overridden by per-page images.',
     },
+    {
+      name: 'footerPrimaryLinks',
+      type: 'array',
+      title: 'Footer — Primary Links',
+      description: 'The primary list of links shown in the footer.',
+      of: [{type: 'navLink'}],
+    },
+    {
+      name: 'footerSecondaryLinks',
+      type: 'array',
+      title: 'Footer — Secondary Links',
+      description: 'The secondary list of links shown in the footer.',
+      of: [{type: 'navLink'}],
+    },
   ],
 }

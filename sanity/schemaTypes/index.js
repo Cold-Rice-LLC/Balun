@@ -1,5 +1,6 @@
 import siteSettings from './siteSettings'
 import blockContent from './objects/blockContent'
+import navLink from './objects/navLink'
 import product from './documents/product'
 import feedPost from './documents/feedPost'
 import homePage from './documents/homePage'
@@ -10,6 +11,7 @@ import livePage from './documents/livePage'
 export const schemaTypes = [
   // Objects
   blockContent,
+  navLink,
   // Singletons
   siteSettings,
   homePage,
