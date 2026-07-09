@@ -38,7 +38,28 @@ export const myStructure = (S) =>
             ]),
         ),
       // Collections (custom titles; schema type titles stay singular for the editor UI).
-      S.documentTypeListItem('product').title('Products').icon(TagIcon),
+      // Products/collections are synced from Shopify by Sanity Connect.
+      // productVariant docs exist in the dataset but are deliberately not
+      // listed here — they're only referenced from product.store.variants.
+      S.listItem()
+        .title('Products')
+        .icon(TagIcon)
+        .child(
+          S.documentTypeList('product')
+            .title('Products')
+            .filter('_type == "product" && store.isDeleted != true')
+            // No "+" create button — docs are created by the Shopify sync only.
+            .initialValueTemplates([]),
+        ),
+      S.listItem()
+        .title('Collections')
+        .icon(ThLargeIcon)
+        .child(
+          S.documentTypeList('collection')
+            .title('Collections')
+            .filter('_type == "collection" && store.isDeleted != true')
+            .initialValueTemplates([]),
+        ),
       S.documentTypeListItem('feedPost').title('Feed').icon(DocumentTextIcon),
       singleton(S, 'siteSettings', 'Site Settings', CogIcon),
     ])

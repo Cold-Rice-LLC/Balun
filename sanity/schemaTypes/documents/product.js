@@ -1,9 +1,14 @@
 import {TagIcon} from '@sanity/icons'
 
 /**
- * Supplemental content for a Shopify product. Shopify remains the source of truth for
- * title/price/inventory/images; this doc only adds editorial content. Linked to Shopify
- * by the stable GID (canonical) plus the handle (URLs / readability).
+ * A Shopify product. Documents are created and kept in sync by Sanity Connect
+ * (ids like shopifyProduct-<id>) — do not create these by hand.
+ *
+ * The `store` object is machine-owned and overwritten on every Shopify save;
+ * everything else is editorial and safe to edit — Connect never touches
+ * sibling fields. Live commerce data (market price, stock) is still fetched
+ * from the Storefront API at render time via store.gid; store.* is for
+ * Studio UX, listing shells, and GROQ filtering only.
  */
 export default {
   name: 'product',
@@ -12,24 +17,10 @@ export default {
   icon: TagIcon,
   fields: [
     {
-      name: 'internalTitle',
-      type: 'string',
-      title: 'Internal Title',
-      description: 'Editor-facing label for this product in the Studio. Shopify owns the real title.',
-      validation: (Rule) => Rule.required(),
-    },
-    {
-      name: 'shopifyGid',
-      type: 'string',
-      title: 'Shopify Product ID (GID)',
-      description: 'Canonical, stable key, e.g. gid://shopify/Product/1234567890',
-      validation: (Rule) => Rule.required(),
-    },
-    {
-      name: 'shopifyHandle',
-      type: 'string',
-      title: 'Shopify Handle',
-      description: 'Used for URLs / readability. May change if the product is renamed in Shopify.',
+      name: 'store',
+      type: 'shopifyProduct',
+      title: 'Shopify',
+      description: 'Synced from Shopify by Sanity Connect. Read-only.',
     },
     {
       name: 'tagline',
@@ -49,6 +40,16 @@ export default {
     },
   ],
   preview: {
-    select: {title: 'internalTitle', subtitle: 'shopifyHandle', media: 'gallery.0'},
+    select: {
+      title: 'store.title',
+      status: 'store.status',
+      isDeleted: 'store.isDeleted',
+      media: 'gallery.0',
+    },
+    prepare: ({title, status, isDeleted, media}) => ({
+      title: title || 'Untitled product',
+      subtitle: isDeleted ? 'Deleted in Shopify' : status,
+      media,
+    }),
   },
 }
