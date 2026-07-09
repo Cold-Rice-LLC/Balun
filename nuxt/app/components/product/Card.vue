@@ -1,6 +1,6 @@
 <template>
   <component
-    :is="live ? 'nuxt-link' : 'div'"
+    :is="live ? NuxtLink : 'div'"
     :to="live ? `/products/${live.handle}` : undefined"
     class="product-card block"
     :class="{ 'is-unavailable': !live }"
@@ -15,7 +15,7 @@
     </div>
 
     <div class="card-meta uppercase text-xs">
-      <p class="title">{{ live?.title || doc.internalTitle }}</p>
+      <p class="title">{{ live?.title || doc.title }}</p>
 
       <p
         v-if="doc.tagline"
@@ -52,6 +52,10 @@
  * `live` the matching Storefront API product — null when Shopify doesn't
  * return it (unpublished, or masked from the visitor's market).
  */
+// String names don't resolve components in dynamic :is at runtime —
+// resolve NuxtLink explicitly.
+const NuxtLink = resolveComponent('NuxtLink')
+
 defineProps({
   doc: {
     type: Object,

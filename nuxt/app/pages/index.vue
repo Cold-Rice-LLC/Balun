@@ -31,7 +31,7 @@ import { homeQuery } from '~/utils/queries'
 const { data: home } = await useSanityQuery(homeQuery)
 
 const docs = computed(() => home.value?.featuredProducts ?? [])
-const gids = computed(() => docs.value.map((doc) => doc.shopifyGid).filter(Boolean))
+const gids = computed(() => docs.value.map((doc) => doc.gid).filter(Boolean))
 
 // Live data hydrates client-side so the cached HTML shell stays geo-agnostic.
 const { data: liveData } = useShopifyProducts(gids)
@@ -39,7 +39,7 @@ const { data: liveData } = useShopifyProducts(gids)
 const featured = computed(() =>
   docs.value.map((doc) => ({
     doc,
-    live: liveData.value?.products?.find((p) => p?.id === doc.shopifyGid) ?? null,
+    live: liveData.value?.products?.find((p) => p?.id === doc.gid) ?? null,
   })),
 )
 </script>

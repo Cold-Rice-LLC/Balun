@@ -1,19 +1,25 @@
 // Central GROQ queries so they're reusable and easy to eyeball/test.
 import { groq } from '#imports'
 
-// Shared product projection — Sanity supplemental fields only.
-// TODO(shopify): merge live Shopify data (title/price/images) by `shopifyGid` at render time.
+// Shared product projection. Product docs are synced by Sanity Connect:
+// identity/title/slug live under the machine-owned `store` object (flattened
+// here so components don't care), editorial fields are siblings. Live market
+// price/stock still comes from /api/products by gid at render time.
 const productProjection = `
   _id,
-  internalTitle,
-  shopifyGid,
-  shopifyHandle,
+  "title": store.title,
+  "gid": store.gid,
+  "slug": store.slug.current,
   tagline,
   gallery
 `
 
+// Referenced products are filtered to those still sellable in Shopify —
+// drafts, archived, and deleted products drop out of listings automatically.
+// (Filter before dereferencing (@->) so non-matching items are removed
+// entirely instead of leaving null holes in the array.)
 export const homeQuery = groq`*[_type == "homePage"][0]{
-  featuredProducts[]->{${productProjection}}
+  featuredProducts[@->store.status == "active" && @->store.isDeleted != true]->{${productProjection}}
 }`
 
 export const infoQuery = groq`*[_type == "infoPage"][0]{

@@ -4,11 +4,11 @@ import type { MaybeRefOrGetter } from 'vue'
  * Live Shopify data (price/availability/title/image) for a list of product
  * GIDs, via the cached /api/products route.
  *
- * Typical use: a page queries Sanity for product docs, maps out their
- * `shopifyGid`s, passes them here, then matches results back by id:
+ * Typical use: a page queries Sanity for product docs (projections expose
+ * store.gid as `gid`), passes the gids here, then matches results back by id:
  *
  *   const { data } = useShopifyProducts(gids)
- *   const live = data.value?.products.find(p => p?.id === doc.shopifyGid)
+ *   const live = data.value?.products.find(p => p?.id === doc.gid)
  *
  * A null entry in `products` means Shopify didn't return that product
  * (unpublished, deleted, or hidden from the visitor's market) — render an
