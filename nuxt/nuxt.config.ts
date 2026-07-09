@@ -13,6 +13,17 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
+  runtimeConfig: {
+    public: {
+      // Overridden by NUXT_PUBLIC_SHOPIFY_STORE_DOMAIN / NUXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN.
+      // Storefront tokens are public-safe (read-only storefront + cart scope).
+      // Empty token = server falls back to mock.shop for local dev.
+      shopifyStoreDomain: '',
+      shopifyStorefrontAccessToken: '',
+      shopifyApiVersion: '2026-04',
+    },
+  },
+
   // Public, read-only config — published content needs no token.
   sanity: {
     projectId: 'pful3cpt',

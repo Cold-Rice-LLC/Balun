@@ -12,6 +12,7 @@
   "dependencies": {
     "@nuxtjs/sanity": "^2.3.0",
     "@sanity/client": "^7.22.1",
+    "@shopify/storefront-api-client": "^1.0.10",
     "@tailwindcss/vite": "^4.3.1",
     "nuxt": "^4.4.4",
     "tailwindcss": "^4.3.1",
