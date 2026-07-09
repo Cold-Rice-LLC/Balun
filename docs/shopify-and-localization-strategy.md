@@ -200,6 +200,36 @@ fragmentation.
 
 ---
 
+## 4. Colorway grouping (split products)
+
+Some colorways are separate Shopify products ("Speedy 01 · Grey" / "· Blue" — own PDP, inventory,
+drop timing); others keep color as a variant option inside one product. For split products, the
+PDP shows a colorways rail linking siblings.
+
+**Mechanism: Shopify tag convention** — tag every member `group:<slug>` (e.g. `group:speedy-01`)
+in Shopify. Connect syncs tags to `store.tags` (comma-separated string). PDP sibling query:
+
+```groq
+"colorways": *[
+  _type == "product"
+  && $groupTag in string::split(store.tags, ", ")
+  && _id != ^._id
+  && store.status == "active" && store.isDeleted != true
+]{ "title": store.title, "slug": store.slug.current, "gid": store.gid, gallery }
+```
+
+- Consistent with the lifecycle rule: grouping happens in Shopify at product-creation time; a new
+  colorway joins every sibling's rail with zero Sanity edits. No tag → no rail (non-split products
+  need nothing).
+- Color label = title suffix after `·`; swatch = the sibling's image.
+- Known limitation: tag membership is unordered. If curated ordering/custom swatches are ever
+  needed, add a `productGroup` document as an override with coalesce-to-default onto tag siblings
+  (same pattern as market overrides) — don't start there.
+- Markets composes for free: colorways are products, so per-market catalog availability applies
+  per colorway; the buy-box null handling hides "not sold here" siblings.
+
+---
+
 ## How it composes
 
 The **URL prefix is the single source of truth** for what a page shows: it selects Sanity language
