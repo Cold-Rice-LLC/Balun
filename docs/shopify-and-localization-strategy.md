@@ -110,24 +110,82 @@ is a mechanical migration later; unused i18n structure is permanent editorial fr
 
 ### Market-specific content → explicit audience fields, not localization plugins
 
-Model it directly and **coarsely** (section/document level, not sentence level):
+The localization plugins key on **language** — to them `/en-us` and `/en-gb` are the same `en`
+locale and get identical content. "US shows 10 featured products, UK shows 5" is a
+**market/audience** decision, so it's modeled with plain fields + GROQ, driven by `$market` from
+the URL. Two patterns:
+
+**Pattern A — tag each item with its markets** (default; best when one market's list is a subset
+of another's):
 
 ```js
-// e.g. on a hero section, announcement, featured-products slot:
+// homePage.featuredProducts becomes an array of:
 {
-  name: 'markets',
-  type: 'array',
-  of: [{type: 'string'}],
-  options: {list: ['us', 'gb', 'de' /* … */]},
-  description: 'Markets this shows in. Leave empty to show everywhere.',
+  type: 'object',
+  fields: [
+    {name: 'product', type: 'reference', to: [{type: 'product'}]},
+    {
+      name: 'markets',
+      type: 'array',
+      of: [{type: 'string'}],
+      options: {list: ['us', 'gb', 'de' /* … */]},
+      description: 'Markets this shows in. Leave empty to show everywhere.',
+    },
+  ],
 }
 ```
 
 ```groq
-*[_type == "announcement" && (count(markets) == 0 || $market in markets)]
+featuredProducts[count(markets) == 0 || $market in markets]{ product->{...} }
 ```
 
-Fine-grained market forking of copy is an editorial tar pit — resist it.
+Editors manage one list; items shown everywhere just leave `markets` empty.
+
+**Pattern B — per-market override lists** (for genuinely different lists, ordering, or wholesale
+swaps like a different hero per market):
+
+```js
+{name: 'featuredProducts', type: 'array' /* … */},        // default list
+{name: 'marketOverrides', type: 'array', of: [{
+  type: 'object',
+  fields: [
+    {name: 'market', type: 'string', options: {list: [/* … */]}},
+    {name: 'featuredProducts', type: 'array' /* … */},    // full replacement list
+  ],
+}]}
+```
+
+```groq
+"featured": coalesce(
+  marketOverrides[market == $market][0].featuredProducts,
+  featuredProducts
+)[]->{ ... }
+```
+
+The `coalesce()` fallback-to-default is the key move in both patterns: editors only do extra work
+for markets that actually differ, and a new market gets default content on day one. Default to
+**A** for lists; reserve **B** for big swaps. Keep granularity **coarse** (section/document level)
+— fine-grained market forking of copy is an editorial tar pit.
+
+### Catalog vs. editorial visibility — the coordination rule
+
+Sanity and Shopify each hold an opinion about market visibility, and they must not be confused:
+
+- **Shopify Markets catalog** = *can it be priced and bought here.* Source of truth for purchase.
+- **Sanity market tags** = *editorial emphasis only* — what we choose to show/feature.
+
+If an editor features a product in a market whose catalog doesn't publish it, the Storefront API
+returns `null` for it and the merge layer drops it or renders "unavailable" — the failure mode is
+graceful. Guardrails:
+
+1. **Convention:** when scoping a drop, editors adjust *both* the Markets catalog and the Sanity
+   market tags.
+2. **Later nicety:** a Studio validation / dashboard widget cross-checking featured products
+   against per-market catalog availability (cheap once the Storefront client exists).
+
+**Cache note:** `$market` in GROQ means each market prefix gets its own cached HTML shell — a
+handful of markets × pages, exactly what the URL-prefix design budgeted for. No per-visitor
+fragmentation.
 
 ---
 
