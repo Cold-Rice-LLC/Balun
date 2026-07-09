@@ -1,5 +1,41 @@
 @import 'tailwindcss';
 
+/*
+Fonts
+*/
+
+@font-face {
+  font-family: 'ABC Maxi Round';
+  src: url('/fonts/ABCMaxiRoundTrial-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ABC Maxi Round Mono';
+  src: url('/fonts/ABCMaxiRoundMonoTrial-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ABC Monument Grotesk';
+  src: url('/fonts/ABCMonumentGroteskTrial-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ABC Monument Grotesk';
+  src: url('/fonts/ABCMonumentGroteskTrial-RegularItalic.woff2') format('woff2');
+  font-weight: normal;
+  font-style: italic;
+}
+
+/* 
+Tailwind Config
+*/
+
 @theme {
   /* Colors */
   --color-white: #ffffff;
@@ -8,8 +44,9 @@
   --color-grey-2: #d6dbe7;
   --color-grey-3: #c6cace;
   --color-grey-4: #babec8;
-  --color-grey-5: #656972;
-  --color-grey-6: #595959;
+  --color-grey-5: #a2a6b0;
+  --color-grey-6: #656972;
+  --color-grey-7: #595959;
   --color-green: #73614b;
   --color-green-alt: #3a7955;
   --color-orange: #d4583b;
@@ -27,7 +64,9 @@
   --text-2xl: 6.4rem;
 
   /* Fonts */
-  --font-primary: Times New Roman, serif;
+  --font-primary: 'ABC Maxi Round', Monospace, sans-serif;
+  --font-secondary: 'ABC Monument Grotesk', sans-serif;
+  --font-tertiary: 'ABC Maxi Round Mono', Monospace, sans-serif;
 
   /* Spacing */
   --spacing-xs: 0.8rem;
@@ -56,6 +95,10 @@ html {
 body {
   font-size: var(--text-base);
   font-family: var(--font-primary);
+}
+
+main {
+  min-height: 100svh;
 }
 
 button {

@@ -77,7 +77,7 @@ nav {
   border-top-left-radius: var(--radius-def);
   border-bottom-left-radius: var(--radius-def);
   line-height: 1;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
 
   & > * {
     flex: none;
