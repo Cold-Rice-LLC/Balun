@@ -41,15 +41,26 @@ source; its value is purely editorial.
 | Price/inventory     | Live via `@inContext` (required)     | **Still** live via `@inContext` — synced prices moot       |
 | Cost                | Nothing                              | Docs count toward Sanity quota; variants are separate docs unless custom sync; synced fields machine-owned |
 
-### Decision
+### Decision (revised July 2026: Connect adopted)
 
-- **Stay reference-only** (`product` docs hold `shopifyGid` + `shopifyHandle` + supplemental
-  content). Right-sized for a curated drop catalog of dozens of SKUs.
-- The **Storefront API `@inContext` fetch layer is on the critical path either way** — build it
-  first.
-- Revisit Connect if the catalog grows or editors feel real pain pasting GIDs. Reversal is cheap
-  (install app, reference `shopify.product`, migrate). **Do not** hand-roll a `products/update`
-  webhook sync — that re-implements Connect, worse.
+Originally deferred; **adopted once the client-editor workflow became the priority** — editors
+pick real synced products in the Studio instead of pasting GIDs. The runtime architecture did not
+change: commerce data still comes live from the Storefront API via `@inContext`; Connect is
+editorial-only.
+
+How it's set up:
+
+- Connect (Direct Sync, automatic) writes `product` / `productVariant` / `collection` documents
+  (ids `shopifyProduct-<id>` etc.). The machine-owned **`store` object** on each doc is defined
+  read-only in `schemaTypes/objects/shopify*.js`; editorial fields (`tagline`, `body`, `gallery`)
+  are siblings Connect never touches.
+- GROQ flattens identity out of `store` (`"gid": store.gid`, `"title": store.title`) and filters
+  listings with `[@->store.status == "active" && @->store.isDeleted != true]->` (filter before
+  deref, or removed items leave null holes).
+- **Never** display `store.priceRange` / variant `price` — base-currency snapshots, wrong under
+  Markets. Prices render only from the live `/api/products` fetch.
+- The **Storefront API `@inContext` fetch layer was built first** — it's on the critical path
+  regardless of sync strategy. **Do not** hand-roll a `products/update` webhook sync.
 
 ---
 
