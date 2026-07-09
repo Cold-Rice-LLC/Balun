@@ -32,8 +32,9 @@ const message = computed(() =>
 onMounted(() => window.scrollTo(0, 0))
 
 // Clears the error state and navigates home — a plain nuxt-link would leave
-// the error page mounted.
-const handleClearError = () => clearError({ redirect: '/' })
+// the error page mounted. Redirect keeps the visitor's market prefix.
+const localePath = useLocalePath()
+const handleClearError = () => clearError({ redirect: localePath('/') })
 </script>
 
 <style scoped>

@@ -4,7 +4,7 @@
 
     <div class="flex justify-center items-center">
       <nuxt-link
-        to="/"
+        :to="localePath('/')"
         class="home-link text-grey-3"
       >
         <span class="sr-only">Balun</span>
@@ -17,7 +17,7 @@
       <ul class="uppercase text-xs flex gap-x-xs">
         <li>
           <nuxt-link
-            to="/feed"
+            :to="localePath('/feed')"
             class="bg-yellow"
             >Feed</nuxt-link
           >
@@ -25,7 +25,7 @@
 
         <li>
           <nuxt-link
-            to="/info"
+            :to="localePath('/info')"
             class="bg-purple text-white"
             >Info</nuxt-link
           >
@@ -34,7 +34,7 @@
     </nav>
 
     <nuxt-link
-      to="/live"
+      :to="localePath('/live')"
       class="live-link"
     >
       <IconsRing />
@@ -43,6 +43,11 @@
     </nuxt-link>
   </header>
 </template>
+
+<script setup>
+// Internal links carry the /{lang}-{country} prefix of the active locale.
+const localePath = useLocalePath()
+</script>
 
 <style scoped>
 header {

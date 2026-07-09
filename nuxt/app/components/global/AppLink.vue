@@ -10,7 +10,7 @@
 
   <nuxt-link
     v-else
-    :to="link.internalPath"
+    :to="localePath(link.internalPath)"
   >
     <slot>{{ link.label }}</slot>
   </nuxt-link>
@@ -19,7 +19,8 @@
 <script setup>
 /**
  * Renders a Sanity `navLink`: an external URL opens in a new tab as an <a>,
- * otherwise an internal path renders as a <nuxt-link>.
+ * otherwise an internal path renders as a <nuxt-link> carrying the active
+ * locale prefix (editors enter unprefixed paths like /info).
  */
 defineProps({
   link: {
@@ -27,4 +28,6 @@ defineProps({
     required: true,
   },
 })
+
+const localePath = useLocalePath()
 </script>

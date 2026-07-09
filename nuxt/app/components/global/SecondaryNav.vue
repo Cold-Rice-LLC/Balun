@@ -2,7 +2,7 @@
   <nav class="fixed bottom-0 left-0 w-full px-base">
     <ul class="grid grid-cols-2 gap-base text-lg">
       <li>
-        <NuxtLink to="/">shop</NuxtLink>
+        <NuxtLink :to="localePath('/')">shop</NuxtLink>
       </li>
 
       <li>
@@ -11,6 +11,10 @@
     </ul>
   </nav>
 </template>
+
+<script setup>
+const localePath = useLocalePath()
+</script>
 
 <style scoped>
 nav {

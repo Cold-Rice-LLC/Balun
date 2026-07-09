@@ -1,7 +1,7 @@
 <template>
   <footer class="relative">
     <nuxt-link
-      to="/"
+      :to="localePath('/')"
       class="wordmark-link"
     >
       <IconsWordmark />
@@ -10,6 +10,8 @@
     <div class="links-container absolute inset-0 grid grid-cols-2 px-base">
       <div class="newsletter">
         <p class="text-lg uppercase leading-none">Sign up for emails</p>
+
+        <MarketSwitcher />
       </div>
 
       <div class="footer-links flex justify-between items-start">
@@ -40,6 +42,7 @@
 </template>
 
 <script setup>
+const localePath = useLocalePath()
 const { data: settings } = await useSiteSettings()
 
 const primaryLinks = computed(() => settings.value?.footerPrimaryLinks ?? [])

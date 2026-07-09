@@ -1,7 +1,7 @@
 <template>
   <component
     :is="live ? NuxtLink : 'div'"
-    :to="live ? `/products/${live.handle}` : undefined"
+    :to="live ? localePath(`/products/${live.handle}`) : undefined"
     class="product-card block"
     :class="{ 'is-unavailable': !live }"
   >
@@ -55,6 +55,7 @@
 // String names don't resolve components in dynamic :is at runtime —
 // resolve NuxtLink explicitly.
 const NuxtLink = resolveComponent('NuxtLink')
+const localePath = useLocalePath()
 
 defineProps({
   doc: {
