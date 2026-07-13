@@ -247,3 +247,5 @@ makes synced prices moot.
 4. Market-audience fields in Sanity
 5. Geo-suggestion banner (edge middleware + cookie)
 6. *(later)* `internationalized-array` + language picker
+
+> Operational how-to for step 2–4 (adding a country): [adding-a-market.md](./adding-a-market.md).

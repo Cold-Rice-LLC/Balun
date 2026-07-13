@@ -4,6 +4,8 @@ import navLink from './objects/navLink'
 import shopifyProduct from './objects/shopifyProduct'
 import shopifyProductVariant from './objects/shopifyProductVariant'
 import shopifyCollection from './objects/shopifyCollection'
+import moduleProductGrid from './objects/moduleProductGrid'
+import moduleFeaturedProduct from './objects/moduleFeaturedProduct'
 import product from './documents/product'
 import productVariant from './documents/productVariant'
 import collection from './documents/collection'
@@ -20,6 +22,9 @@ export const schemaTypes = [
   shopifyProduct,
   shopifyProductVariant,
   shopifyCollection,
+  // Home page modules (page builder)
+  moduleProductGrid,
+  moduleFeaturedProduct,
   // Singletons
   siteSettings,
   homePage,

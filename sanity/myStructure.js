@@ -10,7 +10,9 @@ import {
 } from '@sanity/icons'
 
 // Singleton document types: edited as a single fixed document, not a list.
-export const singletonTypes = ['siteSettings', 'homePage', 'infoPage', 'feedPage', 'livePage']
+// homePage is intentionally NOT a singleton — it's a default page plus optional
+// per-market override pages (see homePage schema / adding-a-market.md).
+export const singletonTypes = ['siteSettings', 'infoPage', 'feedPage', 'livePage']
 
 // Helper to build a singleton list item with a fixed document id.
 const singleton = (S, schemaType, title, icon) =>
@@ -31,8 +33,15 @@ export const myStructure = (S) =>
           S.list()
             .title('Pages')
             .items([
-              singleton(S, 'homePage', 'Home Page', HomeIcon),
-              singleton(S, 'feedPage', 'Feed Page', ThLargeIcon),
+              // Home pages: the default + any per-market override pages.
+              S.listItem()
+                .title('Home Pages')
+                .icon(HomeIcon)
+                .child(
+                  S.documentTypeList('homePage')
+                    .title('Home Pages')
+                    .defaultOrdering([{field: 'market', direction: 'asc'}]),
+                ),
               singleton(S, 'infoPage', 'Info Page', InfoOutlineIcon),
               singleton(S, 'livePage', 'Live Page', PlayIcon),
             ]),
@@ -41,16 +50,13 @@ export const myStructure = (S) =>
       // Products/collections are synced from Shopify by Sanity Connect.
       // productVariant docs exist in the dataset but are deliberately not
       // listed here — they're only referenced from product.store.variants.
-      S.listItem()
-        .title('Products')
-        .icon(TagIcon)
-        .child(
-          S.documentTypeList('product')
-            .title('Products')
-            .filter('_type == "product" && store.isDeleted != true')
-            // No "+" create button — docs are created by the Shopify sync only.
-            .initialValueTemplates([]),
-        ),
+      S.listItem().title('Products').icon(TagIcon).child(
+        S.documentTypeList('product')
+          .title('Products')
+          .filter('_type == "product" && store.isDeleted != true')
+          // No "+" create button — docs are created by the Shopify sync only.
+          .initialValueTemplates([]),
+      ),
       S.listItem()
         .title('Collections')
         .icon(ThLargeIcon)

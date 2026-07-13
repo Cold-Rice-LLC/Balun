@@ -1,22 +1,14 @@
 <template>
   <div class="home-page px-base">
-    <section
-      v-if="featured.length"
-      class="featured"
-    >
-      <h2 class="uppercase text-xs section-heading">Featured</h2>
-
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-base">
-        <ProductCard
-          v-for="(item, index) in featured"
-          :key="item.doc._id"
-          :doc="item.doc"
-          :live="item.live"
-          class="enter-in-fade-up"
-          :style="{ animationDelay: `${index * 0.05}s` }"
-        />
-      </div>
-    </section>
+    <template v-if="modules.length">
+      <component
+        :is="moduleComponents[m._type]"
+        v-for="m in modules"
+        :key="m._key"
+        :module="m"
+        :live-by-gid="liveByGid"
+      />
+    </template>
 
     <div
       v-else
@@ -30,30 +22,51 @@
 <script setup>
 import { homeQuery } from '~/utils/queries'
 
-const { data: home } = await useSanityQuery(homeQuery)
+// $market (from the URL locale) selects the market's home page or the default.
+// Market-keyed cache key so each market gets its own shell and switching
+// refetches in place.
+const sanity = useSanity()
+const market = useMarket()
+const { data: home } = await useAsyncData(
+  () => `home-${market.value.market}`,
+  () => sanity.fetch(homeQuery, { market: market.value.market }),
+  { watch: [() => market.value.market] },
+)
 
-const docs = computed(() => home.value?.featuredProducts ?? [])
-const gids = computed(() => docs.value.map((doc) => doc.gid).filter(Boolean))
+// String names don't resolve components in dynamic :is at runtime.
+const moduleComponents = {
+  moduleProductGrid: resolveComponent('HomeProductGrid'),
+  moduleFeaturedProduct: resolveComponent('HomeFeaturedProduct'),
+}
 
-// Live data hydrates client-side so the cached HTML shell stays geo-agnostic.
+const modules = computed(() => home.value?.modules ?? [])
+
+// Every product gid referenced by any module (grid arrays + featured singles),
+// fetched live in one batch so the cached shell stays geo-agnostic.
+const gids = computed(() => {
+  const out = []
+  for (const m of modules.value) {
+    if (m._type === 'moduleProductGrid') out.push(...(m.products ?? []).map((p) => p.gid))
+    else if (m._type === 'moduleFeaturedProduct' && m.product) out.push(m.product.gid)
+  }
+  return out.filter(Boolean)
+})
+
 const { data: liveData } = useShopifyProducts(gids)
 
-const featured = computed(() =>
-  docs.value.map((doc) => ({
-    doc,
-    live: liveData.value?.products?.find((p) => p?.id === doc.gid) ?? null,
-  })),
-)
+// gid → live product, so each module resolves its cards' price/availability.
+const liveByGid = computed(() => {
+  const map = {}
+  for (const p of liveData.value?.products ?? []) {
+    if (p?.id) map[p.id] = p
+  }
+  return map
+})
 </script>
 
 <style scoped>
 .home-page {
   padding-top: calc(var(--spacing-button-lg-height) + var(--spacing-base) * 2);
   padding-bottom: var(--spacing-base);
-}
-
-.section-heading {
-  color: var(--color-grey-4);
-  margin-bottom: var(--spacing-base);
 }
 </style>

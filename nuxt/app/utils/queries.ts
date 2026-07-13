@@ -14,12 +14,29 @@ const productProjection = `
   gallery
 `
 
-// Referenced products are filtered to those still sellable in Shopify —
-// drafts, archived, and deleted products drop out of listings automatically.
-// (Filter before dereferencing (@->) so non-matching items are removed
-// entirely instead of leaving null holes in the array.)
-export const homeQuery = groq`*[_type == "homePage"][0]{
-  featuredProducts[@->store.status == "active" && @->store.isDeleted != true]->{${productProjection}}
+// The home page is modular (page builder) and market-scoped at the DOCUMENT
+// level (docs/shopify-and-localization-strategy.md §3, document Pattern B):
+// pick this market's page if it exists, else the default (no market). Ordering
+// defined(market) first means the market-specific page wins; [0] takes it, and
+// falls through to the default otherwise. Each market URL caches its own shell.
+//
+// Modules project per-type. Product references are filtered to still-sellable
+// items (buy-box null-handling covers any a market's catalog omits).
+export const homeQuery = groq`*[
+  _type == "homePage" && (market == $market || !defined(market))
+] | order(defined(market) desc)[0]{
+  "modules": modules[]{
+    _type,
+    _key,
+    _type == "moduleProductGrid" => {
+      heading,
+      "products": products[@->store.status == "active" && @->store.isDeleted != true]->{${productProjection}}
+    },
+    _type == "moduleFeaturedProduct" => {
+      heading,
+      "product": product->{${productProjection}}
+    }
+  }
 }`
 
 export const infoQuery = groq`*[_type == "infoPage"][0]{
