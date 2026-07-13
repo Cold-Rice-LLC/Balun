@@ -1,0 +1,142 @@
+/**
+ * Single-product fetch for the PDP: GET /api/product?handle=slide-03&country=US
+ *
+ * Richer projection than /api/products (full variants for the size picker,
+ * images, descriptionHtml) — keep the two routes separate so listing payloads
+ * stay lean. Same caching contract: short SWR cache keyed by handle+country
+ * so drop traffic on a single product collapses to ~1 Shopify request/min
+ * per market (see docs/performance-caching.md).
+ *
+ * `product: null` means Shopify doesn't sell this product to the requested
+ * country (or the handle is unknown) — the PDP renders its unavailable state,
+ * it is NOT a 404 (the editorial shell may still exist).
+ */
+
+const PRODUCT_QUERY = /* GraphQL */ `
+  query ($handle: String!, $country: CountryCode!) @inContext(country: $country) {
+    product(handle: $handle) {
+      id
+      title
+      handle
+      availableForSale
+      descriptionHtml
+      options {
+        name
+        optionValues {
+          name
+        }
+      }
+      images(first: 12) {
+        nodes {
+          url
+          altText
+          width
+          height
+        }
+      }
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+        maxVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      variants(first: 100) {
+        nodes {
+          id
+          title
+          availableForSale
+          price {
+            amount
+            currencyCode
+          }
+          compareAtPrice {
+            amount
+            currencyCode
+          }
+          selectedOptions {
+            name
+            value
+          }
+          image {
+            url
+            altText
+          }
+        }
+      }
+    }
+  }
+`
+
+interface StorefrontMoney {
+  amount: string
+  currencyCode: string
+}
+
+interface StorefrontImage {
+  url: string
+  altText: string | null
+  width?: number
+  height?: number
+}
+
+export interface StorefrontVariant {
+  id: string
+  title: string
+  availableForSale: boolean
+  price: StorefrontMoney
+  compareAtPrice: StorefrontMoney | null
+  selectedOptions: { name: string; value: string }[]
+  image: StorefrontImage | null
+}
+
+export interface StorefrontProductDetail {
+  id: string
+  title: string
+  handle: string
+  availableForSale: boolean
+  descriptionHtml: string
+  options: { name: string; optionValues: { name: string }[] }[]
+  images: { nodes: StorefrontImage[] }
+  priceRange: {
+    minVariantPrice: StorefrontMoney
+    maxVariantPrice: StorefrontMoney
+  }
+  variants: { nodes: StorefrontVariant[] }
+}
+
+export default defineCachedEventHandler(
+  async (event) => {
+    const { handle: rawHandle, country: rawCountry } = getQuery(event)
+
+    const handle = String(rawHandle ?? '').trim()
+    if (!handle) {
+      throw createError({ statusCode: 400, statusMessage: 'handle query param is required' })
+    }
+
+    const country = /^[A-Za-z]{2}$/.test(String(rawCountry ?? ''))
+      ? String(rawCountry).toUpperCase()
+      : 'US'
+
+    const data = await storefrontQuery<{ product: StorefrontProductDetail | null }>(
+      PRODUCT_QUERY,
+      { handle, country },
+    )
+
+    return {
+      country,
+      product: data.product,
+    }
+  },
+  {
+    maxAge: 60,
+    swr: true,
+    getKey: (event) => {
+      const { handle, country } = getQuery(event)
+      return `product:${country ?? 'US'}:${handle ?? ''}`
+    },
+  },
+)

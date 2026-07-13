@@ -43,6 +43,41 @@ export const liveQuery = groq`*[_type == "livePage"][0]{
   title
 }`
 
+// PDP editorial shell: one product by its Shopify handle (synced slug).
+// Live commerce data (variants/price/stock) comes from /api/product, not here.
+// `tags` is exposed so the page can parse the colorway group tag (group:<slug>).
+export const productPageQuery = groq`*[
+  _type == "product" && store.slug.current == $handle && store.isDeleted != true
+][0]{
+  _id,
+  "title": store.title,
+  "gid": store.gid,
+  "slug": store.slug.current,
+  "status": store.status,
+  "tags": store.tags,
+  tagline,
+  body,
+  gallery
+}`
+
+// Colorway siblings: products sharing the group:<slug> Shopify tag (see
+// docs/shopify-and-localization-strategy.md §4). $groupTag == "" (product has
+// no group tag) matches nothing, so callers can pass it unconditionally.
+export const colorwaysQuery = groq`*[
+  _type == "product"
+  && $groupTag != ""
+  && $groupTag in string::split(store.tags, ", ")
+  && store.slug.current != $handle
+  && store.status == "active"
+  && store.isDeleted != true
+] | order(store.title asc) {
+  _id,
+  "title": store.title,
+  "slug": store.slug.current,
+  "gid": store.gid,
+  gallery
+}`
+
 // Shared nav-link projection — used by both footer link lists.
 const navLinkProjection = `
   label,
