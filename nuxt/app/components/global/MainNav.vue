@@ -72,7 +72,7 @@ nav {
   right: 0px;
   top: 7.7rem;
   background-color: var(--color-grey-1);
-  padding: var(--spacing-base);
+  padding: var(--spacing-base) var(--spacing-sm);
   display: flex;
   align-items: center;
   gap: var(--spacing-base);

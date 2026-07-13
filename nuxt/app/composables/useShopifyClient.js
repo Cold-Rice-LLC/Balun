@@ -38,12 +38,15 @@ export const useShopifyClient = () => {
     publicAccessToken: storefrontAccessToken,
     });
 
-    async function CreateCart(items = []) {
+    async function CreateCart(items = [], countryCode = null) {
 
             try{
 
+                // buyerIdentity.countryCode sets the cart's market, so prices
+                // and hosted checkout use the visitor's currency (Shopify Markets).
                 let cartInput = {
-                    lines: items
+                    lines: items,
+                    ...(countryCode ? { buyerIdentity: { countryCode } } : {}),
                 }
 
 
@@ -86,7 +89,7 @@ export const useShopifyClient = () => {
     }
 
 
-    async function AddToCart(variantId, quantity) {
+    async function AddToCart(variantId, quantity, countryCode = null) {
 
         // check if cart Id exists
         const cartId = localStorage.getItem('balunCartId')
@@ -96,7 +99,7 @@ export const useShopifyClient = () => {
             return await AddLineItems(id, [{ merchandiseId: variantId, quantity: quantity }])
         }else{
             // create new cart if no Id exists
-            return await CreateCart([{ merchandiseId: variantId, quantity: quantity }])
+            return await CreateCart([{ merchandiseId: variantId, quantity: quantity }], countryCode)
         }
 
     }

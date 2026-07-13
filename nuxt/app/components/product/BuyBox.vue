@@ -50,14 +50,12 @@
         </ul>
       </div>
 
-      <!-- Wired up in the cart pass (useShopifyClient.AddToCart with the
-           selected variant id) — present now so the layout is final. -->
       <button
         class="add-to-cart uppercase text-xs"
-        disabled
-        :title="live.availableForSale ? 'Cart coming soon' : 'Sold out'"
+        :disabled="!selectedVariant?.availableForSale || adding"
+        @click="addToCart"
       >
-        {{ live.availableForSale ? 'Add to cart' : 'Sold out' }}
+        {{ addToCartLabel }}
       </button>
     </template>
 
@@ -126,6 +124,25 @@ const compareAt = computed(() => {
   const price = selectedVariant.value?.compareAtPrice
   return price && Number(price.amount) > 0 ? formatMoney(price) : null
 })
+
+const { addItem } = useCart()
+const adding = ref(false)
+
+const addToCartLabel = computed(() => {
+  if (adding.value) return 'Adding…'
+  if (!selectedVariant.value?.availableForSale) return 'Sold out'
+  return 'Add to cart'
+})
+
+const addToCart = async () => {
+  if (!selectedVariantId.value || adding.value) return
+  adding.value = true
+  try {
+    await addItem(selectedVariantId.value)
+  } finally {
+    adding.value = false
+  }
+}
 </script>
 
 <style scoped>

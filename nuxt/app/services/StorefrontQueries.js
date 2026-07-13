@@ -56,7 +56,9 @@ lines(first:30){
           product{
             title
             id
+			handle
 			featuredImage {
+				url
 				altText
 			}
           }

@@ -80,6 +80,14 @@ Tailwind Config
   --radius-def: 2rem;
 }
 
+/*
+Root Variables (non tailwind)
+*/
+
+:root {
+  --curve: cubic-bezier(0, 0.84, 0.24, 1);
+}
+
 /* 
 Global Styles 
 */
@@ -95,10 +103,17 @@ html {
 body {
   font-size: var(--text-base);
   font-family: var(--font-primary);
+  transition: background-color 0.3s;
+
+  &.template-pdp {
+    background-color: var(--color-grey-6);
+  }
 }
 
 main {
   min-height: 100svh;
+  display: flex;
+  flex-direction: column;
 }
 
 button {
@@ -145,4 +160,40 @@ img[loading='lazy'] {
   &.loaded {
     opacity: 1;
   }
+}
+
+/*
+Animations
+*/
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.enter-in-fade {
+  opacity: 0;
+  animation: fade-in 0.3s forwards;
+}
+
+.enter-in-fade-up {
+  opacity: 0;
+  animation: fade-in-up 2s forwards var(--curve);
 }

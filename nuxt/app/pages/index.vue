@@ -8,10 +8,12 @@
 
       <div class="grid grid-cols-2 md:grid-cols-3 gap-base">
         <ProductCard
-          v-for="item in featured"
+          v-for="(item, index) in featured"
           :key="item.doc._id"
           :doc="item.doc"
           :live="item.live"
+          class="enter-in-fade-up"
+          :style="{ animationDelay: `${index * 0.05}s` }"
         />
       </div>
     </section>

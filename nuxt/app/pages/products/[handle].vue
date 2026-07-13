@@ -1,35 +1,10 @@
 <template>
-  <div class="pdp px-base">
-    <div class="grid md:grid-cols-2 gap-base">
-      <div class="media">
-        <template v-if="live?.images.nodes.length">
-          <div
-            v-for="image in live.images.nodes"
-            :key="image.url"
-            class="image-frame"
-          >
-            <img
-              :src="image.url"
-              :alt="image.altText || doc.title"
-            />
-          </div>
-        </template>
+  <div class="pdp px-base flex-1 flex flex-col">
+    <div class="pdp-content grid md:grid-cols-2 flex-1 overflow-hidden enter-in-fade-up">
+      <div class="media h-full bg-grey-2"></div>
 
-        <div
-          v-else
-          class="image-frame"
-        ></div>
-      </div>
-
-      <div class="details">
-        <h1 class="uppercase text-lg leading-none">{{ live?.title || doc.title }}</h1>
-
-        <p
-          v-if="doc.tagline"
-          class="tagline text-xs uppercase"
-        >
-          {{ doc.tagline }}
-        </p>
+      <div class="details px-base">
+        <h1 class="uppercase text-lg text-center leading-none py-28">{{ live?.title || doc.title }}</h1>
 
         <!-- ClientOnly: the buy box is the geo-varying client island. Its
              pending state only exists client-side, so rendering it during SSR
@@ -93,9 +68,7 @@ watch(doc, (value) => {
 // Colorway siblings via the shared group:<slug> Shopify tag. Empty tag matches
 // nothing (safe for ungrouped products). Watches handle so the current product
 // is excluded from its own rail after an in-place switch.
-const groupTag = computed(
-  () => (doc.value?.tags ?? '').split(', ').find((t) => t.startsWith('group:')) ?? '',
-)
+const groupTag = computed(() => (doc.value?.tags ?? '').split(', ').find((t) => t.startsWith('group:')) ?? '')
 const { data: colorwayDocs } = await useAsyncData(
   () => `pdp-colorways-${handle.value}`,
   () => sanity.fetch(colorwaysQuery, { groupTag: groupTag.value, handle: handle.value }),
@@ -121,13 +94,21 @@ const colorways = computed(() =>
   })),
 )
 
-useHead({ title: () => `${doc.value?.title ?? 'Product'} — Balun` })
+useHead({
+  title: () => `${doc.value?.title ?? 'Product'} — Balun`,
+  bodyAttrs: { class: 'template-pdp' },
+})
 </script>
 
 <style scoped>
 .pdp {
   padding-top: calc(var(--spacing-button-lg-height) + var(--spacing-base) * 2);
   padding-bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+}
+
+.pdp-content {
+  background-color: var(--color-white);
+  border-radius: var(--radius-def);
 }
 
 .media {
