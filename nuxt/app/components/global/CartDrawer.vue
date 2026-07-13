@@ -8,13 +8,16 @@
   </button>
 
   <aside
-    v-if="isOpen"
+    id="cart-drawer"
     class="cart-drawer"
+    :class="{ active: isOpen }"
     aria-label="Cart"
   >
     <div
       v-if="lines.length"
       class="cart-body text-green p-base space-y-base"
+      :class="{ 'is-pending': pending }"
+      :aria-busy="pending"
     >
       <ul class="lines">
         <li
@@ -55,14 +58,16 @@
                 <div class="stepper">
                   <button
                     aria-label="Decrease quantity"
-                    @click="updateLine(line.id, line.quantity - 1)"
+                    :disabled="pending"
+                    @click="onUpdate(line.id, line.quantity - 1)"
                   >
                     −
                   </button>
                   <span class="qty">{{ line.quantity }}</span>
                   <button
                     aria-label="Increase quantity"
-                    @click="updateLine(line.id, line.quantity + 1)"
+                    :disabled="pending"
+                    @click="onUpdate(line.id, line.quantity + 1)"
                   >
                     +
                   </button>
@@ -70,7 +75,8 @@
 
                 <button
                   class="remove"
-                  @click="removeLine(line.id)"
+                  :disabled="pending"
+                  @click="onRemove(line.id)"
                 >
                   Remove
                 </button>
@@ -109,6 +115,26 @@
  */
 const { isOpen, lines, lineCount, subtotal, close, updateLine, removeLine } = useCart()
 
+// Line mutations hit the Storefront API async; flag while one is in flight so
+// the controls can show a progress cursor and disable to prevent double-taps.
+const pending = ref(false)
+const onUpdate = async (id, quantity) => {
+  pending.value = true
+  try {
+    await updateLine(id, quantity)
+  } finally {
+    pending.value = false
+  }
+}
+const onRemove = async (id) => {
+  pending.value = true
+  try {
+    await removeLine(id)
+  } finally {
+    pending.value = false
+  }
+}
+
 // Product titles follow "Base · Color" (see colorway convention); split for
 // the two-line item label. Falls back to the full title when there's no "·".
 const baseName = (title = '') => (title.includes('·') ? title.split('·')[0].trim() : title)
@@ -139,22 +165,45 @@ const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.f
 .cart-drawer {
   position: fixed;
   z-index: 4900;
-  left: calc(50% + var(--spacing-base) / 2);
+  bottom: 0px;
   right: var(--spacing-base);
-  bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  left: calc(50% + var(--spacing-base) / 2);
   max-height: calc(100svh - var(--spacing-button-lg-height) - var(--spacing-base) * 4);
   display: flex;
   flex-direction: column;
   background-color: var(--color-grey-1);
-  border-radius: var(--radius-def);
-  color: var(--color-green);
+  border-top-left-radius: var(--radius-def);
+  border-top-right-radius: var(--radius-def);
+  padding-bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
   overflow: hidden;
+  color: var(--color-green);
+  transform: translateY(calc(100% - var(--spacing-button-lg-height)));
+  transition: transform 0.3s;
+
+  &.active {
+    transform: translateY(0);
+  }
 }
 
 .cart-body {
   display: flex;
   flex-direction: column;
   min-height: 0;
+}
+
+/* While a line mutation is in flight: progress cursor + dim the controls so
+   the pending state reads even though the numbers haven't updated yet. */
+.cart-body.is-pending {
+  cursor: progress;
+
+  .line-controls {
+    opacity: 0.4;
+    transition: opacity 0.2s;
+
+    button {
+      cursor: progress;
+    }
+  }
 }
 
 .lines {

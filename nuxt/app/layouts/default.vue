@@ -1,7 +1,6 @@
 <template>
   <MainNav />
   <SecondaryNav />
-  <CartDrawer />
 
   <main>
     <slot />

@@ -195,5 +195,5 @@ Animations
 
 .enter-in-fade-up {
   opacity: 0;
-  animation: fade-in-up 2s forwards var(--curve);
+  animation: fade-in-up 2s both var(--curve);
 }
