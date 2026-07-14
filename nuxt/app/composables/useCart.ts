@@ -11,6 +11,10 @@ export const useCart = () => {
   const market = useMarket()
   const isOpen = useState('cart-open', () => false)
 
+  // Shopify LanguageCode for @inContext on every cart op, so line titles and
+  // the hosted checkout follow the URL's language.
+  const language = () => market.value.lang.toUpperCase()
+
   const cart = shopify.Cart
   const lines = computed(() => cart.value?.lines?.nodes ?? [])
   const lineCount = computed(() => lines.value.reduce((total, line) => total + line.quantity, 0))
@@ -26,21 +30,22 @@ export const useCart = () => {
 
   // Load a persisted cart (balunCartId in localStorage) on first mount.
   const init = async () => {
-    if (!cart.value) await shopify.FetchCart(null, true)
+    if (!cart.value) await shopify.FetchCart(null, true, language())
   }
 
   const addItem = async (variantId: string, quantity = 1) => {
-    const result = await shopify.AddToCart(variantId, quantity, market.value.country)
+    const result = await shopify.AddToCart(variantId, quantity, market.value.country, language())
     if (result) open()
     return result
   }
 
   const updateLine = (lineId: string, quantity: number) => {
     if (quantity < 1) return removeLine(lineId)
-    return shopify.UpdateLineItems(cart.value?.id, [{ id: lineId, quantity }])
+    return shopify.UpdateLineItems(cart.value?.id, [{ id: lineId, quantity }], language())
   }
 
-  const removeLine = (lineId: string) => shopify.RemoveLineItems(cart.value?.id, [lineId])
+  const removeLine = (lineId: string) =>
+    shopify.RemoveLineItems(cart.value?.id, [lineId], language())
 
   // Hand off to Shopify's hosted checkout. buyerIdentity set at creation means
   // it opens in the right market/currency.

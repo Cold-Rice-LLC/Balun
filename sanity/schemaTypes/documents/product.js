@@ -1,4 +1,5 @@
 import {TagIcon} from '@sanity/icons'
+import {englishIfAny} from '../lib/i18nValidation'
 
 /**
  * A Shopify product. Documents are created and kept in sync by Sanity Connect
@@ -22,15 +23,20 @@ export default {
       title: 'Shopify',
       description: 'Synced from Shopify by Sanity Connect. Read-only.',
     },
+    // Editorial siblings are translated in Sanity; Shopify-owned strings
+    // (title/description) are translated in Shopify (Translate & Adapt) and
+    // fetched with @inContext(language:) — never re-typed here.
     {
       name: 'tagline',
-      type: 'string',
+      type: 'internationalizedArrayString',
       title: 'Tagline',
+      validation: englishIfAny,
     },
     {
       name: 'body',
-      type: 'blockContent',
+      type: 'internationalizedArrayBlockContent',
       title: 'Supplemental Content',
+      validation: englishIfAny,
     },
     {
       name: 'gallery',

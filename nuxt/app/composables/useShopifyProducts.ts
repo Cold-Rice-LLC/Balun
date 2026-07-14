@@ -27,9 +27,12 @@ export const useShopifyProducts = (gids: MaybeRefOrGetter<string[]>) => {
   const gidsParam = computed(() => toValue(gids).filter(Boolean).join(','))
   const market = useMarket()
   const country = computed(() => market.value.country)
+  // Shopify LanguageCode (EN/ES) from the URL's language half — returns
+  // translated strings when the store has them (Translate & Adapt).
+  const language = computed(() => market.value.lang.toUpperCase())
 
   return useFetch('/api/products', {
-    query: { gids: gidsParam, country },
+    query: { gids: gidsParam, country, language },
     server: false,
   })
 }

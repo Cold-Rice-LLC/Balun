@@ -16,7 +16,8 @@
  */
 
 const PRODUCTS_QUERY = /* GraphQL */ `
-  query ($ids: [ID!]!, $country: CountryCode!) @inContext(country: $country) {
+  query ($ids: [ID!]!, $country: CountryCode!, $language: LanguageCode!)
+  @inContext(country: $country, language: $language) {
     nodes(ids: $ids) {
       ... on Product {
         id
@@ -61,7 +62,7 @@ export interface StorefrontProduct {
 
 export default defineCachedEventHandler(
   async (event) => {
-    const { gids, country: rawCountry } = getQuery(event)
+    const { gids, country: rawCountry, language: rawLanguage } = getQuery(event)
 
     // Only forward well-formed product GIDs — anything else (junk input,
     // variant GIDs, injection attempts) is silently dropped.
@@ -74,17 +75,26 @@ export default defineCachedEventHandler(
       ? String(rawCountry).toUpperCase()
       : 'US'
 
+    // @inContext language: Shopify returns translated title etc. when the
+    // store has that translation (Translate & Adapt); falls back to the
+    // default language otherwise.
+    const language = /^[A-Za-z]{2}$/.test(String(rawLanguage ?? ''))
+      ? String(rawLanguage).toUpperCase()
+      : 'EN'
+
     if (!ids.length) {
-      return { country, products: [] }
+      return { country, language, products: [] }
     }
 
     const data = await storefrontQuery<{ nodes: (StorefrontProduct | null)[] }>(PRODUCTS_QUERY, {
       ids,
       country,
+      language,
     })
 
     return {
       country,
+      language,
       products: data.nodes,
     }
   },
@@ -97,11 +107,12 @@ export default defineCachedEventHandler(
     // visitors at the worst moment.
     maxAge: 60,
     swr: true,
-    // Cache key must include country — the same product has different
-    // prices/currency/availability per market (@inContext).
+    // Cache key must include country AND language — the same product has
+    // different prices/currency per market and different strings per
+    // language (@inContext).
     getKey: (event) => {
-      const { gids, country } = getQuery(event)
-      return `products:${country ?? 'US'}:${gids ?? ''}`
+      const { gids, country, language } = getQuery(event)
+      return `products:${country ?? 'US'}:${language ?? 'EN'}:${gids ?? ''}`
     },
   },
 )

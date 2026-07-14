@@ -15,9 +15,12 @@ import type { MaybeRefOrGetter } from 'vue'
 export const useShopifyProduct = (handle: MaybeRefOrGetter<string>) => {
   const market = useMarket()
   const country = computed(() => market.value.country)
+  // Shopify LanguageCode (EN/ES) from the URL's language half — returns
+  // translated strings when the store has them (Translate & Adapt).
+  const language = computed(() => market.value.lang.toUpperCase())
 
   return useFetch('/api/product', {
-    query: { handle: computed(() => toValue(handle)), country },
+    query: { handle: computed(() => toValue(handle)), country, language },
     server: false,
   })
 }

@@ -13,7 +13,8 @@
  */
 
 const PRODUCT_QUERY = /* GraphQL */ `
-  query ($handle: String!, $country: CountryCode!) @inContext(country: $country) {
+  query ($handle: String!, $country: CountryCode!, $language: LanguageCode!)
+  @inContext(country: $country, language: $language) {
     product(handle: $handle) {
       id
       title
@@ -110,7 +111,7 @@ export interface StorefrontProductDetail {
 
 export default defineCachedEventHandler(
   async (event) => {
-    const { handle: rawHandle, country: rawCountry } = getQuery(event)
+    const { handle: rawHandle, country: rawCountry, language: rawLanguage } = getQuery(event)
 
     const handle = String(rawHandle ?? '').trim()
     if (!handle) {
@@ -121,13 +122,20 @@ export default defineCachedEventHandler(
       ? String(rawCountry).toUpperCase()
       : 'US'
 
+    // @inContext language: translated strings when the store has them
+    // (Translate & Adapt), default language otherwise.
+    const language = /^[A-Za-z]{2}$/.test(String(rawLanguage ?? ''))
+      ? String(rawLanguage).toUpperCase()
+      : 'EN'
+
     const data = await storefrontQuery<{ product: StorefrontProductDetail | null }>(
       PRODUCT_QUERY,
-      { handle, country },
+      { handle, country, language },
     )
 
     return {
       country,
+      language,
       product: data.product,
     }
   },
@@ -135,8 +143,8 @@ export default defineCachedEventHandler(
     maxAge: 60,
     swr: true,
     getKey: (event) => {
-      const { handle, country } = getQuery(event)
-      return `product:${country ?? 'US'}:${handle ?? ''}`
+      const { handle, country, language } = getQuery(event)
+      return `product:${country ?? 'US'}:${language ?? 'EN'}:${handle ?? ''}`
     },
   },
 )

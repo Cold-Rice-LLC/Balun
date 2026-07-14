@@ -45,14 +45,18 @@ import { productPageQuery, colorwaysQuery } from '~/utils/queries'
 const route = useRoute()
 const handle = computed(() => String(route.params.handle))
 const sanity = useSanity()
+const market = useMarket()
 
 // SSR shell (cached per locale URL): Sanity editorial + synced identity.
+// $lang resolves the translated tagline/body; watched so an in-place language
+// switch (same route component, new prefix) refetches.
 const { data: doc } = await useAsyncData(
-  // Handle-specific key: each product caches separately, and the key changing
-  // on navigation triggers a fresh fetch (a static key would serve the
-  // previous product's cached payload).
-  () => `pdp-doc-${handle.value}`,
-  () => sanity.fetch(productPageQuery, { handle: handle.value }),
+  // Handle+lang key: each product/language caches separately, and the key
+  // changing on navigation triggers a fresh fetch (a static key would serve
+  // the previous product's cached payload).
+  () => `pdp-doc-${handle.value}-${market.value.lang}`,
+  () => sanity.fetch(productPageQuery, { handle: handle.value, lang: market.value.lang }),
+  { watch: [() => market.value.lang] },
 )
 
 // Initial / SSR miss.

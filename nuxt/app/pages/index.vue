@@ -22,15 +22,15 @@
 <script setup>
 import { homeQuery } from '~/utils/queries'
 
-// $market (from the URL locale) selects the market's home page or the default.
-// Market-keyed cache key so each market gets its own shell and switching
-// refetches in place.
+// $market selects the market's home page or the default; $lang resolves the
+// translated fields inside it (tagline). Keyed by both so each combo caches
+// its own shell and switching either refetches in place.
 const sanity = useSanity()
 const market = useMarket()
 const { data: home } = await useAsyncData(
-  () => `home-${market.value.market}`,
-  () => sanity.fetch(homeQuery, { market: market.value.market }),
-  { watch: [() => market.value.market] },
+  () => `home-${market.value.market}-${market.value.lang}`,
+  () => sanity.fetch(homeQuery, { market: market.value.market, lang: market.value.lang }),
+  { watch: [() => market.value.market, () => market.value.lang] },
 )
 
 // String names don't resolve components in dynamic :is at runtime.

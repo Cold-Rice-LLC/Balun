@@ -1,6 +1,12 @@
 // Central GROQ queries so they're reusable and easy to eyeball/test.
 import { groq } from '#imports'
 
+// Translated fields are internationalized arrays: resolve the current $lang
+// with an English fallback so untranslated fields still render. Every query
+// that embeds this must be fetched with a $lang param.
+const i18nField = (name: string) =>
+  `"${name}": coalesce(${name}[language == $lang][0].value, ${name}[language == "en"][0].value)`
+
 // Shared product projection. Product docs are synced by Sanity Connect:
 // identity/title/slug live under the machine-owned `store` object (flattened
 // here so components don't care), editorial fields are siblings. Live market
@@ -10,7 +16,7 @@ const productProjection = `
   "title": store.title,
   "gid": store.gid,
   "slug": store.slug.current,
-  tagline,
+  ${i18nField('tagline')},
   gallery
 `
 
@@ -38,11 +44,6 @@ export const homeQuery = groq`*[
     }
   }
 }`
-
-// Info and feed content is translated (internationalized arrays): resolve the
-// current $lang with an English fallback so untranslated fields still render.
-const i18nField = (name: string) =>
-  `"${name}": coalesce(${name}[language == $lang][0].value, ${name}[language == "en"][0].value)`
 
 export const infoQuery = groq`*[_type == "infoPage"][0]{
   ${i18nField('title')},
@@ -86,8 +87,8 @@ export const productPageQuery = groq`*[
   "slug": store.slug.current,
   "status": store.status,
   "tags": store.tags,
-  tagline,
-  body,
+  ${i18nField('tagline')},
+  ${i18nField('body')},
   gallery
 }`
 

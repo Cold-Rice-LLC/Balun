@@ -38,12 +38,13 @@ export const useShopifyClient = () => {
     publicAccessToken: storefrontAccessToken,
     });
 
-    async function CreateCart(items = [], countryCode = null) {
+    async function CreateCart(items = [], countryCode = null, language = null) {
 
             try{
 
                 // buyerIdentity.countryCode sets the cart's market, so prices
                 // and hosted checkout use the visitor's currency (Shopify Markets).
+                // @inContext(language:) localizes line titles + hosted checkout.
                 let cartInput = {
                     lines: items,
                     ...(countryCode ? { buyerIdentity: { countryCode } } : {}),
@@ -52,7 +53,8 @@ export const useShopifyClient = () => {
 
                 const { data } = await client.request(CreateCartQuery, {
                     variables: {
-                        cartInput: cartInput
+                        cartInput: cartInput,
+                        language: language || undefined
                     }
                 })
 
@@ -67,7 +69,7 @@ export const useShopifyClient = () => {
             }
         }
 
-    async function FetchCart(cartId = null, checkLocalStorage = false) {
+    async function FetchCart(cartId = null, checkLocalStorage = false, language = null) {
 
         const id = checkLocalStorage ? localStorage.getItem('balunCartId') : cartId;
         if (!id) return null;
@@ -75,7 +77,8 @@ export const useShopifyClient = () => {
         try{
             const { data } = await client.request(FetchCartQuery, {
                 variables: {
-                    id: id
+                    id: id,
+                    language: language || undefined
                 }
             })
 
@@ -89,28 +92,29 @@ export const useShopifyClient = () => {
     }
 
 
-    async function AddToCart(variantId, quantity, countryCode = null) {
+    async function AddToCart(variantId, quantity, countryCode = null, language = null) {
 
         // check if cart Id exists
         const cartId = localStorage.getItem('balunCartId')
 
         if(cartId || Cart.value?.id){
             const id = cartId || Cart.value?.id;
-            return await AddLineItems(id, [{ merchandiseId: variantId, quantity: quantity }])
+            return await AddLineItems(id, [{ merchandiseId: variantId, quantity: quantity }], language)
         }else{
             // create new cart if no Id exists
-            return await CreateCart([{ merchandiseId: variantId, quantity: quantity }], countryCode)
+            return await CreateCart([{ merchandiseId: variantId, quantity: quantity }], countryCode, language)
         }
 
     }
 
-    async function AddLineItems(cartId, items = []) {
+    async function AddLineItems(cartId, items = [], language = null) {
 
         try{
             const { data } = await client.request(AddLineItemsMutation, {
                 variables: {
-                    cartId: cartId, 
-                    lines: items
+                    cartId: cartId,
+                    lines: items,
+                    language: language || undefined
                 }
             })
             Cart.value = data?.cartLinesAdd?.cart || null;
@@ -121,12 +125,13 @@ export const useShopifyClient = () => {
         }
     }
 
-    async function UpdateLineItems(cartId, items = []) {
+    async function UpdateLineItems(cartId, items = [], language = null) {
         try{
             const { data } = await client.request(UpdateLineItemsMutation, {
                 variables: {
                     cartId: cartId,
-                    lines: items
+                    lines: items,
+                    language: language || undefined
                 }
             })
             Cart.value = data?.cartLinesUpdate?.cart || null;
@@ -137,12 +142,13 @@ export const useShopifyClient = () => {
         }
     }
 
-    async function RemoveLineItems(cartId, items = []) {
+    async function RemoveLineItems(cartId, items = [], language = null) {
         try{
             const { data } = await client.request(RemoveLineItemsMutation, {
                 variables: {
                     cartId: cartId,
-                    lineIds: items
+                    lineIds: items,
+                    language: language || undefined
                 }
             })
 
