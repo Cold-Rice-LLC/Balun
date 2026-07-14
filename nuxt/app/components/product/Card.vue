@@ -14,12 +14,12 @@
       />
     </div>
 
-    <div class="card-meta uppercase text-xs">
+    <div class="card-meta uppercase">
       <p class="title">{{ live?.title || doc.title }}</p>
 
       <p
         v-if="doc.tagline"
-        class="tagline text-2xs"
+        class="tagline"
       >
         {{ doc.tagline }}
       </p>
@@ -38,7 +38,7 @@
 
       <p
         v-else
-        class="tagline text-2xs"
+        class="tagline"
       >
         Unavailable
       </p>
@@ -71,7 +71,7 @@ defineProps({
 
 <style scoped>
 .product-card {
-  color: var(--color-grey-1);
+  color: var(--color-grey-5);
 
   &.is-unavailable {
     opacity: 0.45;
@@ -80,7 +80,7 @@ defineProps({
 
 .image-frame {
   aspect-ratio: 3 / 4;
-  background-color: var(--color-grey-7);
+  background-color: var(--color-grey-1);
   border-radius: var(--radius-def);
   overflow: hidden;
 
