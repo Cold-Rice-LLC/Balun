@@ -11,6 +11,7 @@ import productVariant from './documents/productVariant'
 import collection from './documents/collection'
 import feedPost from './documents/feedPost'
 import homePage from './documents/homePage'
+import legalPage from './documents/legalPage'
 import infoPage from './documents/infoPage'
 import feedPage from './documents/feedPage'
 import livePage from './documents/livePage'
@@ -28,6 +29,7 @@ export const schemaTypes = [
   // Singletons
   siteSettings,
   homePage,
+  legalPage,
   infoPage,
   feedPage,
   livePage,

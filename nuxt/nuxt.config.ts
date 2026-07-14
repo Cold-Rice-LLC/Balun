@@ -1,4 +1,5 @@
 import tailwindcss from '@tailwindcss/vite'
+import { LOCALES } from '../locales.mjs'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -13,10 +14,11 @@ export default defineNuxtConfig({
   // locale; IP is never used to vary content. See
   // docs/shopify-and-localization-strategy.md.
   i18n: {
-    locales: [
-      { code: 'en-us', language: 'en-US', name: 'United States' },
-      { code: 'en-gb', language: 'en-GB', name: 'United Kingdom' },
-    ],
+    // Supported {lang}-{country} combos from the repo-root shared module
+    // (single source of truth, also feeds the Studio) — never the cartesian
+    // product. `country`/`lang` drive market vs language selection; the *Name
+    // fields label the two switchers. See docs/adding-a-market.md.
+    locales: LOCALES,
     defaultLocale: 'en-us',
     // Every route carries its locale prefix — no unprefixed variants to
     // fragment the cache or the analytics.

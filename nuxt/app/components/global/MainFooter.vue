@@ -10,8 +10,6 @@
     <div class="links-container absolute inset-0 grid grid-cols-2 px-base">
       <div class="newsletter">
         <p class="text-lg uppercase leading-none">Sign up for emails</p>
-
-        <MarketSwitcher />
       </div>
 
       <div class="footer-links flex justify-between items-start">

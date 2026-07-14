@@ -39,20 +39,34 @@ export const homeQuery = groq`*[
   }
 }`
 
+// Info and feed content is translated (internationalized arrays): resolve the
+// current $lang with an English fallback so untranslated fields still render.
+const i18nField = (name: string) =>
+  `"${name}": coalesce(${name}[language == $lang][0].value, ${name}[language == "en"][0].value)`
+
 export const infoQuery = groq`*[_type == "infoPage"][0]{
-  title,
-  body
+  ${i18nField('title')},
+  ${i18nField('body')}
+}`
+
+// A reusable policy page by slug. Title/body are internationalized arrays
+// (sanity-plugin-internationalized-array): resolve the current $lang, falling
+// back to English so an untranslated page still renders. Slug is language-
+// agnostic — the {lang} URL prefix carries language, not the path.
+export const legalPageQuery = groq`*[_type == "legalPage" && slug.current == $slug][0]{
+  ${i18nField('title')},
+  ${i18nField('body')}
 }`
 
 export const feedQuery = groq`{
   "page": *[_type == "feedPage"][0]{ title, intro },
   "posts": *[_type == "feedPost"] | order(publishedAt desc){
     _id,
-    title,
+    ${i18nField('title')},
     category,
     publishedAt,
     coverImage,
-    body
+    ${i18nField('body')}
   }
 }`
 

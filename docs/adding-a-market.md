@@ -11,44 +11,39 @@ market-vs-language distinction below is unfamiliar.
 
 ---
 
-## The change is three edits kept in sync
+## The change: one file + Shopify admin
 
-A market is defined in three places, and they must agree. Example: adding
+All locale config lives in the repo-root **[`locales.mjs`](../locales.mjs)** —
+the single source of truth consumed by both the Nuxt app (`i18n.locales`) and
+the Studio (plugin languages, schema market options). Example: adding
 **Germany**.
 
-### 1. `nuxt/nuxt.config.ts` — the URL prefix (source of truth)
-
-Add a locale entry under `i18n.locales`:
-
-```ts
-locales: [
-  { code: 'en-us', language: 'en-US', name: 'United States' },
-  { code: 'en-gb', language: 'en-GB', name: 'United Kingdom' },
-  { code: 'en-de', language: 'en-DE', name: 'Germany' },   // ← add
-],
-```
-
-This creates the `/en-de` URL prefix, from which everything else is derived
-(`useMarket()`). The [MarketSwitcher](../nuxt/app/components/global/MarketSwitcher.vue)
-picks it up automatically — it iterates `locales`, so no edit there.
-
-### 2. `sanity/schemaTypes/documents/homePage.js` — editor options
-
-Add the market to `MARKET_OPTIONS` so editors can tag featured slots for it:
+### 1. `locales.mjs` — markets, languages, and supported combos
 
 ```js
-const MARKET_OPTIONS = [
-  {title: 'United States', value: 'us'},
-  {title: 'United Kingdom', value: 'gb'},
-  {title: 'Germany', value: 'de'},   // ← add
+export const MARKETS = [
+  {id: 'us', title: 'United States'},
+  {id: 'gb', title: 'United Kingdom'},
+  {id: 'de', title: 'Germany'},   // ← add the market
+]
+
+const COMBOS = [
+  ['en', 'us'],
+  ['en', 'gb'],
+  ['es', 'us'],
+  ['en', 'de'],                   // ← add the combo(s) this market supports
 ]
 ```
 
-> As more documents gain market fields, extract `MARKET_OPTIONS` into a shared
-> schema module and import it, so this becomes a one-line edit instead of one per
-> document. Today only `homePage` uses it.
+That's it on the code side. The `/en-de` URL prefix, the market switcher entry,
+the Studio's market options, and `useMarket()` all derive from this file.
+Adding a **language** is the same file: add to `LANGUAGES` and list its combos —
+only combos you actually support, never the cartesian product.
 
-### 3. Shopify admin → Markets — the purchase boundary
+> Restart both dev servers after editing — the file is read at config time by
+> Nuxt and the Studio.
+
+### 2. Shopify admin → Markets — the purchase boundary
 
 Enable the market/country in Shopify. This is what makes
 `@inContext(country: DE)` return real price, currency, and availability. Without
@@ -66,7 +61,7 @@ Use **ISO country codes** — the classic trap is the UK, whose code is `gb`, no
 | Source                                   | Value (Germany) | Used for                    |
 | ---------------------------------------- | --------------- | --------------------------- |
 | `i18n.locales[].code`                    | `en-de`         | URL prefix                  |
-| `MARKET_OPTIONS` value / GROQ `$market`  | `de` (lower)    | Sanity content filter       |
+| `MARKETS[].id` / GROQ `$market`          | `de` (lower)    | Sanity content filter       |
 | `@inContext(country:)` / `useMarket().country` | `DE` (upper) | Shopify pricing             |
 
 `useMarket()` splits `en-de` → `lang: 'en'`, `country: 'DE'`, `market: 'de'`.
@@ -99,7 +94,7 @@ available and lets editors optionally scope content to it.
    override) and confirm `/en-de` shows the scoped content while `/en-us` does
    not.
 3. Confirm the buy box shows real EUR pricing on a product page — if it shows
-   "unavailable", the Shopify Markets step (#3) isn't done.
+   "unavailable", the Shopify Markets step (#2) isn't done.
 
 ---
 

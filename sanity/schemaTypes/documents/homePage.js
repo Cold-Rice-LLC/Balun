@@ -1,13 +1,10 @@
 import {HomeIcon} from '@sanity/icons'
+import {MARKETS} from '../../../locales.mjs'
 
-// Market audience options — keep in sync with the Nuxt i18n locales
-// (nuxt.config `i18n.locales`) and MARKET_OPTIONS elsewhere. Values are the
+// Market audience options from the repo-root shared module (single source of
+// truth for markets/languages — see docs/adding-a-market.md). Values are the
 // lowercase country code useMarket().market produces and $market matches on.
-// See docs/adding-a-market.md.
-const MARKET_OPTIONS = [
-  {title: 'United States', value: 'us'},
-  {title: 'United Kingdom', value: 'gb'},
-]
+const MARKET_OPTIONS = MARKETS.map(({id, title}) => ({title, value: id}))
 
 export default {
   name: 'homePage',

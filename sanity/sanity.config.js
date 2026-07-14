@@ -1,8 +1,20 @@
-import {defineConfig} from 'sanity'
+import {defineConfig, defineField} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
+import {internationalizedArray} from 'sanity-plugin-internationalized-array'
+import {LANGUAGES, DEFAULT_LANGUAGE} from '../locales.mjs'
 import {schemaTypes} from './schemaTypes'
 import {myStructure, singletonTypes} from './myStructure'
+
+// Supported content languages (the {lang} half of the /{lang}-{country} URL),
+// from the repo-root shared module — see docs/adding-a-market.md.
+// Registers internationalizedArrayString + internationalizedArrayBlockContent
+// field types (used by translated editorial fields like legalPage title/body).
+const internationalizedArrayPlugin = internationalizedArray({
+  languages: LANGUAGES.map(({id, title}) => ({id, title})),
+  defaultLanguages: [DEFAULT_LANGUAGE],
+  fieldTypes: ['string', defineField({name: 'blockContent', type: 'blockContent'})],
+})
 
 // Actions that don't make sense for singletons (one fixed document per type).
 const singletonActions = new Set(['publish', 'discardChanges', 'restore'])
@@ -21,7 +33,7 @@ export default defineConfig({
   projectId: 'pful3cpt',
   dataset: 'production',
 
-  plugins: [structureTool({structure: myStructure}), visionTool()],
+  plugins: [structureTool({structure: myStructure}), visionTool(), internationalizedArrayPlugin],
 
   schema: {
     types: schemaTypes,

@@ -116,8 +116,51 @@ for a brand site where pages share structure/images and translations publish tog
 Document-level i18n (doc per language) buys independent publishing workflows at the cost of
 document sprawl — only if some content type develops fully divergent per-language editorial.
 
+Nearly all editorial is this axis, not the market axis: Info, Live, Terms, Returns, Feed posts,
+and a product's `tagline`/`body` are the **same content, translated** — not different content per
+country. They get i18n fields, not `markets` fields. (The home page is the rare genuine exception:
+a wholesale different page per market — see [Market-specific content](#market-specific-content--explicit-audience-fields-not-localization-plugins).)
+
+#### Products: two translation sources, split by field ownership
+
+A product is two content sources, and **each is translated in its own system** — do not conflate
+them:
+
+| Fields                                                  | Owner              | Translated in                        | Retrieved via                                        |
+| ------------------------------------------------------- | ------------------ | ------------------------------------ | ---------------------------------------------------- |
+| Title, description, option/variant names, **checkout**  | Shopify            | **Shopify** (Translate & Adapt app)  | `@inContext(country:, language:)` on the Storefront fetch |
+| `tagline`, `body`, gallery captions                     | Sanity (editorial) | **Sanity** (`internationalized-array`) | GROQ `field[$lang]` + `coalesce()`                   |
+
+The translated product **title/description come from Shopify**, not Sanity: you add a `language`
+argument to the same `@inContext` call the buy box already makes, and Shopify returns the
+localized strings (and localizes hosted checkout too). Only the Sanity-owned editorial siblings
+are translated in Sanity.
+
+**Rule: never re-type a Shopify-owned field into Sanity to translate it.** Copying the product
+title into a Sanity string to translate duplicates the source of truth and drifts. Sanity
+translates only the fields Shopify doesn't own — consistent with the machine-owned `store` object
+rule (§1).
+
+#### Wiring it on (when a language is scheduled)
+
+`useMarket()` already exposes `lang` from the URL, so the later cost is modest:
+
+- **Shopify** — the two batch/PDP routes currently pass **country only**
+  (`@inContext(country: $country)` in `server/api/product.get.ts` and `products.get.ts`). Add
+  `$language` → `@inContext(country: $country, language: $language)`, and add language to the
+  cache keys (`product:${country}:${language}:${handle}`) — a product's strings differ by
+  language just as its price differs by country.
+- **Sanity** — add the plugin; convert the editorial fields above from `string`/`blockContent`
+  to internationalized arrays; queries resolve `field[$lang]` with `coalesce()` to the default
+  language.
+- **Nuxt** — pass `lang` into the Sanity queries and the Shopify fetch; add a **language picker**
+  that swaps the `{lang}` URL segment (mirroring how `MarketSwitcher` swaps `{country}`); add the
+  new `{lang}-{country}` locales to `i18n.locales` — only combos you actually support, **never the
+  cartesian product** of languages × markets.
+
 **Do not add the plugin until a second language is scheduled.** `string` → internationalized array
-is a mechanical migration later; unused i18n structure is permanent editorial friction now.
+is a mechanical migration later; unused i18n structure is permanent editorial friction now (every
+field becomes a multi-language accordion for monolingual content). Leave fields plain until then.
 
 ### Market-specific content → explicit audience fields, not localization plugins
 

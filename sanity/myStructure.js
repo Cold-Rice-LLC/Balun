@@ -44,6 +44,11 @@ export const myStructure = (S) =>
                 ),
               singleton(S, 'infoPage', 'Info Page', InfoOutlineIcon),
               singleton(S, 'livePage', 'Live Page', PlayIcon),
+              // Reusable policy pages: Terms, Returns, Privacy, … (slug-driven).
+              S.listItem()
+                .title('Legal Pages')
+                .icon(DocumentTextIcon)
+                .child(S.documentTypeList('legalPage').title('Legal Pages')),
             ]),
         ),
       // Collections (custom titles; schema type titles stay singular for the editor UI).

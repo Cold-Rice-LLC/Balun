@@ -1,6 +1,9 @@
 <template>
   <header class="fixed top-0 left-0 w-full grid grid-cols-3 p-base">
-    <div></div>
+    <div class="localization flex gap-base items-center">
+      <MarketSwitcher />
+      <LanguageSwitcher />
+    </div>
 
     <div class="flex justify-center items-center">
       <nuxt-link
