@@ -31,8 +31,35 @@ export const useShopifyProducts = (gids: MaybeRefOrGetter<string[]>) => {
   // translated strings when the store has them (Translate & Adapt).
   const language = computed(() => market.value.lang.toUpperCase())
 
-  return useFetch('/api/products', {
+  const result = useFetch('/api/products', {
     query: { gids: gidsParam, country, language },
     server: false,
+    // Bypass Nuxt's payload cache: without this, a back-nav remount reuses
+    // the session's first response forever (sold-out products keep looking
+    // available). Refetching bounds staleness to the server cache's ~60s
+    // window, and costs one request to our own cached route — Shopify load
+    // is unchanged. Callers render from useLiveCatalog so the last known
+    // data keeps painting during the refetch (no flicker).
+    getCachedData: () => undefined,
   })
+
+  // Report every response to the shared catalog. The response array mirrors
+  // the requested gids (nodes(ids:) preserves order), so a null entry maps
+  // back to its gid — that's real information ("not sold in this market"),
+  // not an error, and must overwrite a stale "available" entry.
+  const { report } = useLiveCatalog()
+  watch(result.data, (val) => {
+    if (!val) return
+    const requested = toValue(gids).filter(Boolean)
+    const products = val.products ?? []
+    if (requested.length === products.length) {
+      requested.forEach((gid, i) => report(gid, products[i] ?? null))
+    } else {
+      // gids changed while the request was in flight — only trust the ids
+      // the response itself carries.
+      for (const p of products) if (p?.id) report(p.id, p)
+    }
+  })
+
+  return result
 }

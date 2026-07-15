@@ -4,7 +4,7 @@
       <li>
         <NuxtLink
           :to="localePath('/')"
-          @click="close"
+          @click="onShopLink"
           >shop</NuxtLink
         >
       </li>
@@ -29,12 +29,20 @@
     <!-- Rendered inside the nav so the cart button and drawer it controls
          (aria-controls) live in the same landmark for assistive tech. -->
     <CartDrawer />
+    <QuickAddDrawer />
   </nav>
 </template>
 
 <script setup>
 const localePath = useLocalePath()
 const { isOpen, lineCount, open, close, checkout, init } = useCart()
+const { close: closeQuickAdd } = useQuickAdd()
+
+// Navigating home from the shop button should clear both overlays.
+const onShopLink = () => {
+  close()
+  closeQuickAdd()
+}
 
 // Hide the "cart (N)" label until the persisted cart has actually been
 // fetched, so it fades in with the real count instead of flashing "(0)".

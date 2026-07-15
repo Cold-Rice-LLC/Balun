@@ -12,6 +12,12 @@
         :alt="live.featuredImage.altText || live.title"
         loading="lazy"
       />
+
+      <ProductQuickAddTrigger
+        class="quick-add"
+        :doc="doc"
+        :live="live"
+      />
     </div>
 
     <div class="card-meta uppercase">
@@ -79,8 +85,9 @@ defineProps({
 }
 
 .image-frame {
+  position: relative;
   aspect-ratio: 3 / 4;
-  background-color: var(--color-grey-1);
+  background-color: var(--color-grey-2);
   border-radius: var(--radius-def);
   overflow: hidden;
 
@@ -89,6 +96,13 @@ defineProps({
     height: 100%;
     object-fit: cover;
   }
+}
+
+/* Look comes from ProductQuickAddTrigger's default; only position it here. */
+.quick-add {
+  position: absolute;
+  bottom: var(--spacing-xs);
+  right: var(--spacing-xs);
 }
 
 .card-meta {

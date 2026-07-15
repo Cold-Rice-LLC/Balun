@@ -84,17 +84,37 @@ const { data: colorwayDocs } = await useAsyncData(
 // The buy-box island: live market-priced data, client-side only. useFetch keeps
 // the previous product's data during the refetch, so the box updates rather
 // than collapsing to a loading state.
-const { data: liveData, pending: livePending } = useShopifyProduct(handle)
+const { data: liveData, pending: livePending, refresh: refreshLive } = useShopifyProduct(handle)
 const live = computed(() => liveData.value?.product ?? null)
 
-// Live thumbs/availability for the rail (lean batch route).
+// A back-nav remount serves this useFetch from Nuxt's payload cache — instant
+// paint, but session-stale. Revalidate in the background so availability here
+// is never staler than the server cache's ~60s window. Skip when there's no
+// cached data: the initial fetch is already in flight.
+onMounted(() => {
+  if (liveData.value) refreshLive()
+})
+
+// Report what this page learned to the shared catalog, so listing surfaces
+// stay consistent with what the visitor just saw here. A loaded-but-null
+// product is real info (masked from this market) — the response can't name
+// its gid, but the Sanity doc can.
+const { report, byGid: catalog } = useLiveCatalog()
+watch(liveData, (val) => {
+  if (!val) return
+  if (val.product?.id) report(val.product.id, val.product)
+  else if (doc.value?.gid) report(doc.value.gid, null)
+})
+
+// Live thumbs/availability for the rail: fetched via the lean batch route,
+// rendered from the catalog so revisits paint the last known data instantly.
 const colorwayGids = computed(() => (colorwayDocs.value ?? []).map((d) => d.gid).filter(Boolean))
-const { data: colorwayLive } = useShopifyProducts(colorwayGids)
+useShopifyProducts(colorwayGids)
 
 const colorways = computed(() =>
   (colorwayDocs.value ?? []).map((d) => ({
     doc: d,
-    live: colorwayLive.value?.products?.find((p) => p?.id === d.gid) ?? null,
+    live: catalog.value[d.gid] ?? null,
   })),
 )
 

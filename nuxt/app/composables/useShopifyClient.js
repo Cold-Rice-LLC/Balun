@@ -58,9 +58,16 @@ export const useShopifyClient = () => {
                     }
                 })
 
+                // Keep the cart even on userErrors (it may exist, just without
+                // the failed line), but honor the null-on-failure contract —
+                // Shopify reports "couldn't add" via userErrors, not a throw.
                 Cart.value = data?.cartCreate?.cart || null;
                 if (data?.cartCreate?.cart?.id) {
                     localStorage.setItem('balunCartId', data.cartCreate.cart.id)
+                }
+                if (data?.cartCreate?.userErrors?.length) {
+                    console.error('CreateCart userErrors', data.cartCreate.userErrors)
+                    return null
                 }
                 return data?.cartCreate?.cart
             }catch(e){
@@ -117,6 +124,13 @@ export const useShopifyClient = () => {
                     language: language || undefined
                 }
             })
+            // Shopify signals "couldn't add" (e.g. variant sold out) via
+            // userErrors WITH a truthy, unchanged cart — return null per this
+            // module's contract, and don't clobber Cart state with it.
+            if (data?.cartLinesAdd?.userErrors?.length) {
+                console.error('AddLineItems userErrors', data.cartLinesAdd.userErrors)
+                return null
+            }
             Cart.value = data?.cartLinesAdd?.cart || null;
             return data?.cartLinesAdd?.cart
         }catch(e){

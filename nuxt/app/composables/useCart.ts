@@ -33,9 +33,11 @@ export const useCart = () => {
     if (!cart.value) await shopify.FetchCart(null, true, language())
   }
 
-  const addItem = async (variantId: string, quantity = 1) => {
+  // `openCart: false` lets in-place flows (quick-add's "added!" state) confirm
+  // without yanking the drawer open over them.
+  const addItem = async (variantId: string, quantity = 1, { openCart = true } = {}) => {
     const result = await shopify.AddToCart(variantId, quantity, market.value.country, language())
-    if (result) open()
+    if (result && openCart) open()
     return result
   }
 

@@ -14,6 +14,12 @@
           :src="live.featuredImage.url"
           :alt="live.featuredImage.altText || live.title"
         />
+
+        <ProductQuickAddTrigger
+          class="quick-add"
+          :doc="product"
+          :live="live"
+        />
       </div>
 
       <div class="featured-meta uppercase">
@@ -81,7 +87,7 @@ const live = computed(() => props.liveByGid[product.value?.gid] ?? null)
 }
 
 .featured-link {
-  color: var(--color-grey-1);
+  color: var(--color-grey-5);
 
   &.is-unavailable {
     opacity: 0.45;
@@ -89,8 +95,9 @@ const live = computed(() => props.liveByGid[product.value?.gid] ?? null)
 }
 
 .image-frame {
+  position: relative;
   aspect-ratio: 16 / 9;
-  background-color: var(--color-grey-7);
+  background-color: var(--color-grey-2);
   border-radius: var(--radius-def);
   overflow: hidden;
 
@@ -99,6 +106,13 @@ const live = computed(() => props.liveByGid[product.value?.gid] ?? null)
     height: 100%;
     object-fit: cover;
   }
+}
+
+/* Look comes from ProductQuickAddTrigger's default; only position it here. */
+.quick-add {
+  position: absolute;
+  bottom: var(--spacing-sm);
+  right: var(--spacing-sm);
 }
 
 .featured-meta {

@@ -59,6 +59,22 @@ A spike on one product then hits the edge cache, not Shopify's Storefront API.
    hit at scale otherwise).
 4. **Sanity & Shopify CDNs** — Sanity `apicdn` (already on) + Shopify image CDN.
 
+### Client-side consistency layer (useLiveCatalog)
+
+The cached API routes bound staleness to ~60s per surface, but Nuxt's payload cache would otherwise
+pin a page's live data for the whole session (back-nav remounts reuse the first response — a product
+could look available an hour after selling out). So on the client:
+
+- Live fetches **bypass the payload cache and revalidate on remount** (one extra request per visit to
+  our own cached route — Shopify load unchanged).
+- Every live response — batch and detail — **reports into `useLiveCatalog`**, a session-wide gid →
+  lean-product map. Listing surfaces render from the catalog, so the last known data keeps painting
+  during refetches (no flicker), and fresher surfaces overwrite staler ones: a product the visitor
+  just saw sold out on the PDP shows sold out on the home cards too.
+
+Net: every surface is at most one server-cache window stale, and never contradicts what the visitor
+just saw.
+
 ## Invalidation
 
 - **Sanity webhook → revalidate/purge** affected pages on publish. This is what makes long TTLs safe

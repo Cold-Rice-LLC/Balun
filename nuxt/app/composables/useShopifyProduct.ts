@@ -11,8 +11,15 @@ import type { MaybeRefOrGetter } from 'vue'
  *   refetches in the new currency automatically.
  * - `data.value.product === null` after load means "not sold in this market
  *   or unknown handle" — render the unavailable state, not an error.
+ *
+ * `options` forwards to useFetch — e.g. quick-add passes { immediate: false }
+ * because its handle is empty until a product is picked (an immediate fetch
+ * would 400); reactive query changes still trigger fetches afterwards.
  */
-export const useShopifyProduct = (handle: MaybeRefOrGetter<string>) => {
+export const useShopifyProduct = (
+  handle: MaybeRefOrGetter<string>,
+  options: Record<string, unknown> = {},
+) => {
   const market = useMarket()
   const country = computed(() => market.value.country)
   // Shopify LanguageCode (EN/ES) from the URL's language half — returns
@@ -22,5 +29,6 @@ export const useShopifyProduct = (handle: MaybeRefOrGetter<string>) => {
   return useFetch('/api/product', {
     query: { handle: computed(() => toValue(handle)), country, language },
     server: false,
+    ...options,
   })
 }
