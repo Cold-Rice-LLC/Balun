@@ -1,0 +1,56 @@
+{
+  "nav": {
+    "shop": "shop",
+    "feed": "feed",
+    "info": "info",
+    "cart": "cart ({n})",
+    "checkout": "checkout"
+  },
+  "cart": {
+    "close": "Close cart",
+    "empty": "Your cart is empty",
+    "subtotal": "Subtotal",
+    "items": "{n} item | {n} items",
+    "taxesNote": "Taxes and shipping calculated at checkout",
+    "remove": "Remove"
+  },
+  "stepper": {
+    "decrease": "Decrease quantity",
+    "increase": "Increase quantity"
+  },
+  "quickAdd": {
+    "trigger": "Quick add {title}",
+    "close": "Close quick add",
+    "loadingSizes": "Loading sizes…",
+    "sizeFallback": "Size",
+    "quantity": "Quantity",
+    "addToCart": "add to cart",
+    "adding": "adding…",
+    "added": "added!",
+    "failed": "couldn’t add",
+    "soldOut": "sold out",
+    "unavailable": "Not available in your region",
+    "learnMore": "learn more"
+  },
+  "buyBox": {
+    "loading": "Loading price…",
+    "optionFallback": "Option",
+    "addToCart": "Add to cart",
+    "adding": "Adding…",
+    "soldOut": "Sold out",
+    "unavailable": "Not available in your region"
+  },
+  "product": {
+    "soldOut": "Sold out",
+    "unavailable": "Unavailable"
+  },
+  "locale": {
+    "market": "Market",
+    "language": "Language",
+    "closePicker": "Close {label} picker"
+  },
+  "newsletter": {
+    "heading": "Sign up for emails →",
+    "placeholder": "Email Address"
+  }
+}

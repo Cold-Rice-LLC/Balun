@@ -1,9 +1,9 @@
 <template>
   <form class="email-signup flex items-center gap-x-sm">
-    <p class="text-lg uppercase leading-none flex-none">Sign up for emails &rarr;</p>
+    <p class="text-lg uppercase leading-none flex-none">{{ $t('newsletter.heading') }}</p>
     <input
       type="text"
-      placeholder="Email Address"
+      :placeholder="$t('newsletter.placeholder')"
       class="flex-1"
     />
   </form>

@@ -4,7 +4,7 @@
     :class="{ active: isOpen }"
     @click="close"
   >
-    <span class="sr-only">Close quick add</span>
+    <span class="sr-only">{{ $t('quickAdd.close') }}</span>
   </button>
 
   <aside
@@ -35,7 +35,7 @@
             v-if="pending && !variants.length"
             class="font-secondary uppercase state-note"
           >
-            Loading sizes…
+            {{ $t('quickAdd.loadingSizes') }}
           </p>
 
           <template v-else-if="variants.length">
@@ -63,7 +63,7 @@
             </div>
 
             <div class="quantity flex items-center justify-between font-secondary">
-              <p class="uppercase label">Quantity</p>
+              <p class="uppercase label">{{ $t('quickAdd.quantity') }}</p>
 
               <QuantityStepper
                 v-model="quantity"
@@ -97,17 +97,17 @@
           v-else-if="data"
           class="text-base-plus uppercase state-note"
         >
-          Not available in your region
+          {{ $t('quickAdd.unavailable') }}
         </p>
       </div>
 
       <button
         class="close"
-        aria-label="Close quick add"
+        :aria-label="$t('quickAdd.close')"
         @click="close"
       >
         <IconsX />
-        <span class="sr-only">Close quick add</span>
+        <span class="sr-only">{{ $t('quickAdd.close') }}</span>
       </button>
     </div>
 
@@ -118,7 +118,7 @@
         class="learn-more text-base-plus"
         @click="close"
       >
-        learn more
+        {{ $t('quickAdd.learnMore') }}
       </NuxtLink>
     </div>
   </aside>
@@ -135,6 +135,7 @@
 const { active, isOpen, close } = useQuickAdd()
 const localePath = useLocalePath()
 const market = useMarket()
+const { t } = useI18n()
 
 useScrollLock(isOpen)
 
@@ -181,7 +182,7 @@ watch(data, (val) => {
 
 const detail = computed(() => data.value?.product ?? null)
 const variants = computed(() => detail.value?.variants.nodes ?? [])
-const optionLabel = computed(() => detail.value?.options?.[0]?.name || 'Size')
+const optionLabel = computed(() => detail.value?.options?.[0]?.name || t('quickAdd.sizeFallback'))
 
 // Titles follow "Base · Color" (colorway convention) — header shows the base.
 const title = computed(() => {
@@ -222,11 +223,11 @@ const addState = ref('idle') // idle | adding | added | failed
 let addedTimer = null
 
 const addLabel = computed(() => {
-  if (addState.value === 'adding') return 'adding…'
-  if (addState.value === 'added') return 'added!'
-  if (addState.value === 'failed') return 'couldn’t add'
-  if (!selectedVariant.value?.availableForSale) return 'sold out'
-  return 'add to cart'
+  if (addState.value === 'adding') return t('quickAdd.adding')
+  if (addState.value === 'added') return t('quickAdd.added')
+  if (addState.value === 'failed') return t('quickAdd.failed')
+  if (!selectedVariant.value?.availableForSale) return t('quickAdd.soldOut')
+  return t('quickAdd.addToCart')
 })
 
 const settleAddState = (state, holdMs, onSettled) => {

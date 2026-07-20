@@ -34,7 +34,9 @@ const COMBOS = [
 
 // Nuxt i18n locale entries derived from the combos. The default language shows
 // the bare market name; others get "(Native name)" so /en-us and /es-us read
-// distinctly in pickers and analytics.
+// distinctly in pickers and analytics. `file` points at the UI-string catalog
+// (web/i18n/locales/): keyed by LANGUAGE, so en-us and en-gb share en.json —
+// adding a language means adding its catalog file alongside the combo here.
 export const LOCALES = COMBOS.map(([lang, country]) => {
   const language = LANGUAGES.find((l) => l.id === lang)
   const market = MARKETS.find((m) => m.id === country)
@@ -43,6 +45,7 @@ export const LOCALES = COMBOS.map(([lang, country]) => {
     language: `${lang}-${country.toUpperCase()}`,
     name:
       lang === DEFAULT_LANGUAGE ? market.title : `${market.title} (${language.nativeName})`,
+    file: `${lang}.json`,
     country,
     lang,
     marketName: market.title,

@@ -3,7 +3,7 @@
        language (e.g. UK = English only) needs no picker. -->
   <LocaleModal
     v-if="languages.length > 1"
-    label="Language"
+    :label="$t('locale.language')"
     :items="languages"
   />
 </template>

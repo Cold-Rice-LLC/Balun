@@ -20,7 +20,7 @@
       tabindex="-1"
       @click="open = false"
     >
-      <span class="sr-only">Close {{ label.toLowerCase() }} picker</span>
+      <span class="sr-only">{{ $t('locale.closePicker', { label: label.toLowerCase() }) }}</span>
     </button>
 
     <div

@@ -10,7 +10,7 @@
       v-if="pending && !live"
       class="text-xs uppercase state-note"
     >
-      Loading price…
+      {{ $t('buyBox.loading') }}
     </p>
 
     <template v-else-if="live">
@@ -28,7 +28,7 @@
         v-if="live.variants.nodes.length > 1"
         class="variants"
       >
-        <p class="text-2xs uppercase label">{{ live.options[0]?.name || 'Option' }}</p>
+        <p class="text-2xs uppercase label">{{ live.options[0]?.name || $t('buyBox.optionFallback') }}</p>
 
         <ul class="flex flex-wrap gap-xs">
           <li
@@ -63,7 +63,7 @@
       v-else
       class="text-xs uppercase state-note"
     >
-      Not available in your region
+      {{ $t('buyBox.unavailable') }}
     </p>
   </div>
 </template>
@@ -91,6 +91,7 @@ const props = defineProps({
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 
 // Shopify variant GIDs are gid://shopify/ProductVariant/<numericId>; the URL
 // carries just the numeric id (Shopify's ?variant= convention) so links are
@@ -129,9 +130,9 @@ const { addItem } = useCart()
 const adding = ref(false)
 
 const addToCartLabel = computed(() => {
-  if (adding.value) return 'Adding…'
-  if (!selectedVariant.value?.availableForSale) return 'Sold out'
-  return 'Add to cart'
+  if (adding.value) return t('buyBox.adding')
+  if (!selectedVariant.value?.availableForSale) return t('buyBox.soldOut')
+  return t('buyBox.addToCart')
 })
 
 const addToCart = async () => {

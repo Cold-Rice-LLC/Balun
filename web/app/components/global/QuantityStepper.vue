@@ -1,7 +1,7 @@
 <template>
   <div class="stepper">
     <button
-      aria-label="Decrease quantity"
+      :aria-label="$t('stepper.decrease')"
       :disabled="disabled"
       @click="step(-1)"
     >
@@ -9,7 +9,7 @@
     </button>
     <span class="qty">{{ modelValue }}</span>
     <button
-      aria-label="Increase quantity"
+      :aria-label="$t('stepper.increase')"
       :disabled="disabled"
       @click="step(1)"
     >

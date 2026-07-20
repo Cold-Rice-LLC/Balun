@@ -19,7 +19,7 @@
           <nuxt-link
             :to="localePath('/feed')"
             class="bg-yellow text-grey-6"
-            >feed</nuxt-link
+            >{{ $t('nav.feed') }}</nuxt-link
           >
         </li>
 
@@ -27,7 +27,7 @@
           <nuxt-link
             :to="localePath('/info')"
             class="bg-purple text-white"
-            >info</nuxt-link
+            >{{ $t('nav.info') }}</nuxt-link
           >
         </li>
       </ul>

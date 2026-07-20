@@ -4,7 +4,7 @@
     :class="{ active: isOpen }"
     @click="close"
   >
-    <span class="sr-only">Close cart</span>
+    <span class="sr-only">{{ $t('cart.close') }}</span>
   </button>
 
   <aside
@@ -67,7 +67,7 @@
                   :disabled="pending"
                   @click="onRemove(line.id)"
                 >
-                  Remove
+                  {{ $t('cart.remove') }}
                 </button>
               </div>
             </div>
@@ -77,14 +77,14 @@
 
       <div class="summary font-secondary flex-none px-base pb-base">
         <div class="border-t border-grey-5 pt-base flex flex-col gap-3">
-          <p class="text-base summary-label">Subtotal</p>
+          <p class="text-base summary-label">{{ $t('cart.subtotal') }}</p>
 
           <div class="summary-row text-base flex justify-between">
-            <span>{{ lineCount }} {{ lineCount === 1 ? 'item' : 'items' }}</span>
+            <span>{{ $t('cart.items', lineCount) }}</span>
             <span>{{ formatMoney(subtotal) }}</span>
           </div>
 
-          <p class="text-sm note opacity-50">Taxes and shipping calculated at checkout</p>
+          <p class="text-sm note opacity-50">{{ $t('cart.taxesNote') }}</p>
         </div>
       </div>
     </div>
@@ -93,7 +93,7 @@
       v-else
       class="cart-empty"
     >
-      <p class="text-lg uppercase">Your cart is empty</p>
+      <p class="text-lg uppercase">{{ $t('cart.empty') }}</p>
     </div>
   </aside>
 </template>

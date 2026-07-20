@@ -1,0 +1,56 @@
+{
+  "nav": {
+    "shop": "tienda",
+    "feed": "feed",
+    "info": "info",
+    "cart": "carrito ({n})",
+    "checkout": "pagar"
+  },
+  "cart": {
+    "close": "Cerrar carrito",
+    "empty": "Tu carrito está vacío",
+    "subtotal": "Subtotal",
+    "items": "{n} artículo | {n} artículos",
+    "taxesNote": "Impuestos y envío calculados al pagar",
+    "remove": "Eliminar"
+  },
+  "stepper": {
+    "decrease": "Disminuir cantidad",
+    "increase": "Aumentar cantidad"
+  },
+  "quickAdd": {
+    "trigger": "Compra rápida {title}",
+    "close": "Cerrar compra rápida",
+    "loadingSizes": "Cargando tallas…",
+    "sizeFallback": "Talla",
+    "quantity": "Cantidad",
+    "addToCart": "agregar al carrito",
+    "adding": "agregando…",
+    "added": "¡agregado!",
+    "failed": "no se pudo agregar",
+    "soldOut": "agotado",
+    "unavailable": "No disponible en tu región",
+    "learnMore": "ver más"
+  },
+  "buyBox": {
+    "loading": "Cargando precio…",
+    "optionFallback": "Opción",
+    "addToCart": "Agregar al carrito",
+    "adding": "Agregando…",
+    "soldOut": "Agotado",
+    "unavailable": "No disponible en tu región"
+  },
+  "product": {
+    "soldOut": "Agotado",
+    "unavailable": "No disponible"
+  },
+  "locale": {
+    "market": "Mercado",
+    "language": "Idioma",
+    "closePicker": "Cerrar selector de {label}"
+  },
+  "newsletter": {
+    "heading": "Suscríbete para recibir correos →",
+    "placeholder": "Correo electrónico"
+  }
+}

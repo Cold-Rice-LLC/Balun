@@ -1,6 +1,6 @@
 <template>
   <LocaleModal
-    label="Market"
+    :label="$t('locale.market')"
     :items="markets"
   />
 </template>

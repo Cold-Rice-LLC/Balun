@@ -18,7 +18,7 @@
             />
 
             <template #fallback>
-              <p class="text-xs uppercase buy-box-fallback">Loading price…</p>
+              <p class="text-xs uppercase buy-box-fallback">{{ $t('buyBox.loading') }}</p>
             </template>
           </ClientOnly>
         </div>

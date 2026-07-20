@@ -5,7 +5,7 @@
         <NuxtLink
           :to="localePath('/')"
           @click="onShopLink"
-          >shop</NuxtLink
+          >{{ $t('nav.shop') }}</NuxtLink
         >
       </li>
 
@@ -36,6 +36,7 @@
 <script setup>
 const localePath = useLocalePath()
 const route = useRoute()
+const { t } = useI18n()
 const { isOpen, lineCount, open, close, checkout, init } = useCart()
 const { close: closeQuickAdd } = useQuickAdd()
 
@@ -62,8 +63,8 @@ onMounted(async () => {
 
 // Closed → "cart (N)"; open with items → "checkout"; open empty → "cart".
 const cartLabel = computed(() => {
-  if (!isOpen.value) return `cart (${lineCount.value})`
-  return lineCount.value > 0 ? 'checkout' : `cart (${lineCount.value})`
+  if (!isOpen.value) return t('nav.cart', { n: lineCount.value })
+  return lineCount.value > 0 ? t('nav.checkout') : t('nav.cart', { n: lineCount.value })
 })
 
 // Open the drawer; once open, the button checks out (if filled) or closes it.

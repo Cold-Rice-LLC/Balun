@@ -47,14 +47,14 @@
           <span
             v-if="!live.availableForSale"
             class="sold-out"
-            >Sold out</span
+            >{{ $t('product.soldOut') }}</span
           >
         </p>
         <p
           v-else
           class="tagline text-2xs"
         >
-          Unavailable
+          {{ $t('product.unavailable') }}
         </p>
       </div>
     </component>

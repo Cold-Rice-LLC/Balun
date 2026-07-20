@@ -2,7 +2,7 @@
   <button
     v-if="live?.availableForSale"
     class="quick-add-trigger text-base"
-    :aria-label="`Quick add ${live.title}`"
+    :aria-label="$t('quickAdd.trigger', { title: live.title })"
     aria-haspopup="dialog"
     aria-controls="quick-add-drawer"
     @click.stop.prevent="quickAdd.open({ doc, live })"
