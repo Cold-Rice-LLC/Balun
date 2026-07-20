@@ -87,7 +87,7 @@ nav {
       display: block;
       text-align: center;
       padding: var(--spacing-sm);
-      color: var(--color-grey-5);
+      color: var(--color-grey-7);
       border-top-left-radius: var(--radius-def);
       border-top-right-radius: var(--radius-def);
     }

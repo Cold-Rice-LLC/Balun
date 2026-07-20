@@ -1,7 +1,7 @@
 <template>
   <div
     ref="root"
-    class="locale-dropdown text-sm uppercase"
+    class="locale-dropdown text-lg leading-none"
   >
     <button
       type="button"
@@ -11,13 +11,8 @@
       :aria-expanded="open"
       @click="open = !open"
     >
+      <IconsGlobe />
       <span>{{ currentName }}</span>
-      <span
-        class="caret"
-        :class="{ open }"
-        aria-hidden="true"
-        >▾</span
-      >
     </button>
 
     <ul
@@ -84,24 +79,25 @@ onBeforeUnmount(() => {
 }
 
 .trigger {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: var(--spacing-xs);
   color: var(--color-grey-4);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.3s;
+  pointer-events: auto;
+  text-transform: uppercase;
 
-  &:hover,
-  &[aria-expanded='true'] {
-    color: var(--color-grey-3);
+  &:hover {
+    color: var(--color-grey-7);
   }
-}
 
-.caret {
-  transition: transform 0.2s;
+  svg {
+    width: 2.3rem;
+  }
 
-  &.open {
-    transform: rotate(180deg);
+  span {
+    flex: none;
   }
 }
 

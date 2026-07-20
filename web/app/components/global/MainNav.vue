@@ -1,9 +1,6 @@
 <template>
   <header class="fixed top-0 left-0 w-full grid grid-cols-3 p-base">
-    <div class="localization flex gap-base items-center">
-      <MarketSwitcher />
-      <LanguageSwitcher />
-    </div>
+    <div></div>
 
     <div class="flex justify-center items-center">
       <nuxt-link
@@ -17,12 +14,12 @@
     </div>
 
     <nav class="flex justify-end items-center">
-      <ul class="uppercase text-xs flex gap-x-xs">
+      <ul class="text-xs flex gap-x-xs">
         <li>
           <nuxt-link
             :to="localePath('/feed')"
-            class="bg-yellow"
-            >Feed</nuxt-link
+            class="bg-yellow text-grey-6"
+            >feed</nuxt-link
           >
         </li>
 
@@ -30,7 +27,7 @@
           <nuxt-link
             :to="localePath('/info')"
             class="bg-purple text-white"
-            >Info</nuxt-link
+            >info</nuxt-link
           >
         </li>
       </ul>

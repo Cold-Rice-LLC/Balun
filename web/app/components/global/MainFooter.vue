@@ -1,15 +1,10 @@
 <template>
   <footer class="relative">
-    <nuxt-link
-      :to="localePath('/')"
-      class="wordmark-link"
-    >
-      <IconsWordmark />
-    </nuxt-link>
+    <IconsWordmark />
 
     <div class="links-container absolute inset-0 grid grid-cols-2 px-base">
       <div class="newsletter">
-        <p class="text-lg uppercase leading-none">Sign up for emails</p>
+        <EmailSignup />
       </div>
 
       <div class="footer-links flex justify-between items-start">
@@ -24,16 +19,23 @@
           </ul>
         </nav>
 
-        <nav class="text-right uppercase leading-none">
-          <ul>
-            <li
-              v-for="(link, i) in secondaryLinks"
-              :key="i"
-            >
-              <AppLink :link="link" />
-            </li>
-          </ul>
-        </nav>
+        <div class="flex items-end flex-col gap-y-sm">
+          <div class="flex items-end flex-col">
+            <MarketSwitcher />
+            <LanguageSwitcher />
+          </div>
+
+          <nav class="text-right uppercase leading-none">
+            <ul>
+              <li
+                v-for="(link, i) in secondaryLinks"
+                :key="i"
+              >
+                <AppLink :link="link" />
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
     </div>
   </footer>
@@ -57,6 +59,7 @@ footer {
 :deep(.icon-wordmark) {
   width: calc(100vw + 1px);
   height: auto;
+  pointer-events: auto;
 }
 
 .newsletter {
@@ -70,8 +73,17 @@ footer {
 .footer-links {
   padding: 0 0 0 11.4vw;
 
-  a {
+  a,
+  button {
     pointer-events: auto;
+  }
+
+  a {
+    transition: color 0.3s;
+
+    &:hover {
+      color: var(--color-grey-7);
+    }
   }
 }
 

@@ -4,7 +4,7 @@
     {
       "name": "nuxt-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "--prefix", "nuxt", "dev"],
+      "runtimeArgs": ["run", "--prefix", "web", "dev"],
       "port": 3000,
       "autoPort": true
     }
