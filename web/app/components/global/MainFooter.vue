@@ -64,30 +64,31 @@ footer {
 
 .newsletter {
   padding: 0 0 0 8.1vw;
+}
 
-  :deep(p),
-  :deep(input) {
-    pointer-events: auto;
-  }
+.newsletter :deep(p),
+.newsletter :deep(input) {
+  pointer-events: auto;
 }
 
 .footer-links {
   padding: 0 0 0 11.4vw;
+}
 
-  /* :deep so the re-enable reaches into child components (switcher triggers)
-     — the links-container's pointer-events: none would swallow them. */
-  :deep(a),
-  :deep(button) {
-    pointer-events: auto;
-  }
+/* :deep so the re-enable reaches into child components (switcher triggers)
+   — the links-container's pointer-events: none would swallow them. Kept
+   top-level: the scoped-CSS compiler mangles :deep() inside nested blocks. */
+.footer-links :deep(a),
+.footer-links :deep(button) {
+  pointer-events: auto;
+}
 
-  :deep(a) {
-    transition: color 0.3s;
+.footer-links :deep(a) {
+  transition: color 0.3s;
+}
 
-    &:hover {
-      color: var(--color-grey-7);
-    }
-  }
+.footer-links :deep(a:hover) {
+  color: var(--color-grey-7);
 }
 
 .links-container {

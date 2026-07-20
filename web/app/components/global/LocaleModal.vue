@@ -78,19 +78,13 @@ const onKey = (e) => {
   if (e.key === 'Escape') open.value = false
 }
 
-// Lock page scroll while the modal is up — unlike the bottom drawers, a
-// centered dialog over a blurred page shouldn't let the page move under it.
-watch(open, (isOpen) => {
-  document.documentElement.style.overflow = isOpen ? 'hidden' : ''
-})
+useScrollLock(open)
 
 onMounted(() => {
   document.addEventListener('keydown', onKey)
 })
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKey)
-  // Don't leave the page unscrollable if we unmount while open.
-  if (open.value) document.documentElement.style.overflow = ''
 })
 </script>
 

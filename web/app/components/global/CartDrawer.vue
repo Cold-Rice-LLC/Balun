@@ -15,15 +15,15 @@
   >
     <div
       v-if="lines.length"
-      class="cart-body text-green p-base space-y-base"
+      class="cart-body text-green pb-base h-full flex flex-col"
       :class="{ 'is-pending': pending }"
       :aria-busy="pending"
     >
-      <ul class="lines">
+      <ul class="lines flex-1 p-base">
         <li
           v-for="line in lines"
           :key="line.id"
-          class="line"
+          class="line font-secondary"
         >
           <span class="thumb">
             <img
@@ -35,10 +35,10 @@
           </span>
 
           <div class="flex justify-between gap-base">
-            <div class="flex flex-col">
-              <p class="title text-base uppercase">{{ baseName(line.merchandise.product.title) }}</p>
+            <div class="flex flex-col gap-2">
+              <p class="title text-base uppercase leading-none">{{ baseName(line.merchandise.product.title) }}</p>
 
-              <div class="opacity-50 text-sm flex flex-col">
+              <div class="opacity-50 text-sm flex flex-col gap-1">
                 <p
                   v-if="colorName(line.merchandise.product.title)"
                   class="sub"
@@ -54,24 +54,13 @@
                 {{ formatMoney(line.cost.totalAmount) }}
               </p>
 
-              <div class="line-controls text-sm uppercase opacity-50">
-                <div class="stepper">
-                  <button
-                    aria-label="Decrease quantity"
-                    :disabled="pending"
-                    @click="onUpdate(line.id, line.quantity - 1)"
-                  >
-                    −
-                  </button>
-                  <span class="qty">{{ line.quantity }}</span>
-                  <button
-                    aria-label="Increase quantity"
-                    :disabled="pending"
-                    @click="onUpdate(line.id, line.quantity + 1)"
-                  >
-                    +
-                  </button>
-                </div>
+              <div class="line-controls text-sm uppercase">
+                <QuantityStepper
+                  :model-value="line.quantity"
+                  :min="0"
+                  :disabled="pending"
+                  @update:model-value="onUpdate(line.id, $event)"
+                />
 
                 <button
                   class="remove"
@@ -86,15 +75,17 @@
         </li>
       </ul>
 
-      <div class="summary flex flex-col gap-2 border-t border-grey-3 pt-base">
-        <p class="text-base summary-label">Subtotal</p>
+      <div class="summary font-secondary flex-none px-base pb-base">
+        <div class="border-t border-grey-5 pt-base flex flex-col gap-3">
+          <p class="text-base summary-label">Subtotal</p>
 
-        <div class="summary-row text-base flex justify-between">
-          <span>{{ lineCount }} {{ lineCount === 1 ? 'item' : 'items' }}</span>
-          <span>{{ formatMoney(subtotal) }}</span>
+          <div class="summary-row text-base flex justify-between">
+            <span>{{ lineCount }} {{ lineCount === 1 ? 'item' : 'items' }}</span>
+            <span>{{ formatMoney(subtotal) }}</span>
+          </div>
+
+          <p class="text-sm note opacity-50">Taxes and shipping calculated at checkout</p>
         </div>
-
-        <p class="text-sm note opacity-50">Taxes and shipping calculated at checkout</p>
       </div>
     </div>
 
@@ -114,6 +105,8 @@
  * SecondaryNav bar; the CHECKOUT action lives in that bar, not here.
  */
 const { isOpen, lines, lineCount, subtotal, close, updateLine, removeLine } = useCart()
+
+useScrollLock(isOpen)
 
 // Line mutations hit the Storefront API async; flag while one is in flight so
 // the controls can show a progress cursor and disable to prevent double-taps.
@@ -168,13 +161,13 @@ const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.f
   bottom: 0px;
   right: var(--spacing-base);
   left: calc(50% + var(--spacing-base) / 2);
-  max-height: calc(100svh - var(--spacing-button-lg-height) - var(--spacing-base) * 4);
+  height: 500px;
   display: flex;
   flex-direction: column;
   background-color: var(--color-grey-1);
   border-top-left-radius: var(--radius-def);
   border-top-right-radius: var(--radius-def);
-  padding-bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  padding-bottom: var(--spacing-button-lg-height);
   overflow: hidden;
   color: var(--color-green);
   transform: translateY(calc(100% - var(--spacing-button-lg-height)));
@@ -199,11 +192,13 @@ const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.f
   .line-controls {
     opacity: 0.4;
     transition: opacity 0.2s;
-
-    button {
-      cursor: progress;
-    }
   }
+}
+
+/* :deep so the progress cursor reaches the stepper's buttons too. Top-level
+   because the scoped-CSS compiler mangles :deep() inside nested blocks. */
+.cart-body.is-pending .line-controls :deep(button) {
+  cursor: progress;
 }
 
 .lines {
@@ -211,6 +206,7 @@ const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.f
   display: flex;
   flex-direction: column;
   gap: var(--spacing-base);
+  scrollbar-width: none;
 }
 
 .line {
@@ -235,16 +231,6 @@ const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.f
   margin-top: var(--spacing-xs);
   color: var(--color-grey-6);
 
-  .stepper {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-
-    button {
-      line-height: 1;
-    }
-  }
-
   .remove {
     text-decoration: underline;
     text-underline-offset: 0.2em;
@@ -259,9 +245,9 @@ const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.f
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 40svh;
   padding: var(--spacing-base);
   text-align: center;
+  height: 100%;
 }
 
 @media (max-width: 768px) {

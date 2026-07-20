@@ -60,6 +60,7 @@ Tailwind Config
   --text-xs: 1.2rem;
   --text-sm: 1.4rem;
   --text-base: 1.6rem;
+  --text-base-plus: 1.8rem;
   --text-lg: 2.8rem; /* 28 or 30 */
   --text-xl: 4rem;
   --text-2xl: 6.4rem;

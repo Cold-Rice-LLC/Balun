@@ -14,112 +14,108 @@
     aria-label="Quick add"
   >
     <div class="quick-add-body text-green">
-      <div class="p-base space-y-base">
-        <header class="flex items-start justify-between gap-base">
-          <p class="title text-base uppercase">{{ title }}</p>
+      <div class="quick-add-body-inner">
+        <div class="p-base space-y-base">
+          <header class="flex items-start justify-between gap-base font-secondary">
+            <p class="title text-base uppercase">{{ title }}</p>
 
-          <div class="flex items-center gap-base">
-            <p
-              v-if="price"
-              class="text-base"
-            >
-              {{ price }}
-            </p>
-
-            <button
-              class="close"
-              aria-label="Close quick add"
-              @click="close"
-            >
-              ✕
-            </button>
-          </div>
-        </header>
-
-        <!-- Bare loading only when there's nothing to show — a same-product
-           reopen keeps the sizes visible through the background refresh. -->
-        <p
-          v-if="pending && !variants.length"
-          class="text-xs uppercase state-note"
-        >
-          Loading sizes…
-        </p>
-
-        <template v-else-if="variants.length">
-          <div class="sizes">
-            <p class="text-2xs uppercase label">{{ optionLabel }}</p>
-
-            <ul class="grid grid-cols-2 gap-xs">
-              <li
-                v-for="variant in variants"
-                :key="variant.id"
+            <div class="flex items-center gap-base">
+              <p
+                v-if="price"
+                class="text-base"
               >
-                <button
-                  class="size-pill text-xs"
-                  :class="{
-                    'is-selected': variant.id === selectedVariant?.id,
-                    'is-oos': !variant.availableForSale,
-                  }"
-                  :disabled="!variant.availableForSale"
-                  @click="selectedId = variant.id"
-                >
-                  {{ variant.title }}
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          <div class="quantity flex items-center justify-between">
-            <p class="text-2xs uppercase label">Quantity</p>
-
-            <div class="stepper text-base">
-              <button
-                aria-label="Decrease quantity"
-                @click="quantity = Math.max(1, quantity - 1)"
-              >
-                −
-              </button>
-              <span class="qty">{{ quantity }}</span>
-              <button
-                aria-label="Increase quantity"
-                @click="quantity += 1"
-              >
-                +
-              </button>
+                {{ price }}
+              </p>
             </div>
-          </div>
-        </template>
-      </div>
+          </header>
 
-      <div
-        v-if="variants.length"
-        class="actions space-y-xs"
-      >
-        <button
-          class="add-to-cart text-base"
-          :class="{ 'is-added': addState === 'added', 'is-failed': addState === 'failed' }"
-          :disabled="!selectedVariant?.availableForSale || addState === 'adding'"
-          @click="addToCart"
+          <!-- Bare loading only when there's nothing to show — a same-product
+           reopen keeps the sizes visible through the background refresh. -->
+          <p
+            v-if="pending && !variants.length"
+            class="font-secondary uppercase state-note"
+          >
+            Loading sizes…
+          </p>
+
+          <template v-else-if="variants.length">
+            <div class="sizes font-secondary">
+              <p class="uppercase label">{{ optionLabel }}</p>
+
+              <ul class="grid grid-cols-2 gap-xs">
+                <li
+                  v-for="variant in variants"
+                  :key="variant.id"
+                >
+                  <button
+                    class="size-pill"
+                    :class="{
+                      'is-selected': variant.id === selectedVariant?.id,
+                      'is-oos': !variant.availableForSale,
+                    }"
+                    :disabled="!variant.availableForSale"
+                    @click="selectedId = variant.id"
+                  >
+                    {{ variant.title }}
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            <div class="quantity flex items-center justify-between font-secondary">
+              <p class="uppercase label">Quantity</p>
+
+              <QuantityStepper
+                v-model="quantity"
+                class="text-base"
+              />
+            </div>
+          </template>
+        </div>
+
+        <div
+          v-if="variants.length"
+          class="actions space-y-xs"
         >
-          {{ addLabel }}
-        </button>
+          <button
+            class="add-to-cart text-base-plus"
+            :class="{
+              'is-adding': addState === 'adding',
+              'is-added': addState === 'added',
+              'is-failed': addState === 'failed',
+            }"
+            :disabled="!selectedVariant?.availableForSale || addState === 'adding'"
+            @click="addToCart"
+          >
+            {{ addLabel }}
+          </button>
+        </div>
+
+        <!-- Only after a completed fetch — before the first open there's no
+           data at all, and "not available" would be wrong. -->
+        <p
+          v-else-if="data"
+          class="text-base-plus uppercase state-note"
+        >
+          Not available in your region
+        </p>
       </div>
 
-      <!-- Only after a completed fetch — before the first open there's no
-           data at all, and "not available" would be wrong. -->
-      <p
-        v-else-if="data"
-        class="text-xs uppercase state-note"
+      <button
+        class="close"
+        aria-label="Close quick add"
+        @click="close"
       >
-        Not available in your region
-      </p>
+        <IconsX />
+        <span class="sr-only">Close quick add</span>
+      </button>
     </div>
 
-    <div class="w-1/2">
+    <div class="learn-more-container w-1/2">
       <NuxtLink
         v-if="pdpPath"
         :to="pdpPath"
-        class="learn-more text-base"
+        class="learn-more text-base-plus"
         @click="close"
       >
         learn more
@@ -139,6 +135,8 @@
 const { active, isOpen, close } = useQuickAdd()
 const localePath = useLocalePath()
 const market = useMarket()
+
+useScrollLock(isOpen)
 
 // Keep the last product while closing so the panel doesn't blank out
 // mid slide-down transition.
@@ -281,7 +279,7 @@ onUnmounted(() => clearTimeout(addedTimer))
 .quick-add-drawer {
   position: fixed;
   z-index: 4900;
-  bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  bottom: var(--spacing-button-lg-height);
   left: var(--spacing-base);
   width: calc(50vw - (var(--spacing-base) * 1.5));
   max-height: calc(100svh - var(--spacing-button-lg-height) - var(--spacing-base) * 4);
@@ -289,34 +287,100 @@ onUnmounted(() => clearTimeout(addedTimer))
   align-items: flex-end;
   overflow: hidden;
   color: var(--color-green);
-  transform: translateY(3rem);
-  transition:
-    transform 0.3s,
-    opacity 0.3s;
-  opacity: 0;
   gap: var(--spacing-base);
   pointer-events: none;
+  padding-bottom: var(--spacing-base);
+
+  .quick-add-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    width: 50%;
+    position: relative;
+    transform: translateY(3rem);
+    transition:
+      transform 0.3s,
+      opacity 0.3s;
+    opacity: 0;
+
+    .quick-add-body-inner {
+      overflow: hidden;
+      border-top-left-radius: var(--radius-def);
+      border-bottom-left-radius: var(--radius-def);
+      border-bottom-right-radius: var(--radius-def);
+      background-color: var(--color-grey-1);
+    }
+  }
+
+  .learn-more-container {
+    transform: translateY(3rem);
+    transition:
+      transform 0.3s,
+      opacity 0.3s;
+    transition-delay: 0.05s;
+    opacity: 0;
+  }
 
   &.active {
     transform: translateY(0);
     opacity: 1;
     pointer-events: auto;
+
+    .quick-add-body,
+    .learn-more-container {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 }
 
-.quick-add-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow-y: auto;
+.close {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  color: var(--color-grey-6);
+  width: 50px;
+  height: 62px;
+  transform: translateX(100%);
   background-color: var(--color-grey-1);
-  border-radius: var(--radius-def);
-  width: 50%;
+  border-bottom-right-radius: 3rem;
+  border-top-right-radius: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.close {
-  line-height: 1;
-  color: var(--color-grey-6);
+/* The concave fillet where the tab flows back into the panel edge — an
+   "inverted border-radius", no SVG needed. A small square hangs just below
+   the button, painted the panel color everywhere EXCEPT a quarter-circle
+   carved from its far corner: the arc runs tangent from the button's bottom
+   edge into the panel's right edge. The 0.5px overlap in the gradient stops
+   anti-aliases the curve. */
+.close::after {
+  /* One knob for the curve's size — the square and the carved arc must
+     always share the same radius or the fillet detaches from the edges. */
+  --fillet: 1.7rem;
+
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: var(--fillet);
+  height: var(--fillet);
+  background: radial-gradient(
+    circle at 100% 100%,
+    transparent calc(var(--fillet) - 0.5px),
+    var(--color-grey-1) var(--fillet)
+  );
+  pointer-events: none;
+}
+
+/* Top-level, not nested inside .close: the scoped-CSS compiler mangles
+   :deep() inside native CSS nesting (emits `& [data-v] .icon-x`, which
+   requires an intermediate scoped element and never matches here). */
+.close :deep(.icon-x) {
+  width: 3rem;
+  transform: translateX(-5px);
 }
 
 .state-note,
@@ -350,24 +414,14 @@ onUnmounted(() => clearTimeout(addedTimer))
   }
 }
 
-.stepper {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-
-  button {
-    line-height: 1;
-  }
-}
-
 .add-to-cart {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: var(--spacing-button-lg-height);
-  background-color: var(--color-grey-2);
-  color: var(--color-grey-6);
+  background-color: var(--color-grey-7);
+  color: var(--color-white);
   transition:
     background-color 0.3s,
     color 0.3s;
@@ -390,6 +444,12 @@ onUnmounted(() => clearTimeout(addedTimer))
 .add-to-cart {
   &:disabled {
     cursor: not-allowed;
+  }
+
+  /* After :disabled so it wins while the add is in flight — "working",
+     not "not allowed". */
+  &.is-adding {
+    cursor: progress;
   }
 
   &.is-added {

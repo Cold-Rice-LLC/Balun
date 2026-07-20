@@ -35,13 +35,21 @@
 
 <script setup>
 const localePath = useLocalePath()
+const route = useRoute()
 const { isOpen, lineCount, open, close, checkout, init } = useCart()
 const { close: closeQuickAdd } = useQuickAdd()
 
-// Navigating home from the shop button should clear both overlays.
+// Navigating home from the shop button should clear both overlays. Already
+// on home, the NuxtLink is a no-op — scroll to the top instead. nextTick:
+// closing the overlays releases the scroll lock on the watcher flush, and
+// scrollTo is itself a no-op while html overflow is still hidden.
 const onShopLink = () => {
   close()
   closeQuickAdd()
+  const strip = (p) => p.replace(/\/+$/, '')
+  if (strip(route.path) === strip(localePath('/'))) {
+    nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
+  }
 }
 
 // Hide the "cart (N)" label until the persisted cart has actually been
