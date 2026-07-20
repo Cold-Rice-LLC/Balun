@@ -28,9 +28,33 @@ export const useCart = () => {
     isOpen.value = false
   }
 
-  // Load a persisted cart (balunCartId in localStorage) on first mount.
+  // A cart's currency is pinned to its buyerIdentity, not the URL — left
+  // alone, a cart created on /en-us stays USD after switching to /en-gb.
+  // cartBuyerIdentityUpdate re-points it: Shopify reprices every line, the
+  // subtotal, and checkoutUrl in the new market's currency.
+  const syncMarket = async () => {
+    if (!cart.value?.id) return
+    if (cart.value.buyerIdentity?.countryCode === market.value.country) return
+    await shopify.UpdateBuyerIdentity(cart.value.id, market.value.country, language())
+  }
+
+  // One watcher app-wide: useCart is called from many components, and each
+  // call registering its own watcher would fire duplicate mutations per
+  // switch. The first client-side caller is the persistent layout nav, so
+  // the watcher lives for the whole session.
+  if (import.meta.client) {
+    const registered = useState('cart-market-watch', () => false)
+    if (!registered.value) {
+      registered.value = true
+      watch(() => market.value.country, () => syncMarket())
+    }
+  }
+
+  // Load a persisted cart (balunCartId in localStorage) on first mount, and
+  // re-point it if it came back from a session in another market.
   const init = async () => {
     if (!cart.value) await shopify.FetchCart(null, true, language())
+    await syncMarket()
   }
 
   // `openCart: false` lets in-place flows (quick-add's "added!" state) confirm
@@ -49,8 +73,8 @@ export const useCart = () => {
   const removeLine = (lineId: string) =>
     shopify.RemoveLineItems(cart.value?.id, [lineId], language())
 
-  // Hand off to Shopify's hosted checkout. buyerIdentity set at creation means
-  // it opens in the right market/currency.
+  // Hand off to Shopify's hosted checkout. buyerIdentity (set at creation,
+  // re-synced on market switch) means it opens in the right market/currency.
   const checkout = () => {
     if (checkoutUrl.value) window.location.href = checkoutUrl.value
   }

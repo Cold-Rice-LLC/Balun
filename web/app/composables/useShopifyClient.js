@@ -1,5 +1,5 @@
 import { createStorefrontApiClient } from '@shopify/storefront-api-client';
-import { CreateCartQuery, FetchProductById, FetchCartQuery, AddLineItemsMutation, UpdateLineItemsMutation, RemoveLineItemsMutation } from '@/services/StorefrontQueries';
+import { CreateCartQuery, FetchProductById, FetchCartQuery, AddLineItemsMutation, UpdateLineItemsMutation, RemoveLineItemsMutation, UpdateBuyerIdentityMutation } from '@/services/StorefrontQueries';
 
 /**
  * Client-side Shopify layer for CART operations (create/fetch/add/update/remove).
@@ -17,10 +17,10 @@ import { CreateCartQuery, FetchProductById, FetchCartQuery, AddLineItemsMutation
  *
  * All functions return null on failure (and console.error the cause).
  *
- * TODO(cart pass): pass buyerIdentity { countryCode } on CreateCart so
- * checkout opens in the visitor's market/currency (Shopify Markets), wire
- * the SecondaryNav cart button to Cart/TotalCartItems, and send the user to
- * cart.checkoutUrl for Shopify-hosted checkout.
+ * Markets: a cart's currency is pinned to its buyerIdentity.countryCode, not
+ * to the URL — CreateCart sets it, and useCart re-syncs it via
+ * UpdateBuyerIdentity whenever the market switches (or a persisted cart comes
+ * back from a session in another market).
  */
 export const useShopifyClient = () => {
 
@@ -175,6 +175,30 @@ export const useShopifyClient = () => {
         }
     }
 
+    async function UpdateBuyerIdentity(cartId, countryCode, language = null) {
+        try{
+            const { data } = await client.request(UpdateBuyerIdentityMutation, {
+                variables: {
+                    cartId: cartId,
+                    buyerIdentity: { countryCode },
+                    language: language || undefined
+                }
+            })
+            // On userErrors keep the current Cart state — the cart still
+            // exists in its previous market; don't clobber it with the
+            // failed response.
+            if (data?.cartBuyerIdentityUpdate?.userErrors?.length) {
+                console.error('UpdateBuyerIdentity userErrors', data.cartBuyerIdentityUpdate.userErrors)
+                return null
+            }
+            Cart.value = data?.cartBuyerIdentityUpdate?.cart || null;
+            return data?.cartBuyerIdentityUpdate?.cart
+        }catch(e){
+            console.error('UpdateBuyerIdentity failed', e)
+            return null
+        }
+    }
+
     async function GetShopifyProduct(id) {
         try{
             
@@ -203,6 +227,6 @@ export const useShopifyClient = () => {
     }
 
 
-    return { Cart, CreateCart, FetchCart, AddLineItems, UpdateLineItems, RemoveLineItems, GetShopifyProduct, CurrencyFormatter, AddToCart, TotalCartItems }
+    return { Cart, CreateCart, FetchCart, AddLineItems, UpdateLineItems, RemoveLineItems, UpdateBuyerIdentity, GetShopifyProduct, CurrencyFormatter, AddToCart, TotalCartItems }
 
 }

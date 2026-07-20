@@ -138,6 +138,7 @@
  */
 const { active, isOpen, close } = useQuickAdd()
 const localePath = useLocalePath()
+const market = useMarket()
 
 // Keep the last product while closing so the panel doesn't blank out
 // mid slide-down transition.
@@ -159,9 +160,11 @@ const activeGid = ref('')
 watch(active, (payload) => {
   if (!payload?.live?.handle) return
   activeGid.value = payload.live.id ?? ''
-  if (payload.live.handle !== handle.value) {
+  // Stale if it's a different product OR the kept response was fetched for
+  // another market (its prices are in the wrong currency) — show the loading
+  // state instead of flashing the old data.
+  if (payload.live.handle !== handle.value || data.value?.country !== market.value.country) {
     handle.value = payload.live.handle
-    // The previous product's sizes are stale — show the loading state.
     data.value = null
   }
   // Refresh on every open; cheap thanks to the 60s SWR cache server-side.
@@ -174,8 +177,8 @@ watch(active, (payload) => {
 const { report } = useLiveCatalog()
 watch(data, (val) => {
   if (!val) return
-  if (val.product?.id) report(val.product.id, val.product)
-  else if (activeGid.value) report(activeGid.value, null)
+  if (val.product?.id) report(val.product.id, val.product, val.country)
+  else if (activeGid.value) report(activeGid.value, null, val.country)
 })
 
 const detail = computed(() => data.value?.product ?? null)

@@ -102,8 +102,8 @@ onMounted(() => {
 const { report, byGid: catalog } = useLiveCatalog()
 watch(liveData, (val) => {
   if (!val) return
-  if (val.product?.id) report(val.product.id, val.product)
-  else if (doc.value?.gid) report(doc.value.gid, null)
+  if (val.product?.id) report(val.product.id, val.product, val.country)
+  else if (doc.value?.gid) report(doc.value.gid, null, val.country)
 })
 
 // Live thumbs/availability for the rail: fetched via the lean batch route,

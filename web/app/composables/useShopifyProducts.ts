@@ -53,11 +53,11 @@ export const useShopifyProducts = (gids: MaybeRefOrGetter<string[]>) => {
     const requested = toValue(gids).filter(Boolean)
     const products = val.products ?? []
     if (requested.length === products.length) {
-      requested.forEach((gid, i) => report(gid, products[i] ?? null))
+      requested.forEach((gid, i) => report(gid, products[i] ?? null, val.country))
     } else {
       // gids changed while the request was in flight — only trust the ids
       // the response itself carries.
-      for (const p of products) if (p?.id) report(p.id, p)
+      for (const p of products) if (p?.id) report(p.id, p, val.country)
     }
   })
 

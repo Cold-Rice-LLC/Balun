@@ -13,6 +13,9 @@
 export const CartObj = `
 id
 checkoutUrl
+buyerIdentity{
+  countryCode
+}
 lines(first:30){
   nodes{
     ...on CartLine{
@@ -154,6 +157,21 @@ export const UpdateLineItemsMutation = `mutation cartLinesUpdate($cartId: ID!, $
 
 export const RemoveLineItemsMutation = `mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!, $language: LanguageCode) @inContext(language: $language) {
   cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+    cart {
+      ${CartObj}
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}`
+
+// Re-points an existing cart at another market: Shopify reprices every line,
+// the totals, and checkoutUrl in the new country's currency. This is what
+// keeps a persisted cart honest when the market switcher changes the URL.
+export const UpdateBuyerIdentityMutation = `mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!, $language: LanguageCode) @inContext(language: $language) {
+  cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
     cart {
       ${CartObj}
     }
