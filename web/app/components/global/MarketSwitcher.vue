@@ -1,5 +1,5 @@
 <template>
-  <LocaleDropdown
+  <LocaleModal
     label="Market"
     :items="markets"
   />

@@ -1,7 +1,7 @@
 <template>
   <!-- Only render when the current market actually offers a choice — a lone
        language (e.g. UK = English only) needs no picker. -->
-  <LocaleDropdown
+  <LocaleModal
     v-if="languages.length > 1"
     label="Language"
     :items="languages"

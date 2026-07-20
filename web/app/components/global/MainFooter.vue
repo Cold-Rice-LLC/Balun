@@ -65,7 +65,8 @@ footer {
 .newsletter {
   padding: 0 0 0 8.1vw;
 
-  p {
+  :deep(p),
+  :deep(input) {
     pointer-events: auto;
   }
 }
@@ -73,12 +74,14 @@ footer {
 .footer-links {
   padding: 0 0 0 11.4vw;
 
-  a,
-  button {
+  /* :deep so the re-enable reaches into child components (switcher triggers)
+     — the links-container's pointer-events: none would swallow them. */
+  :deep(a),
+  :deep(button) {
     pointer-events: auto;
   }
 
-  a {
+  :deep(a) {
     transition: color 0.3s;
 
     &:hover {
