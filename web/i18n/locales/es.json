@@ -30,7 +30,12 @@
     "failed": "no se pudo agregar",
     "soldOut": "agotado",
     "unavailable": "No disponible en tu región",
-    "learnMore": "ver más"
+    "learnMore": "ver más",
+    "cta": "compra rápida"
+  },
+  "carousel": {
+    "prev": "Imagen anterior",
+    "next": "Imagen siguiente"
   },
   "buyBox": {
     "loading": "Cargando precio…",

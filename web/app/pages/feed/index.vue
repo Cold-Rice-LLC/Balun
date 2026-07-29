@@ -1,5 +1,5 @@
 <template>
-  <div class="feed-page px-base">
+  <div class="feed-page px-base enter-in-fade-up">
     <ul
       v-if="posts.length"
       class="posts space-y-base"
@@ -58,18 +58,10 @@ const { data: feed } = await useAsyncData(
 
 const posts = computed(() => feed.value?.posts ?? [])
 
-// Sanity image URL via the configured project (no extra dep needed for basics).
-const { projectId, dataset } = useSanity().client.config()
-const urlFor = (image) => {
-  const ref = image?.asset?._ref
-  if (!ref) return ''
-  const [, id, size, format] = ref.split('-')
-  return `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${size}.${format}?w=1200&fit=max&auto=format`
-}
+const urlFor = useSanityImage()
 
 // Localized date, matching the active locale's language.
-const formatDate = (iso) =>
-  new Intl.DateTimeFormat(market.value.locale, { dateStyle: 'long' }).format(new Date(iso))
+const formatDate = (iso) => new Intl.DateTimeFormat(market.value.locale, { dateStyle: 'long' }).format(new Date(iso))
 </script>
 
 <style scoped>

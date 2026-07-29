@@ -1,21 +1,12 @@
 <template>
-  <div class="home-page px-base">
-    <template v-if="modules.length">
-      <component
-        :is="moduleComponents[m._type]"
-        v-for="m in modules"
-        :key="m._key"
-        :module="m"
-        :live-by-gid="liveByGid"
-      />
-    </template>
-
-    <div
-      v-else
-      class="h-svh flex justify-center items-center"
-    >
-      <h1>Home</h1>
-    </div>
+  <div class="home-page px-base enter-in-fade-up">
+    <component
+      :is="moduleComponents[m._type]"
+      v-for="m in modules"
+      :key="m._key"
+      :module="m"
+      :live-by-gid="liveByGid"
+    />
   </div>
 </template>
 
@@ -37,6 +28,7 @@ const { data: home } = await useAsyncData(
 const moduleComponents = {
   moduleProductGrid: resolveComponent('HomeProductGrid'),
   moduleFeaturedProduct: resolveComponent('HomeFeaturedProduct'),
+  moduleMarquee: resolveComponent('HomeMarquee'),
 }
 
 const modules = computed(() => home.value?.modules ?? [])
@@ -76,5 +68,9 @@ const liveByGid = computed(() => {
 .home-page {
   padding-top: calc(var(--spacing-button-lg-height) + var(--spacing-base) * 2);
   padding-bottom: var(--spacing-base);
+
+  & > section + section {
+    margin-top: 10rem;
+  }
 }
 </style>

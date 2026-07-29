@@ -30,7 +30,12 @@
     "failed": "couldn’t add",
     "soldOut": "sold out",
     "unavailable": "Not available in your region",
-    "learnMore": "learn more"
+    "learnMore": "learn more",
+    "cta": "buy now"
+  },
+  "carousel": {
+    "prev": "Previous image",
+    "next": "Next image"
   },
   "buyBox": {
     "loading": "Loading price…",

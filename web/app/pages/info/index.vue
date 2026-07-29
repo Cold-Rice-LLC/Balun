@@ -3,7 +3,7 @@
        plain-string title resolves to null in the query. -->
   <article
     v-if="page?.title || page?.body"
-    class="info-page px-base"
+    class="info-page px-base enter-in-fade-up"
   >
     <h1 class="uppercase text-lg">{{ page.title }}</h1>
 
@@ -17,7 +17,7 @@
 
   <div
     v-else
-    class="h-svh flex justify-center items-center"
+    class="h-svh flex justify-center items-center enter-in-fade-up"
   >
     <h1>Info</h1>
   </div>

@@ -181,7 +181,7 @@ Animations
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(50px);
   }
 
   to {
@@ -197,5 +197,5 @@ Animations
 
 .enter-in-fade-up {
   opacity: 0;
-  animation: fade-in-up 2s both var(--curve);
+  animation: fade-in-up 0.6s both var(--curve);
 }
