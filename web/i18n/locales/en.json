@@ -31,7 +31,7 @@
     "soldOut": "sold out",
     "unavailable": "Not available in your region",
     "learnMore": "learn more",
-    "cta": "buy now"
+    "cta": "quick add"
   },
   "carousel": {
     "prev": "Previous image",
@@ -47,7 +47,8 @@
   },
   "product": {
     "soldOut": "Sold out",
-    "unavailable": "Unavailable"
+    "unavailable": "Unavailable",
+    "outOfStock": "out of stock"
   },
   "locale": {
     "market": "Market",

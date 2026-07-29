@@ -47,7 +47,8 @@
   },
   "product": {
     "soldOut": "Agotado",
-    "unavailable": "No disponible"
+    "unavailable": "No disponible",
+    "outOfStock": "agotado"
   },
   "locale": {
     "market": "Mercado",

@@ -12,39 +12,30 @@
         :alt="live.featuredImage.altText || live.title"
         loading="lazy"
       />
+    </div>
 
+    <div class="card-meta uppercase flex items-center justify-between gap-base">
+      <p class="title">{{ title }}</p>
+
+      <!-- Renders only when live and purchasable (the trigger's own v-if);
+           otherwise the row shows why there's no "+". No prices here — the
+           grid is editorial, price lives on the PDP/quick add. -->
       <ProductQuickAddTrigger
         class="quick-add"
         :doc="doc"
         :live="live"
       />
-    </div>
-
-    <div class="card-meta uppercase">
-      <p class="title">{{ live?.title || doc.title }}</p>
 
       <p
-        v-if="doc.tagline"
-        class="tagline"
+        v-if="live && !live.availableForSale"
+        class="stock-note"
       >
-        {{ doc.tagline }}
+        {{ $t('product.outOfStock') }}
       </p>
 
       <p
-        v-if="live"
-        class="price"
-      >
-        {{ formatMoney(live.priceRange.minVariantPrice) }}
-        <span
-          v-if="!live.availableForSale"
-          class="sold-out"
-          >{{ $t('product.soldOut') }}</span
-        >
-      </p>
-
-      <p
-        v-else
-        class="tagline"
+        v-else-if="!live"
+        class="stock-note"
       >
         {{ $t('product.unavailable') }}
       </p>
@@ -63,7 +54,7 @@
 const NuxtLink = resolveComponent('NuxtLink')
 const localePath = useLocalePath()
 
-defineProps({
+const props = defineProps({
   doc: {
     type: Object,
     required: true,
@@ -72,6 +63,13 @@ defineProps({
     type: Object,
     default: null,
   },
+})
+
+// Titles follow "Base · Color" (colorway convention) — the grid shows the
+// base model name; the colorway reads from the image.
+const title = computed(() => {
+  const full = props.live?.title || props.doc.title || ''
+  return full.includes('·') ? full.split('·')[0].trim() : full
 })
 </script>
 
@@ -85,7 +83,6 @@ defineProps({
 }
 
 .image-frame {
-  position: relative;
   aspect-ratio: 3 / 4;
   background-color: var(--color-grey-2);
   border-radius: var(--radius-def);
@@ -98,23 +95,25 @@ defineProps({
   }
 }
 
-/* Look comes from ProductQuickAddTrigger's default; only position it here. */
-.quick-add {
-  position: absolute;
-  bottom: var(--spacing-xs);
-  right: var(--spacing-xs);
-}
-
 .card-meta {
   padding: var(--spacing-sm) var(--spacing-xs);
 
-  .tagline {
+  .stock-note {
     color: var(--color-grey-4);
   }
+}
 
-  .sold-out {
-    color: var(--color-orange);
-    margin-left: var(--spacing-xs);
+/* Bare "+" in the meta row — strip the trigger's default white pill. */
+.card-meta .quick-add {
+  width: auto;
+  height: auto;
+  background: none;
+  color: var(--color-grey-5);
+  font-size: var(--text-base-plus);
+
+  &:hover {
+    background: none;
+    color: var(--color-grey-7);
   }
 }
 </style>

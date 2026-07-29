@@ -1,5 +1,8 @@
 <template>
-  <section class="featured-product text-grey-6">
+  <section
+    ref="moduleEl"
+    class="featured-product text-grey-6"
+  >
     <header
       v-if="module.heading || module.subheading"
       class="flex flex-col items-center gap-base text-center py-base"
@@ -32,7 +35,7 @@
         :aria-label="$t('carousel.prev')"
         @click="swiper?.slidePrev()"
       >
-        ‹
+        <IconsPixelArrow />
       </button>
 
       <Swiper
@@ -60,19 +63,25 @@
               :alt="slide.alt || product?.title || ''"
             />
 
-            <!-- Editor-positioned callouts; % coordinates are relative to
-                 the image frame, line breaks in the text are kept. -->
+            <!-- Editor-positioned callouts. x/y are the ANCHOR the leader
+                 line points at (% of the image frame — the frame hugs the
+                 image, so anchors hold at every viewport size); the text
+                 block sits at the frame edge on the chosen side and the
+                 line spans the gap. -->
             <p
               v-for="(highlight, i) in slide.highlights ?? []"
               :key="i"
               class="highlight font-secondary uppercase text-2xs"
-              :style="{
-                left: `${highlight.xPosition}%`,
-                top: `${highlight.yPosition}%`,
-                width: highlight.width ? `${highlight.width}vw` : undefined,
-              }"
+              :class="highlight.side === 'right' ? 'side-right' : 'side-left'"
+              :style="highlightStyle(highlight)"
             >
-              {{ highlight.text }}
+              <span
+                class="hl-text"
+                :style="{ maxWidth: highlight.width ? `${highlight.width}vw` : undefined }"
+                >{{ highlight.text }}</span
+              >
+              <span class="hl-line"></span>
+              <span class="hl-dot"></span>
             </p>
           </figure>
         </SwiperSlide>
@@ -84,7 +93,7 @@
         :aria-label="$t('carousel.next')"
         @click="swiper?.slideNext()"
       >
-        ›
+        <IconsPixelArrow />
       </button>
     </div>
 
@@ -98,6 +107,7 @@
     <div
       v-if="product"
       class="ctas"
+      :class="{ 'is-visible': ctasVisible }"
     >
       <ProductQuickAddTrigger
         class="cta cta-quick-add text-base"
@@ -139,6 +149,22 @@ const props = defineProps({
 const product = computed(() => props.module.product)
 const live = computed(() => props.liveByGid[product.value?.gid] ?? null)
 const slides = computed(() => props.module.images ?? [])
+
+// The CTAs are position:fixed and fade with the module's visibility. 0.5:
+// show only while the module holds the MAJORITY of the viewport — modules
+// are 100svh, so two featured modules can never both pass the threshold
+// and stack their CTAs in the same fixed slot.
+const moduleEl = ref(null)
+const ctasVisible = useInView(moduleEl, { threshold: 0.5 })
+
+// Highlight geometry: the element spans from the image-frame edge to the
+// anchor, so the text hugs the edge and the leader line fills the gap.
+const highlightStyle = (highlight) => {
+  const base = { top: `${highlight.yPosition}%` }
+  return highlight.side === 'right'
+    ? { ...base, left: `${highlight.xPosition}%`, right: '0' }
+    : { ...base, left: '0', width: `${highlight.xPosition}%` }
+}
 
 // Swiper instance (from @swiper) drives the arrow buttons; loop mode makes
 // prev/next wrap around.
@@ -249,9 +275,37 @@ const frameRatio = (slide) => {
 .highlight {
   position: absolute;
   margin: 0;
+  display: flex;
+  align-items: center;
+  transform: translateY(-50%);
+  color: var(--color-grey-6);
+
+  /* Anchor sits at the far end: text → line → dot. Reversed, the dot leads
+     and the text hugs the right edge. */
+  &.side-right {
+    flex-direction: row-reverse;
+  }
+}
+
+.hl-text {
+  flex: none;
   /* Keep editor line breaks ("GLOSS 01\nWATERPROOF 02" stacks). */
   white-space: pre-line;
-  color: var(--color-grey-6);
+}
+
+.hl-line {
+  flex: 1;
+  height: 1px;
+  background-color: currentColor;
+  margin-inline: 0.6em;
+}
+
+.hl-dot {
+  flex: none;
+  width: 0.5em;
+  height: 0.5em;
+  border: 1px solid currentColor;
+  border-radius: 50%;
 }
 
 .nav {
@@ -264,14 +318,16 @@ const frameRatio = (slide) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--text-lg);
-  line-height: 1;
   color: var(--color-grey-5);
   transition: color 0.2s;
 
   &:hover {
     color: var(--color-grey-7);
   }
+}
+
+.nav :deep(.icon-pixel-arrow) {
+  width: 2.8rem;
 }
 
 .nav-prev {
@@ -282,12 +338,32 @@ const frameRatio = (slide) => {
   right: 0;
 }
 
+/* The icon points left; mirror it for next. */
+.nav-next :deep(.icon-pixel-arrow) {
+  transform: scaleX(-1);
+}
+
+/* Fixed in the quick-add drawer's slot above the "shop" button, fading with
+   the module's visibility (useInView drives .is-visible). Kept below the
+   overlay backdrops (z 4800) so an open drawer blurs them like the rest of
+   the page. */
 .ctas {
+  position: fixed;
+  z-index: 4000;
+  bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  left: var(--spacing-base);
+  width: calc(50vw - (var(--spacing-base) * 1.5));
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-base);
-  max-width: 60rem;
-  margin: var(--spacing-base) auto 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+
+  &.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
 
   /* Both CTAs share the pill look; extra specificity so the quick-add
      trigger's own default (circle "+") styles lose. */
@@ -320,6 +396,13 @@ const frameRatio = (slide) => {
     &:hover {
       color: var(--color-grey-7);
     }
+  }
+}
+
+@media (max-width: 768px) {
+  .ctas {
+    right: var(--spacing-base);
+    width: auto;
   }
 }
 </style>
