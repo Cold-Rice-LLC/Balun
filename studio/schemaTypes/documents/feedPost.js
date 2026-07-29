@@ -9,12 +9,15 @@ const CATEGORIES = [
 ]
 
 /**
- * A post on the Feed page. Posts have no individual pages for now — they all render inline
- * on the feed, labelled/grouped by category.
+ * A post on the Feed page. Every post gets a detail page at /feed/<slug>
+ * unless `link` is set — then the card links there instead (external opens a
+ * new tab). Category drives styling only: events = yellow, blog = grey,
+ * stream/products = cover-image background.
  *
- * Title/body are translated (internationalized arrays resolved by $lang); category,
- * date, and image are language-agnostic (the language axis — same content, different
- * words; see docs/shopify-and-localization-strategy.md §3).
+ * Title/excerpt/body are translated (internationalized arrays resolved by
+ * $lang); category, slug, date, image, and link are language-agnostic (the
+ * language axis — same content, different words; see
+ * docs/shopify-and-localization-strategy.md §3).
  */
 export default {
   name: 'feedPost',
@@ -27,6 +30,17 @@ export default {
       type: 'internationalizedArrayString',
       title: 'Title',
       validation: requireEnglish,
+    },
+    {
+      name: 'slug',
+      type: 'slug',
+      title: 'Slug',
+      description: 'URL of the detail page: /feed/<slug>.',
+      options: {
+        source: (doc) => doc.title?.find?.((t) => t.language === 'en')?.value ?? '',
+        maxLength: 96,
+      },
+      validation: (Rule) => Rule.required(),
     },
     {
       name: 'category',
@@ -49,13 +63,29 @@ export default {
       name: 'coverImage',
       type: 'image',
       title: 'Cover Image',
+      description: 'Card background for stream/products posts; the right-side image on detail pages.',
       options: {hotspot: true},
+    },
+    {
+      name: 'excerpt',
+      type: 'internationalizedArrayText',
+      title: 'Excerpt',
+      description: 'Short text on the feed card itself (e.g. event details).',
+      validation: englishIfAny,
     },
     {
       name: 'body',
       type: 'internationalizedArrayBlockContent',
       title: 'Body',
+      description: 'Detail-page content.',
       validation: englishIfAny,
+    },
+    {
+      name: 'link',
+      type: 'linkTarget',
+      title: 'Link Override',
+      description:
+        'Optional. If set, the card links here instead of its detail page (external URLs open a new tab — e.g. an RSVP form).',
     },
   ],
   orderings: [

@@ -42,7 +42,16 @@ export default {
       name: 'gallery',
       type: 'array',
       title: 'Gallery',
+      description: 'Lifestyle/editorial images — the draggable carousel on the left of the PDP.',
       of: [{type: 'image', options: {hotspot: true}}],
+    },
+    {
+      name: 'featureCarousel',
+      type: 'array',
+      title: 'Feature Carousel',
+      description:
+        'Product images with text highlights. Shown in the home Featured Product module and on the PDP — one place to keep them in sync.',
+      of: [{type: 'featureImage'}],
     },
   ],
   preview: {

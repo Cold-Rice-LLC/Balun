@@ -12,12 +12,6 @@ export default {
   icon: ThLargeIcon,
   fields: [
     {
-      name: 'heading',
-      type: 'string',
-      title: 'Heading',
-      description: 'Optional label shown above the grid (e.g. "Featured").',
-    },
-    {
       name: 'products',
       type: 'array',
       title: 'Products',
@@ -26,12 +20,11 @@ export default {
     },
   ],
   preview: {
-    select: {heading: 'heading', products: 'products'},
-    prepare({heading, products}) {
+    select: {products: 'products'},
+    prepare({products}) {
       const count = products?.length ?? 0
       return {
-        title: heading || 'Product Grid',
-        subtitle: `Product grid · ${count} product${count === 1 ? '' : 's'}`,
+        title: `Product Grid · ${count} product${count === 1 ? '' : 's'}`,
       }
     },
   },

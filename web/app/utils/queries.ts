@@ -35,19 +35,51 @@ export const homeQuery = groq`*[
     _type,
     _key,
     _type == "moduleProductGrid" => {
-      heading,
       "products": products[@->store.status == "active" && @->store.isDeleted != true]->{${productProjection}}
     },
     _type == "moduleFeaturedProduct" => {
-      heading,
-      "product": product->{${productProjection}}
+      ${i18nField('heading')},
+      ${i18nField('subheading')},
+      ${i18nField('caption')},
+      "product": product->{${productProjection}},
+      // Slides live on the product now (featureCarousel, shared with the PDP);
+      // fall back to the module's legacy images until content is re-entered.
+      "images": coalesce(product->featureCarousel, images)[]{
+        ...,
+        highlights[]{
+          ${i18nField('text')},
+          xPosition,
+          yPosition,
+          side,
+          width
+        }
+      }
+    },
+    _type == "moduleMarquee" => {
+      ${i18nField('text')},
+      link{linkType, internalPath, externalUrl}
     }
   }
 }`
 
+// Modular since the info rebuild; `body` is the legacy single-field shape,
+// kept selected so the current page renders until the module UI ships.
 export const infoQuery = groq`*[_type == "infoPage"][0]{
   ${i18nField('title')},
-  ${i18nField('body')}
+  ${i18nField('body')},
+  "modules": modules[]{
+    _type,
+    _key,
+    _type == "moduleInfoText" => {
+      ${i18nField('text')}
+    },
+    _type == "moduleInfoImage" => {
+      image
+    },
+    _type == "moduleInfoProse" => {
+      ${i18nField('body')}
+    }
+  }
 }`
 
 // A reusable policy page by slug. Title/body are internationalized arrays
@@ -60,19 +92,25 @@ export const legalPageQuery = groq`*[_type == "legalPage" && slug.current == $sl
 }`
 
 export const feedQuery = groq`{
-  "page": *[_type == "feedPage"][0]{ title, intro },
+  "page": *[_type == "feedPage"][0]{ title },
   "posts": *[_type == "feedPost"] | order(publishedAt desc){
     _id,
     ${i18nField('title')},
+    "slug": slug.current,
     category,
     publishedAt,
     coverImage,
-    ${i18nField('body')}
+    ${i18nField('excerpt')},
+    ${i18nField('body')},
+    link{linkType, internalPath, externalUrl}
   }
 }`
 
 export const liveQuery = groq`*[_type == "livePage"][0]{
-  title
+  ${i18nField('location')},
+  ${i18nField('description')},
+  streamUrl,
+  "featuredProduct": featuredProduct->{${productProjection}}
 }`
 
 // PDP editorial shell: one product by its Shopify handle (synced slug).
@@ -89,7 +127,17 @@ export const productPageQuery = groq`*[
   "tags": store.tags,
   ${i18nField('tagline')},
   ${i18nField('body')},
-  gallery
+  gallery,
+  featureCarousel[]{
+    ...,
+    highlights[]{
+      ${i18nField('text')},
+      xPosition,
+      yPosition,
+      side,
+      width
+    }
+  }
 }`
 
 // Colorway siblings: products sharing the group:<slug> Shopify tag (see

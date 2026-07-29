@@ -1,8 +1,13 @@
 import {StarIcon} from '@sanity/icons'
+import {englishIfAny} from '../lib/i18nValidation'
 
 /**
- * Home page module: a single product given prominence (larger image + meta).
- * Live price/availability still comes from the buy-box fetch at render time.
+ * Home page module: a single product given prominence — heading/subheading
+ * and a caption around the product's feature carousel. The carousel slides
+ * (images + highlights) live on the product document (featureCarousel) so
+ * the PDP shows the same ones. Live price/availability still comes from the
+ * buy-box fetch at render time; text fields are language-axis
+ * (internationalized arrays).
  */
 export default {
   name: 'moduleFeaturedProduct',
@@ -12,9 +17,17 @@ export default {
   fields: [
     {
       name: 'heading',
-      type: 'string',
-      title: 'Eyebrow',
-      description: 'Optional small label shown above the product (e.g. "New").',
+      type: 'internationalizedArrayString',
+      title: 'Heading',
+      description: 'Large heading above the carousel (e.g. "Meet the Speedy 01").',
+      validation: englishIfAny,
+    },
+    {
+      name: 'subheading',
+      type: 'internationalizedArrayString',
+      title: 'Subheading',
+      description: 'Small label under the heading.',
+      validation: englishIfAny,
     },
     {
       name: 'product',
@@ -23,9 +36,16 @@ export default {
       to: [{type: 'product'}],
       validation: (Rule) => Rule.required(),
     },
+    {
+      name: 'caption',
+      type: 'internationalizedArrayString',
+      title: 'Caption',
+      description: 'Optional caption shown below the carousel.',
+      validation: englishIfAny,
+    },
   ],
   preview: {
-    select: {title: 'product.store.title', heading: 'heading'},
+    select: {title: 'product.store.title', heading: 'heading.0.value'},
     prepare({title, heading}) {
       return {
         title: title || 'Featured Product',

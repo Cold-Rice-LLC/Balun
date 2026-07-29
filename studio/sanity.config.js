@@ -8,12 +8,19 @@ import {myStructure, singletonTypes} from './myStructure'
 
 // Supported content languages (the {lang} half of the /{lang}-{country} URL),
 // from the repo-root shared module — see docs/adding-a-market.md.
-// Registers internationalizedArrayString + internationalizedArrayBlockContent
-// field types (used by translated editorial fields like legalPage title/body).
+// Registers internationalizedArrayString / internationalizedArrayText /
+// internationalizedArrayBlockContent / internationalizedArrayProseContent
+// field types (used by translated editorial fields like legalPage title/body,
+// image highlight callouts, the info page's intermingled module).
 const internationalizedArrayPlugin = internationalizedArray({
   languages: LANGUAGES.map(({id, title}) => ({id, title})),
   defaultLanguages: [DEFAULT_LANGUAGE],
-  fieldTypes: ['string', defineField({name: 'blockContent', type: 'blockContent'})],
+  fieldTypes: [
+    'string',
+    'text',
+    defineField({name: 'blockContent', type: 'blockContent'}),
+    defineField({name: 'proseContent', type: 'proseContent'}),
+  ],
 })
 
 // Actions that don't make sense for singletons (one fixed document per type).
