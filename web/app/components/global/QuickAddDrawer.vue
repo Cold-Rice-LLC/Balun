@@ -13,103 +13,59 @@
     :class="{ active: isOpen }"
     aria-label="Quick add"
   >
-    <div class="quick-add-body text-green">
-      <div class="quick-add-body-inner">
-        <div class="p-base space-y-base">
-          <header class="flex items-start justify-between gap-base font-secondary">
-            <p class="title text-base uppercase">{{ title }}</p>
+    <NotchPanel class="quick-add-body text-green">
+      <div class="p-base space-y-base">
+        <header class="flex items-start justify-between gap-base font-secondary">
+          <p class="title text-base uppercase">{{ title }}</p>
 
-            <div class="flex items-center gap-base">
-              <p
-                v-if="price"
-                class="text-base"
-              >
-                {{ price }}
-              </p>
-            </div>
-          </header>
+          <div class="flex items-center gap-base">
+            <p
+              v-if="price"
+              class="text-base"
+            >
+              {{ price }}
+            </p>
+          </div>
+        </header>
 
-          <!-- Bare loading only when there's nothing to show — a same-product
+        <!-- Bare loading only when there's nothing to show — a same-product
            reopen keeps the sizes visible through the background refresh. -->
-          <p
-            v-if="pending && !variants.length"
-            class="font-secondary uppercase state-note"
-          >
-            {{ $t('quickAdd.loadingSizes') }}
-          </p>
-
-          <template v-else-if="variants.length">
-            <div class="sizes font-secondary">
-              <p class="uppercase label">{{ optionLabel }}</p>
-
-              <ul class="grid grid-cols-2 gap-xs">
-                <li
-                  v-for="variant in variants"
-                  :key="variant.id"
-                >
-                  <button
-                    class="size-pill"
-                    :class="{
-                      'is-selected': variant.id === selectedVariant?.id,
-                      'is-oos': !variant.availableForSale,
-                    }"
-                    :disabled="!variant.availableForSale"
-                    @click="selectedId = variant.id"
-                  >
-                    {{ variant.title }}
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-            <div class="quantity flex items-center justify-between font-secondary">
-              <p class="uppercase label">{{ $t('quickAdd.quantity') }}</p>
-
-              <QuantityStepper
-                v-model="quantity"
-                class="text-base"
-              />
-            </div>
-          </template>
-        </div>
-
-        <div
-          v-if="variants.length"
-          class="actions space-y-xs"
-        >
-          <button
-            class="add-to-cart text-base-plus"
-            :class="{
-              'is-adding': addState === 'adding',
-              'is-added': addState === 'added',
-              'is-failed': addState === 'failed',
-            }"
-            :disabled="!selectedVariant?.availableForSale || addState === 'adding'"
-            @click="addToCart"
-          >
-            {{ addLabel }}
-          </button>
-        </div>
-
-        <!-- Only after a completed fetch — before the first open there's no
-           data at all, and "not available" would be wrong. -->
         <p
-          v-else-if="data"
-          class="text-base-plus uppercase state-note"
+          v-if="pending && !variants.length"
+          class="font-secondary uppercase state-note"
         >
-          {{ $t('quickAdd.unavailable') }}
+          {{ $t('quickAdd.loadingSizes') }}
         </p>
       </div>
 
-      <button
-        class="close"
-        :aria-label="$t('quickAdd.close')"
-        @click="close"
+      <ProductOptionsPanel
+        v-if="variants.length"
+        v-model:variant-id="selectedId"
+        :product="detail"
+        open-cart-on-add
+        @add-failed="execute"
+      />
+
+      <!-- Only after a completed fetch — before the first open there's no
+         data at all, and "not available" would be wrong. -->
+      <p
+        v-else-if="data"
+        class="text-base-plus uppercase state-note"
       >
-        <IconsX />
-        <span class="sr-only">{{ $t('quickAdd.close') }}</span>
-      </button>
-    </div>
+        {{ $t('quickAdd.unavailable') }}
+      </p>
+
+      <template #tab>
+        <button
+          class="close"
+          :aria-label="$t('quickAdd.close')"
+          @click="close"
+        >
+          <IconsX />
+          <span class="sr-only">{{ $t('quickAdd.close') }}</span>
+        </button>
+      </template>
+    </NotchPanel>
 
     <div class="learn-more-container w-1/2">
       <NuxtLink
@@ -129,13 +85,15 @@
  * Quick-add overlay panel: the cart drawer's bottom-left mirror, anchored
  * above the "shop" button in SecondaryNav. Opened from a card's quick-add
  * trigger (useQuickAdd), it fetches the product's full variants via the
- * cached /api/product route — the home page's batch read stays lean — and
- * adds to cart in place ("added!") without popping the cart drawer open.
+ * cached /api/product route — the home page's batch read stays lean.
+ *
+ * The variant UI (sizes/quantity/add with its state machine) is the shared
+ * ProductOptionsPanel; this wrapper owns fetching, the title/price header,
+ * the catalog report, and the drawer chrome (NotchPanel + learn more).
  */
 const { active, isOpen, close } = useQuickAdd()
 const localePath = useLocalePath()
 const market = useMarket()
-const { t } = useI18n()
 
 useScrollLock(isOpen)
 
@@ -182,7 +140,6 @@ watch(data, (val) => {
 
 const detail = computed(() => data.value?.product ?? null)
 const variants = computed(() => detail.value?.variants.nodes ?? [])
-const optionLabel = computed(() => detail.value?.options?.[0]?.name || t('quickAdd.sizeFallback'))
 
 // Titles follow "Base · Color" (colorway convention) — header shows the base.
 const title = computed(() => {
@@ -190,15 +147,10 @@ const title = computed(() => {
   return full.includes('·') ? full.split('·')[0].trim() : full
 })
 
-// Selected size: explicit pick, else first purchasable. Reset per product.
+// The panel owns selection (and resets it per product); bound here so the
+// header price tracks the selected size through the same fallback chain.
 const selectedId = ref(null)
-const selectedVariant = computed(
-  () =>
-    variants.value.find((v) => v.id === selectedId.value) ??
-    variants.value.find((v) => v.availableForSale) ??
-    variants.value[0] ??
-    null,
-)
+const selectedVariant = computed(() => pickVariant(variants.value, selectedId.value))
 
 const price = computed(() =>
   formatMoney(selectedVariant.value?.price ?? active.value?.live?.priceRange?.minVariantPrice),
@@ -206,57 +158,11 @@ const price = computed(() =>
 
 const pdpPath = computed(() => (handle.value ? localePath(`/products/${handle.value}`) : null))
 
-const quantity = ref(1)
-watch(active, (payload) => {
-  if (!payload) return
-  selectedId.value = null
-  quantity.value = 1
-  addState.value = 'idle'
-})
-
-const { isOpen: cartOpen, open: openCart, addItem } = useCart()
+const { isOpen: cartOpen } = useCart()
 // The reverse of useQuickAdd.open() closing the cart: cart opening closes us.
 watch(cartOpen, (open) => {
   if (open) close()
 })
-const addState = ref('idle') // idle | adding | added | failed
-let addedTimer = null
-
-const addLabel = computed(() => {
-  if (addState.value === 'adding') return t('quickAdd.adding')
-  if (addState.value === 'added') return t('quickAdd.added')
-  if (addState.value === 'failed') return t('quickAdd.failed')
-  if (!selectedVariant.value?.availableForSale) return t('quickAdd.soldOut')
-  return t('quickAdd.addToCart')
-})
-
-const settleAddState = (state, holdMs, onSettled) => {
-  addState.value = state
-  clearTimeout(addedTimer)
-  addedTimer = setTimeout(() => {
-    addState.value = 'idle'
-    onSettled?.()
-  }, holdMs)
-}
-
-const addToCart = async () => {
-  if (!selectedVariant.value?.availableForSale || addState.value === 'adding') return
-  addState.value = 'adding'
-  try {
-    const result = await addItem(selectedVariant.value.id, quantity.value, { openCart: false })
-    if (result) {
-      settleAddState('added', 300, openCart)
-    } else {
-      // Most likely the variant sold out under our cached data — refetch so
-      // the size grid (and, via the report watch, the cards) tell the truth.
-      settleAddState('failed', 2400)
-      execute()
-    }
-  } catch {
-    addState.value = 'idle'
-  }
-}
-onUnmounted(() => clearTimeout(addedTimer))
 </script>
 
 <style scoped>
@@ -293,24 +199,17 @@ onUnmounted(() => clearTimeout(addedTimer))
   padding-bottom: var(--spacing-base);
 
   .quick-add-body {
+    --notch-tab-radius: 3rem;
+
     display: flex;
     flex-direction: column;
     min-height: 0;
     width: 50%;
-    position: relative;
     transform: translateY(3rem);
     transition:
       transform 0.3s,
       opacity 0.3s;
     opacity: 0;
-
-    .quick-add-body-inner {
-      overflow: hidden;
-      border-top-left-radius: var(--radius-def);
-      border-bottom-left-radius: var(--radius-def);
-      border-bottom-right-radius: var(--radius-def);
-      background-color: var(--color-grey-1);
-    }
   }
 
   .learn-more-container {
@@ -333,45 +232,15 @@ onUnmounted(() => clearTimeout(addedTimer))
   }
 }
 
+/* Tab shape/background/fillet come from NotchPanel — this is just the
+   button's own size and content layout. */
 .close {
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: var(--color-grey-6);
   width: 5rem;
   height: 6.2rem;
-  transform: translateX(100%);
-  background-color: var(--color-grey-1);
-  border-bottom-right-radius: 3rem;
-  border-top-right-radius: 3rem;
+  color: var(--color-grey-6);
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-/* The concave fillet where the tab flows back into the panel edge — an
-   "inverted border-radius", no SVG needed. A small square hangs just below
-   the button, painted the panel color everywhere EXCEPT a quarter-circle
-   carved from its far corner: the arc runs tangent from the button's bottom
-   edge into the panel's right edge. The 0.5px overlap in the gradient stops
-   anti-aliases the curve. */
-.close::after {
-  /* One knob for the curve's size — the square and the carved arc must
-     always share the same radius or the fillet detaches from the edges. */
-  --fillet: 1.7rem;
-
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: var(--fillet);
-  height: var(--fillet);
-  background: radial-gradient(
-    circle at 100% 100%,
-    transparent calc(var(--fillet) - 0.5px),
-    var(--color-grey-1) var(--fillet)
-  );
-  pointer-events: none;
 }
 
 /* Top-level, not nested inside .close: the scoped-CSS compiler mangles
@@ -382,68 +251,8 @@ onUnmounted(() => clearTimeout(addedTimer))
   transform: translateX(-0.5rem);
 }
 
-.state-note,
-.label {
+.state-note {
   color: var(--color-grey-6);
-}
-
-.sizes .label {
-  margin-bottom: var(--spacing-xs);
-}
-
-.size-pill {
-  width: 100%;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: calc(var(--radius-def) / 2);
-  background-color: var(--color-grey-2);
-  color: var(--color-grey-6);
-  transition:
-    background-color 0.2s,
-    color 0.2s;
-
-  &.is-selected {
-    background-color: var(--color-grey-7);
-    color: var(--color-white);
-  }
-
-  &.is-oos {
-    opacity: 0.4;
-    cursor: not-allowed;
-    text-decoration: line-through;
-  }
-}
-
-.add-to-cart {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: var(--spacing-button-lg-height);
-  background-color: var(--color-grey-7);
-  color: var(--color-white);
-  transition:
-    background-color 0.3s,
-    color 0.3s;
-
-  &:disabled {
-    cursor: not-allowed;
-  }
-
-  /* After :disabled so it wins while the add is in flight — "working",
-     not "not allowed". */
-  &.is-adding {
-    cursor: progress;
-  }
-
-  &.is-added {
-    background-color: var(--color-green-bright);
-    color: var(--color-white);
-  }
-
-  &.is-failed {
-    background-color: var(--color-orange);
-    color: var(--color-white);
-  }
 }
 
 .learn-more {
