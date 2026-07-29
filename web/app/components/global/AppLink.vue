@@ -8,18 +8,18 @@
     <slot>{{ link.label }}</slot>
   </a>
 
-  <nuxt-link
+  <NuxtLink
     v-else
     :to="prefixedPath"
   >
     <slot>{{ link.label }}</slot>
-  </nuxt-link>
+  </NuxtLink>
 </template>
 
 <script setup>
 /**
  * Renders a Sanity `navLink`: an external URL opens in a new tab as an <a>,
- * otherwise an internal path renders as a <nuxt-link> carrying the active
+ * otherwise an internal path renders as a <NuxtLink> carrying the active
  * locale prefix (editors enter unprefixed paths like /info).
  *
  * Prefix is applied manually rather than via localePath(): editors can enter

@@ -11,11 +11,11 @@
 
       <li>
         <button
-          @click="onCartButton"
           class="cart-button"
           :class="{ 'is-checkout': lineCount > 0 && isOpen }"
           :aria-expanded="isOpen"
           aria-controls="cart-drawer"
+          @click="onCartButton"
         >
           <span
             class="cart-label"

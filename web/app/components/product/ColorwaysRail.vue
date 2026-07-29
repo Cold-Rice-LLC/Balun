@@ -11,7 +11,7 @@
         v-for="item in items"
         :key="item.doc._id"
       >
-        <nuxt-link
+        <NuxtLink
           :to="localePath(`/products/${item.doc.slug}`)"
           class="colorway-link block"
           :class="{ 'is-unavailable': !item.live }"
@@ -28,7 +28,7 @@
           <span class="name block text-2xs uppercase text-center">{{
             colorName(item.doc.title)
           }}</span>
-        </nuxt-link>
+        </NuxtLink>
       </li>
     </ul>
   </nav>

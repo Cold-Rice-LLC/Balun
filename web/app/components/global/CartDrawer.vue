@@ -158,10 +158,10 @@ const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.f
 .cart-drawer {
   position: fixed;
   z-index: 4900;
-  bottom: 0px;
+  bottom: 0;
   right: var(--spacing-base);
   left: calc(50% + var(--spacing-base) / 2);
-  height: 500px;
+  height: 50rem;
   display: flex;
   flex-direction: column;
   background-color: var(--color-grey-1);

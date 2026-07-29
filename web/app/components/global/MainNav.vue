@@ -1,46 +1,44 @@
 <template>
   <header class="fixed top-0 left-0 w-full grid grid-cols-3 p-base">
-    <div></div>
-
-    <div class="flex justify-center items-center">
-      <nuxt-link
+    <div class="col-start-2 flex justify-center items-center">
+      <NuxtLink
         :to="localePath('/')"
         class="home-link text-grey-3"
       >
         <span class="sr-only">Balun</span>
 
         <IconsLogo />
-      </nuxt-link>
+      </NuxtLink>
     </div>
 
     <nav class="flex justify-end items-center">
       <ul class="text-xs flex gap-x-xs">
         <li>
-          <nuxt-link
+          <NuxtLink
             :to="localePath('/feed')"
             class="bg-yellow text-grey-6"
-            >{{ $t('nav.feed') }}</nuxt-link
+            >{{ $t('nav.feed') }}</NuxtLink
           >
         </li>
 
         <li>
-          <nuxt-link
+          <NuxtLink
             :to="localePath('/info')"
             class="bg-purple text-white"
-            >{{ $t('nav.info') }}</nuxt-link
+            >{{ $t('nav.info') }}</NuxtLink
           >
         </li>
       </ul>
     </nav>
 
-    <nuxt-link
+    <NuxtLink
       :to="localePath('/live')"
       class="live-link"
     >
       <IconsRing />
       <span>12M Viewing</span>
       <span>Live in Beijing</span>
-    </nuxt-link>
+    </NuxtLink>
   </header>
 </template>
 
@@ -69,7 +67,7 @@ nav {
 
 .live-link {
   position: absolute;
-  right: 0px;
+  right: 0;
   top: 7.7rem;
   background-color: var(--color-grey-1);
   padding: var(--spacing-base) var(--spacing-sm);

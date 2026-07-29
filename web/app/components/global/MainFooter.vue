@@ -63,7 +63,7 @@ footer {
 }
 
 .newsletter {
-  padding: 0 0 0 8.1vw;
+  padding-left: 8.1vw;
 }
 
 .newsletter :deep(p),
@@ -72,7 +72,7 @@ footer {
 }
 
 .footer-links {
-  padding: 0 0 0 11.4vw;
+  padding-left: 11.4vw;
 }
 
 /* :deep so the re-enable reaches into child components (switcher triggers)

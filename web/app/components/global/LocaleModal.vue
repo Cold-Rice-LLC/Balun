@@ -43,13 +43,13 @@
           role="option"
           :aria-selected="item.active"
         >
-          <nuxt-link
+          <NuxtLink
             :to="switchLocalePath(item.code)"
             :class="{ 'is-active': item.active }"
             @click="open = false"
           >
             {{ item.name }}
-          </nuxt-link>
+          </NuxtLink>
         </li>
       </ul>
     </div>

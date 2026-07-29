@@ -323,8 +323,6 @@ onUnmounted(() => clearTimeout(addedTimer))
   }
 
   &.active {
-    transform: translateY(0);
-    opacity: 1;
     pointer-events: auto;
 
     .quick-add-body,
@@ -337,11 +335,11 @@ onUnmounted(() => clearTimeout(addedTimer))
 
 .close {
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: 0;
+  right: 0;
   color: var(--color-grey-6);
-  width: 50px;
-  height: 62px;
+  width: 5rem;
+  height: 6.2rem;
   transform: translateX(100%);
   background-color: var(--color-grey-1);
   border-bottom-right-radius: 3rem;
@@ -381,7 +379,7 @@ onUnmounted(() => clearTimeout(addedTimer))
    requires an intermediate scoped element and never matches here). */
 .close :deep(.icon-x) {
   width: 3rem;
-  transform: translateX(-5px);
+  transform: translateX(-0.5rem);
 }
 
 .state-note,
@@ -426,23 +424,7 @@ onUnmounted(() => clearTimeout(addedTimer))
   transition:
     background-color 0.3s,
     color 0.3s;
-}
 
-.learn-more {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: var(--spacing-button-lg-height);
-  border-radius: var(--radius-def);
-  background-color: var(--color-grey-2);
-  color: var(--color-grey-6);
-  transition:
-    background-color 0.3s,
-    color 0.3s;
-}
-
-.add-to-cart {
   &:disabled {
     cursor: not-allowed;
   }
@@ -464,9 +446,22 @@ onUnmounted(() => clearTimeout(addedTimer))
   }
 }
 
+.learn-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--spacing-button-lg-height);
+  border-radius: var(--radius-def);
+  background-color: var(--color-grey-2);
+  color: var(--color-grey-6);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
 @media (max-width: 768px) {
   .quick-add-drawer {
-    left: var(--spacing-base);
     right: var(--spacing-base);
     width: auto;
   }

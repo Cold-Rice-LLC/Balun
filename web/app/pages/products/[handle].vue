@@ -141,28 +141,11 @@ useHead({
   gap: var(--spacing-base);
 }
 
-.image-frame {
-  aspect-ratio: 3 / 4;
-  background-color: var(--color-grey-7);
-  border-radius: var(--radius-def);
-  overflow: hidden;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
 .details {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-base);
   color: var(--color-grey-1);
-
-  .tagline {
-    color: var(--color-grey-4);
-  }
 
   .buy-box-fallback {
     color: var(--color-grey-6);
