@@ -75,9 +75,7 @@ Tailwind Config
   --spacing-sm: 1.2rem;
   --spacing-base: 2rem;
   --spacing-button-lg-height: 6.8rem;
-  /* Top padding shared by every page: clears the fixed MainNav. Modules that
-     fill the rest of the viewport subtract it (featured product). */
-  --spacing-page-top: calc(var(--spacing-button-lg-height) + var(--spacing-base) * 2);
+  --spacing-page-top: 8.5rem;
 
   /*
   Border Radius

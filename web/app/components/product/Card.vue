@@ -96,7 +96,7 @@ const title = computed(() => {
 }
 
 .card-meta {
-  padding: var(--spacing-sm) var(--spacing-xs);
+  padding: var(--spacing-sm) 0;
 
   .stock-note {
     color: var(--color-grey-4);

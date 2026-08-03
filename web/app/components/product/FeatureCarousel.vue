@@ -42,7 +42,7 @@
           <p
             v-for="(highlight, i) in slide.highlights ?? []"
             :key="i"
-            class="highlight font-secondary uppercase text-2xs"
+            class="highlight font-secondary uppercase text-xs"
             :class="highlight.side === 'right' ? 'side-right' : 'side-left'"
             :style="highlightStyle(highlight)"
           >
@@ -214,7 +214,8 @@ const highlightTextStyle = (highlight) => {
      otherwise wrap at whatever the leader span happens to be. The editor's
      Max Width (inline, % of the image) is the only thing that wraps it. */
   width: max-content;
-  margin-bottom: 0.4em;
+  margin-bottom: 0.6em;
+  line-height: 1;
   /* Keep editor line breaks ("GLOSS 01\nWATERPROOF 02" stacks). */
   white-space: pre-line;
 }

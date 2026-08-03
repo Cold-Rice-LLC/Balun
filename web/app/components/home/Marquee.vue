@@ -53,8 +53,9 @@ const COPIES = 6
 
 <style scoped>
 .marquee-module {
-  /* Full bleed out of the page container's px-base padding. */
-  margin-inline: calc(var(--spacing-base) * -1);
+  /* No negative margin-inline here: the home page pads only top/bottom, so
+     the band is already full bleed — pulling it wider just pushed it past
+     the viewport and gave the body a horizontal scrollbar. */
   overflow: hidden;
   background-color: var(--color-yellow);
   color: var(--color-grey-5);

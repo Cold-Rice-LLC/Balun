@@ -50,7 +50,17 @@ export default defineNuxtConfig({
   sanity: {
     projectId: 'pful3cpt',
     dataset: 'production',
-    useCdn: false,
+    // The CDN serves the last published build, so Studio edits can take a
+    // minute to appear — fine (and cheaper) in production, but it makes
+    // authoring feel broken. $development below opts local dev out.
+    useCdn: true,
     apiVersion: '2024-10-01',
+  },
+
+  // Applied only under `nuxt dev`; production builds keep the values above.
+  $development: {
+    sanity: {
+      useCdn: false,
+    },
   },
 })

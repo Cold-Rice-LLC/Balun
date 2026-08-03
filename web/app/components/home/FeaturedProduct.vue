@@ -42,26 +42,32 @@
       {{ module.caption }}
     </p>
 
-    <div
-      v-if="product"
-      class="ctas"
-      :class="{ 'is-visible': ctasVisible }"
-    >
-      <ProductQuickAddTrigger
-        class="cta cta-quick-add text-base"
-        :doc="product"
-        :live="live"
+    <!-- Teleported: the home page's entrance animation leaves a transform on
+         its wrapper, and a transformed ancestor becomes the containing block
+         for position:fixed — which pinned these to the bottom of the page
+         instead of the viewport. Out here they fix to the viewport again. -->
+    <Teleport to="body">
+      <div
+        v-if="product"
+        class="ctas"
+        :class="{ 'is-visible': ctasVisible }"
       >
-        {{ $t('quickAdd.cta') }}
-      </ProductQuickAddTrigger>
+        <ProductQuickAddTrigger
+          class="cta cta-quick-add text-base"
+          :doc="product"
+          :live="live"
+        >
+          {{ $t('quickAdd.cta') }}
+        </ProductQuickAddTrigger>
 
-      <NuxtLink
-        :to="localePath(`/products/${product.slug}`)"
-        class="cta cta-learn-more text-base"
-      >
-        {{ $t('quickAdd.learnMore') }}
-      </NuxtLink>
-    </div>
+        <NuxtLink
+          :to="localePath(`/products/${product.slug}`)"
+          class="cta cta-learn-more text-base"
+        >
+          {{ $t('quickAdd.learnMore') }}
+        </NuxtLink>
+      </div>
+    </Teleport>
   </section>
 </template>
 
