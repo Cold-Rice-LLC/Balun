@@ -51,7 +51,7 @@ const secondaryLinks = computed(() => settings.value?.footerSecondaryLinks ?? []
 
 <style scoped>
 footer {
-  padding-top: 28rem;
+  margin-top: 28rem;
   padding-bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
   color: var(--color-grey-4);
   overflow: hidden;
