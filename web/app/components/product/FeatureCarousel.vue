@@ -77,6 +77,11 @@
  *
  * Fills its parent — the parent owns the height context (a flex leftover on
  * home, a fixed region on the PDP) and the frames cap to it.
+ *
+ * Custom properties (set on any ancestor):
+ *   --carousel-arrow-width  nav arrow width (default 8.6rem). Also widens the
+ *                           slide's safe-area, so highlight text keeps clear
+ *                           of the arrows at whatever size they are.
  */
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
@@ -135,7 +140,9 @@ const highlightTextStyle = (highlight) => {
 
 <style scoped>
 .feature-carousel {
-  --arrow-width: 8.6rem;
+  /* Resolved once here so the wrapper's override (the PDP runs smaller
+     arrows than the home module) reaches both the arrows and the safe-area. */
+  --arrow-width-resolved: var(--carousel-arrow-width, 8.6rem);
 
   position: relative;
   width: 100%;
@@ -154,7 +161,7 @@ const highlightTextStyle = (highlight) => {
   /* Horizontal safe-area: edge gap + arrow + gap on each side. The frame
      caps to the space between the arrows, so highlight text (which hugs the
      frame edge) can never overlap them. */
-  padding-inline: calc(var(--arrow-width) + var(--spacing-base) * 2);
+  padding-inline: calc(var(--arrow-width-resolved) + var(--spacing-base) * 2);
 }
 
 /* The inline aspect-ratio (from the asset's intrinsic dimensions) plus these
@@ -231,7 +238,7 @@ const highlightTextStyle = (highlight) => {
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
-  width: var(--arrow-width);
+  width: var(--arrow-width-resolved);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -50,7 +50,7 @@
       <div
         v-if="product"
         class="ctas"
-        :class="{ 'is-visible': ctasVisible }"
+        :class="{ 'is-visible': ctasVisible && !quickAddOpen }"
       >
         <ProductQuickAddTrigger
           class="cta cta-quick-add text-base"
@@ -97,6 +97,11 @@ const slides = computed(() => props.module.images ?? [])
 // and stack their CTAs in the same fixed slot.
 const moduleEl = ref(null)
 const ctasVisible = useInView(moduleEl, { threshold: 0.5 })
+
+// ...and drop out of the way once the drawer they opened is up. Destructured
+// so the template unwraps the ref — reaching through the returned object
+// (quickAdd.isOpen) yields the Ref itself, which is always truthy.
+const { isOpen: quickAddOpen } = useQuickAdd()
 </script>
 
 <style scoped>
@@ -106,7 +111,7 @@ const ctasVisible = useInView(moduleEl, { threshold: 0.5 })
    its content, so the carousel's "leftover" would just be the image's
    intrinsic size and the frames would never cap to the fold. */
 .featured-product {
-  height: calc(100svh - var(--spacing-page-top));
+  height: calc(88svh - var(--spacing-page-top));
   display: flex;
   flex-direction: column;
 }
@@ -182,10 +187,12 @@ const ctasVisible = useInView(moduleEl, { threshold: 0.5 })
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s;
+  /* transition-delay: 0s; */
 
   &.is-visible {
     opacity: 1;
     pointer-events: auto;
+    /* transition-delay: 0.3s; */
   }
 
   /* Both CTAs share the pill look; extra specificity so the quick-add

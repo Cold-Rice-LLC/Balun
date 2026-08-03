@@ -28,7 +28,7 @@
           v-if="post.body"
           class="post-body space-y-base"
         >
-          <SanityContent :blocks="post.body" />
+          <SanityContent :value="post.body" />
         </div>
       </li>
     </ul>

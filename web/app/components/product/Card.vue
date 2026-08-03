@@ -7,9 +7,9 @@
   >
     <div class="image-frame">
       <img
-        v-if="live?.featuredImage"
-        :src="live.featuredImage.url"
-        :alt="live.featuredImage.altText || live.title"
+        v-if="cardImage"
+        :src="cardImage.src"
+        :alt="cardImage.alt"
         loading="lazy"
       />
     </div>
@@ -71,6 +71,11 @@ const title = computed(() => {
   const full = props.live?.title || props.doc.title || ''
   return full.includes('·') ? full.split('·')[0].trim() : full
 })
+
+// Editorial featuredImage first, Shopify's product image as the fallback —
+// so cards still fill without any Sanity work.
+const productImage = useProductImage()
+const cardImage = computed(() => productImage(props.doc, props.live, { w: 900 }))
 </script>
 
 <style scoped>
@@ -83,15 +88,15 @@ const title = computed(() => {
 }
 
 .image-frame {
-  aspect-ratio: 3 / 2;
-  background-color: var(--color-grey-2);
+  aspect-ratio: 3 / 1.6;
   border-radius: var(--radius-def);
   overflow: hidden;
 
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
   }
 }
 
@@ -100,6 +105,7 @@ const title = computed(() => {
 
   .stock-note {
     color: var(--color-grey-4);
+    font-family: var(--font-secondary);
   }
 }
 
@@ -109,7 +115,8 @@ const title = computed(() => {
   height: auto;
   background: none;
   color: var(--color-grey-5);
-  font-size: var(--text-base-plus);
+  font-size: var(--text-lg);
+  font-family: var(--font-secondary);
 
   &:hover {
     background: none;

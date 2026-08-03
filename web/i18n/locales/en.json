@@ -38,15 +38,15 @@
     "next": "Next image"
   },
   "buyBox": {
-    "loading": "Loading price…",
+    "loading": "loading price…",
     "optionFallback": "Option",
-    "addToCart": "Add to cart",
-    "adding": "Adding…",
-    "soldOut": "Sold out",
+    "addToCart": "add to cart",
+    "adding": "adding…",
+    "soldOut": "sold out",
     "unavailable": "Not available in your region"
   },
   "product": {
-    "soldOut": "Sold out",
+    "soldOut": "sold out",
     "unavailable": "Unavailable",
     "outOfStock": "out of stock"
   },

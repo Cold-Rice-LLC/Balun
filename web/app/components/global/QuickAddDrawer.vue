@@ -1,5 +1,6 @@
 <template>
   <button
+    v-if="showBackdrop"
     class="quick-add-backdrop"
     :class="{ active: isOpen }"
     @click="close"
@@ -41,6 +42,7 @@
       <ProductOptionsPanel
         v-if="variants.length"
         v-model:variant-id="selectedId"
+        v-model:quantity="quantity"
         :product="detail"
         open-cart-on-add
         @add-failed="execute"
@@ -67,7 +69,10 @@
       </template>
     </NotchPanel>
 
-    <div class="learn-more-container w-1/2">
+    <div
+      v-if="showLearnMore"
+      class="learn-more-container w-1/2"
+    >
       <NuxtLink
         v-if="pdpPath"
         :to="pdpPath"
@@ -94,8 +99,23 @@
 const { active, isOpen, close } = useQuickAdd()
 const localePath = useLocalePath()
 const market = useMarket()
+const route = useRoute()
 
-useScrollLock(isOpen)
+// Latched per open like `handle` (not read from `active` directly), so the
+// backdrop doesn't flash back in mid close-transition when `active` nulls.
+const showBackdrop = ref(true)
+
+// Backdrop-less opens (the PDP) leave the page scrollable and clickable —
+// only lock scroll when the page is actually covered.
+useScrollLock(computed(() => isOpen.value && showBackdrop.value))
+
+// With no backdrop there's nothing stopping navigation while open (e.g. the
+// PDP's colorway rail switches products in place) — close instead of
+// lingering over the new page with the old product's sizes.
+watch(
+  () => route.fullPath,
+  () => close(),
+)
 
 // Keep the last product while closing so the panel doesn't blank out
 // mid slide-down transition.
@@ -114,8 +134,20 @@ const { data, pending, execute } = useShopifyProduct(handle, {
 // late response still maps to the right catalog entry.
 const activeGid = ref('')
 
+// Reset per open, not per product: the panel keeps quantity across a
+// same-product reopen, and picking up where a previous add left off ("3")
+// is never what someone reopening quick add means.
+const quantity = ref(1)
+
+// Latched per open like `handle` (not read from `active` directly), so the
+// link doesn't pop back in mid close-transition when `active` nulls.
+const showLearnMore = ref(true)
+
 watch(active, (payload) => {
   if (!payload?.live?.handle) return
+  quantity.value = 1
+  showLearnMore.value = payload.learnMore !== false
+  showBackdrop.value = payload.backdrop !== false
   activeGid.value = payload.live.id ?? ''
   // Stale if it's a different product OR the kept response was fetched for
   // another market (its prices are in the wrong currency) — show the loading

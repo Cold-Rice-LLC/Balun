@@ -17,6 +17,7 @@ const productProjection = `
   "gid": store.gid,
   "slug": store.slug.current,
   ${i18nField('tagline')},
+  featuredImage,
   gallery
 `
 
@@ -142,14 +143,15 @@ export const productPageQuery = groq`*[
   }
 }`
 
-// Colorway siblings: products sharing the group:<slug> Shopify tag (see
-// docs/shopify-and-localization-strategy.md §4). $groupTag == "" (product has
-// no group tag) matches nothing, so callers can pass it unconditionally.
+// Colorway group members: products sharing the group:<slug> Shopify tag (see
+// docs/shopify-and-localization-strategy.md §4), INCLUDING the current
+// product — the PDP marks it as current in the rail rather than hiding it.
+// $groupTag == "" (product has no group tag) matches nothing, so callers can
+// pass it unconditionally.
 export const colorwaysQuery = groq`*[
   _type == "product"
   && $groupTag != ""
   && $groupTag in string::split(store.tags, ", ")
-  && store.slug.current != $handle
   && store.status == "active"
   && store.isDeleted != true
 ] | order(store.title asc) {
@@ -157,6 +159,7 @@ export const colorwaysQuery = groq`*[
   "title": store.title,
   "slug": store.slug.current,
   "gid": store.gid,
+  featuredImage,
   gallery
 }`
 

@@ -51,10 +51,17 @@ const secondaryLinks = computed(() => settings.value?.footerSecondaryLinks ?? []
 
 <style scoped>
 footer {
-  margin-top: 28rem;
   padding-bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
   color: var(--color-grey-4);
   overflow: hidden;
+}
+
+body.template-home footer {
+  margin-top: 20rem;
+}
+
+body.template-pdp footer {
+  margin-top: 10rem;
 }
 
 :deep(.icon-wordmark) {

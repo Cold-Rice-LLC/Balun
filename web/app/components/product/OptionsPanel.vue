@@ -88,7 +88,10 @@ const optionLabel = computed(() => props.product?.options?.[0]?.name || t('quick
 const variantId = defineModel('variantId', { default: null })
 const selectedVariant = computed(() => pickVariant(variants.value, variantId.value))
 
-const quantity = ref(1)
+// A model like variantId, so a wrapper that opens and closes (the quick-add
+// drawer) can reset it per open. Left unbound — the PDP, which has no
+// open/close cycle — it's plain local state defaulting to 1.
+const quantity = defineModel('quantity', { default: 1 })
 
 // Reset only on a real product SWAP (quick-add A→B, colorway switch) — not
 // on first arrival, where wiping the model would clobber a wrapper-provided

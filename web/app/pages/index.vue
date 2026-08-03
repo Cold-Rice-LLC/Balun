@@ -62,6 +62,11 @@ const liveByGid = computed(() => {
   }
   return map
 })
+
+useHead({
+  title: () => `Balun`,
+  bodyAttrs: { class: 'template-home' },
+})
 </script>
 
 <style scoped>
@@ -70,7 +75,7 @@ const liveByGid = computed(() => {
   padding-bottom: var(--spacing-base);
 
   & > section + section {
-    margin-top: 10rem;
+    margin-top: 20rem;
   }
 
   & > section.featured-product + section.marquee-module {

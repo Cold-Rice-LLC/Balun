@@ -200,3 +200,13 @@ Animations
   opacity: 0;
   animation: fade-in-up 0.6s both var(--curve);
 }
+
+/*
+Rich Text
+*/
+
+.rich-text {
+  & > * + * {
+    margin-top: 1em;
+  }
+}

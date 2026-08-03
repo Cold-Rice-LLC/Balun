@@ -35,8 +35,25 @@ export default {
     {
       name: 'body',
       type: 'internationalizedArrayBlockContent',
-      title: 'Supplemental Content',
+      title: 'Description',
+      description:
+        "The product copy under the buy button on the PDP. This is the description the site shows — Shopify's own description is not used.",
       validation: englishIfAny,
+    },
+    {
+      name: 'featuredImage',
+      type: 'image',
+      title: 'Featured Image',
+      description:
+        'The product image used on grid cards. Leave empty to fall back to the Shopify product image.',
+      options: {hotspot: true},
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alt Text',
+        },
+      ],
     },
     {
       name: 'gallery',

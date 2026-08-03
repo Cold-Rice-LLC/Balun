@@ -6,7 +6,7 @@
       v-if="page.body"
       class="legal-body space-y-base"
     >
-      <SanityContent :blocks="page.body" />
+      <SanityContent :value="page.body" />
     </div>
   </article>
 </template>

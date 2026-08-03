@@ -2,8 +2,10 @@
  * Single-product fetch for the PDP: GET /api/product?handle=slide-03&country=US
  *
  * Richer projection than /api/products (full variants for the size picker,
- * images, descriptionHtml) — keep the two routes separate so listing payloads
- * stay lean. Same caching contract: short SWR cache keyed by handle+country
+ * images) — keep the two routes separate so listing payloads stay lean.
+ * Product copy is NOT fetched here: the PDP renders the Sanity `body` field,
+ * so Shopify's descriptionHtml would be an unread HTML blob on every request.
+ * Same caching contract: short SWR cache keyed by handle+country
  * so drop traffic on a single product collapses to ~1 Shopify request/min
  * per market (see docs/performance-caching.md).
  *
@@ -20,7 +22,6 @@ const PRODUCT_QUERY = /* GraphQL */ `
       title
       handle
       availableForSale
-      descriptionHtml
       options {
         name
         optionValues {
@@ -99,7 +100,6 @@ export interface StorefrontProductDetail {
   title: string
   handle: string
   availableForSale: boolean
-  descriptionHtml: string
   options: { name: string; optionValues: { name: string }[] }[]
   images: { nodes: StorefrontImage[] }
   priceRange: {

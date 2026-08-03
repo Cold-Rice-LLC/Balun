@@ -1,6 +1,6 @@
 <template>
   <div class="pdp px-base flex-1 flex flex-col">
-    <div class="pdp-content grid md:grid-cols-2 flex-1 enter-in-fade-up">
+    <div class="pdp-content flex flex-1 enter-in-fade-up">
       <div class="media-col">
         <!-- Draggable lifestyle gallery (no arrows — dots only), pinned
              while the details column scrolls. -->
@@ -10,7 +10,8 @@
             class="media-slides"
             :modules="[Pagination]"
             :slides-per-view="1"
-            :pagination="{ clickable: true }"
+            :loop="true"
+            :grab-cursor="true"
           >
             <SwiperSlide
               v-for="(image, i) in doc.gallery"
@@ -27,8 +28,8 @@
         </div>
       </div>
 
-      <div class="details px-base">
-        <header class="pdp-header text-center">
+      <div class="details">
+        <header class="pdp-header text-center px-base">
           <h1 class="uppercase text-lg leading-none">{{ live?.title || doc.title }}</h1>
 
           <!-- Live price is the geo-varying client island; SSR renders the
@@ -73,68 +74,44 @@
         </p>
 
         <!-- Sticky purchase row: pinned above the bottom nav while the
-             column scrolls; the options popover grows up from it. -->
-        <div class="buy-row font-secondary">
-          <ClientOnly>
-            <button
-              class="open-options text-base-plus font-primary"
-              :disabled="!live || !live.availableForSale"
-              :aria-expanded="showOptions"
-              @click="showOptions = !showOptions"
-            >
-              {{ buyLabel }}
-            </button>
+             column scrolls. The button opens the shared quick-add drawer
+             (sizes/quantity/add live there); colorway switching stays on the
+             page, above the button, so siblings are one click with no drawer
+             in between. -->
+        <div class="buy-row font-secondary px-base">
+          <div class="buy-col flex flex-col justify-end gap-base">
+            <ProductColorwaysRail :items="colorways" />
 
-            <template #fallback>
+            <ClientOnly>
               <button
                 class="open-options text-base-plus font-primary"
-                disabled
+                :disabled="!live || !live.availableForSale"
+                aria-haspopup="dialog"
+                aria-controls="quick-add-drawer"
+                @click="openQuickAdd({ doc, live, learnMore: false, backdrop: false })"
               >
-                {{ $t('buyBox.loading') }}
+                {{ buyLabel }}
               </button>
-            </template>
-          </ClientOnly>
 
-          <div
-            v-if="doc.body?.length"
-            class="description text-sm"
-          >
-            <SanityContent :blocks="doc.body" />
+              <template #fallback>
+                <button
+                  class="open-options text-base-plus font-primary"
+                  disabled
+                >
+                  {{ $t('buyBox.loading') }}
+                </button>
+              </template>
+            </ClientOnly>
           </div>
 
-          <Transition name="options-pop">
+          <div class="flex flex-col gap-sm">
             <div
-              v-if="showOptions && live"
-              class="options-popover"
+              v-if="doc.body?.length"
+              class="description text-sm rich-text"
             >
-              <header class="popover-header flex items-start justify-between gap-base p-base">
-                <p class="uppercase">{{ baseTitle }}</p>
-
-                <div class="flex items-center gap-base">
-                  <p>{{ formatMoney(selectedVariant?.price ?? live.priceRange.minVariantPrice) }}</p>
-
-                  <button
-                    class="close-options"
-                    :aria-label="$t('pdp.closeOptions')"
-                    @click="showOptions = false"
-                  >
-                    <IconsX />
-                  </button>
-                </div>
-              </header>
-
-              <ProductOptionsPanel
-                v-model:variant-id="selectedVariantId"
-                :product="live"
-                @add-failed="refreshLive"
-              >
-                <!-- Same panel, second decision: jump to a sibling colorway.
-                     Navigation is in-place (same route component), so the
-                     popover stays open across the switch. -->
-                <ProductColorwaysRail :items="colorways" />
-              </ProductOptionsPanel>
+              <SanityContent :value="doc.body" />
             </div>
-          </Transition>
+          </div>
         </div>
       </div>
     </div>
@@ -182,15 +159,16 @@ watch(doc, (value) => {
   if (!value) showError({ statusCode: 404, statusMessage: 'Product not found' })
 })
 
-// Colorway siblings via the shared group:<slug> Shopify tag. Empty tag matches
-// nothing (safe for ungrouped products). Watches handle so the current product
-// is excluded from its own rail after an in-place switch.
+// The colorway group (current product INCLUDED — the rail marks it) via the
+// shared group:<slug> Shopify tag. Empty tag matches nothing (safe for
+// ungrouped products). Keyed by GROUP, not handle: switching to a sibling
+// serves the same cached member list and only the current marker moves.
 const groupTag = computed(() => (doc.value?.tags ?? '').split(', ').find((t) => t.startsWith('group:')) ?? '')
 const { data: colorwayDocs } = await useAsyncData(
-  () => `pdp-colorways-${handle.value}`,
-  () => sanity.fetch(colorwaysQuery, { groupTag: groupTag.value, handle: handle.value }),
+  () => `pdp-colorways-${groupTag.value}`,
+  () => sanity.fetch(colorwaysQuery, { groupTag: groupTag.value }),
   // groupTag resolves from doc a tick after handle changes; watch it so the
-  // rail refetches once the new product's group is known.
+  // rail refetches once a NEW group is known (cross-group navigation).
   { watch: [groupTag] },
 )
 
@@ -228,6 +206,7 @@ const colorways = computed(() =>
   (colorwayDocs.value ?? []).map((d) => ({
     doc: d,
     live: catalog.value[d.gid] ?? null,
+    current: d.slug === handle.value,
   })),
 )
 
@@ -262,28 +241,15 @@ const compareAt = computed(() => {
   return price && Number(price.amount) > 0 ? formatMoney(price) : null
 })
 
-// Titles follow "Base · Color" (colorway convention) — the popover header
-// shows the base.
-const baseTitle = computed(() => {
-  const full = live.value?.title ?? doc.value?.title ?? ''
-  return full.includes('·') ? full.split('·')[0].trim() : full
-})
-
-// The main button only OPENS the popover — the add itself happens on the
-// panel's own button (its state machine owns adding/added/failed).
-const showOptions = ref(false)
+// The main button only OPENS the shared quick-add drawer — the add itself
+// happens on the drawer's panel (its state machine owns adding/added/failed).
+const { open: openQuickAdd } = useQuickAdd()
 
 const buyLabel = computed(() => {
   if (!live.value) return livePending.value ? t('buyBox.loading') : t('buyBox.unavailable')
   if (!live.value.availableForSale) return t('buyBox.soldOut')
   return t('buyBox.addToCart')
 })
-
-const onKey = (e) => {
-  if (e.key === 'Escape') showOptions.value = false
-}
-onMounted(() => document.addEventListener('keydown', onKey))
-onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
 
 useHead({
   title: () => `${doc.value?.title ?? 'Product'} — Balun`,
@@ -294,24 +260,21 @@ useHead({
 <style scoped>
 .pdp {
   padding-top: var(--spacing-page-top);
-  padding-bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
-}
-
-/* No overflow:hidden here — it would break both sticky columns. The media
-   column rounds its own corners instead. */
-.pdp-content {
-  background-color: var(--color-white);
-  border-radius: var(--radius-def);
 }
 
 .media {
   position: sticky;
-  top: var(--spacing-page-top);
-  height: calc(100svh - var(--spacing-page-top) - var(--spacing-button-lg-height) - var(--spacing-base));
+  top: 0px;
+  height: 100svh;
   border-top-left-radius: var(--radius-def);
   border-bottom-left-radius: var(--radius-def);
   overflow: hidden;
   background-color: var(--color-grey-2);
+}
+
+.media-col {
+  width: calc(50% - 1rem);
+  flex: none;
 }
 
 .media-slides {
@@ -321,6 +284,20 @@ useHead({
 
 .media-slide img {
   display: block;
+}
+
+/* Swiper renders the bullets into this SIBLING of the swiper (pagination.el),
+   so they're positioned against the panel rather than inside the swiper's
+   own context. The stuck panel's bottom edge is the viewport bottom, so the
+   inset clears the fixed shop button (top edge = button-lg-height from the
+   bottom) plus a spacing-base gap. */
+.media-dots {
+  position: absolute;
+  z-index: 2;
+  bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  left: 0;
+  width: 100%;
+  text-align: center;
 }
 
 .media :deep(.swiper-pagination-bullet) {
@@ -333,23 +310,32 @@ useHead({
 }
 
 .details {
+  /* Takes the row's leftover beside the fixed-width media column. min-width 0
+     because a flex item defaults to min-width:auto, which refuses to shrink
+     below its content — that's what lets a wide child push this column past
+     its share instead of wrapping inside it. */
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-base);
-  color: var(--color-grey-1);
+  color: var(--color-grey-3);
+  background-color: var(--color-white);
   /* Bottom out the sticky buy row on short content: the column always
      spans at least the visible panel height. */
   min-height: calc(100svh - var(--spacing-page-top) - var(--spacing-button-lg-height) - var(--spacing-base));
+  border-top-right-radius: var(--radius-def);
+  border-bottom-right-radius: var(--radius-def);
 }
 
 .pdp-header {
-  padding-top: 6rem;
+  padding-top: 4.5rem;
   padding-bottom: 2rem;
 }
 
 .price {
   margin-top: var(--spacing-sm);
-  color: var(--color-grey-3);
+  color: var(--color-grey-7);
 
   .compare-at {
     color: var(--color-grey-4);
@@ -366,7 +352,14 @@ useHead({
    just the content's own size and the shared carousel's frames would never
    cap (same trap as the featured module's min-height). */
 .carousel-region {
-  height: 45svh;
+  height: 32svh;
+  /* Narrower arrows than the home module's — this carousel sits in a half
+     -width column, so the full-size ones eat too much of the image. */
+  --carousel-arrow-width: 3.4rem;
+}
+
+.carousel-region :deep(.highlight) {
+  font-size: 0.8rem;
 }
 
 .tagline {
@@ -374,20 +367,26 @@ useHead({
 }
 
 .buy-row {
-  position: sticky;
-  bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
   z-index: 10;
   margin-top: auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-base);
   align-items: end;
-  background-color: var(--color-white);
   padding-block: var(--spacing-base);
+}
+
+/* Sticky as a UNIT (rail + button) within the tall grid area the description
+   creates — sticky on the button alone would clamp to the area's top while
+   the row is below the fold and ride up over the rail. */
+.buy-col {
+  position: sticky;
+  bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
 }
 
 .open-options {
   height: var(--spacing-button-lg-height);
+  width: 100%;
   border-radius: var(--radius-def);
   background-color: var(--color-grey-7);
   color: var(--color-white);
@@ -407,45 +406,7 @@ useHead({
 }
 
 .description {
-  color: var(--color-grey-4);
-  text-align: right;
-}
-
-.options-popover {
-  position: absolute;
-  bottom: var(--spacing-base);
-  left: 0;
-  width: min(38rem, 100%);
-  z-index: 20;
-  background-color: var(--color-grey-1);
-  border-radius: var(--radius-def);
-  overflow: hidden;
-  color: var(--color-green);
-}
-
-.popover-header {
   color: var(--color-grey-6);
-}
-
-.close-options {
-  color: var(--color-grey-6);
-}
-
-.close-options :deep(.icon-x) {
-  width: 2rem;
-}
-
-.options-pop-enter-active,
-.options-pop-leave-active {
-  transition:
-    opacity 0.25s,
-    transform 0.25s;
-}
-
-.options-pop-enter-from,
-.options-pop-leave-to {
-  opacity: 0;
-  transform: translateY(1rem);
 }
 
 @media (max-width: 768px) {
@@ -454,6 +415,12 @@ useHead({
     height: 50svh;
     border-top-right-radius: var(--radius-def);
     border-bottom-left-radius: 0;
+  }
+
+  /* Static media here — its bottom edge is nowhere near the fixed nav, so
+     the dots go back to hugging the panel. */
+  .media-dots {
+    bottom: var(--spacing-base);
   }
 
   .buy-row {
