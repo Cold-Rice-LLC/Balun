@@ -58,5 +58,8 @@
   "newsletter": {
     "heading": "Suscríbete para recibir correos →",
     "placeholder": "Correo electrónico"
+  },
+  "pdp": {
+    "closeOptions": "Cerrar opciones"
   }
 }

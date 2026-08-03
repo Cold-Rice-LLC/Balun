@@ -42,14 +42,15 @@ export const homeQuery = groq`*[
       ${i18nField('subheading')},
       ${i18nField('caption')},
       "product": product->{${productProjection}},
-      // Slides live on the product now (featureCarousel, shared with the PDP);
-      // fall back to the module's legacy images until content is re-entered.
-      "images": coalesce(product->featureCarousel, images)[]{
+      // Slides live on the product (featureCarousel, shared with the PDP);
+      // none entered = no carousel (the component hides it).
+      "images": product->featureCarousel[]{
         ...,
         highlights[]{
           ${i18nField('text')},
           xPosition,
           yPosition,
+          textPosition,
           side,
           width
         }
@@ -134,6 +135,7 @@ export const productPageQuery = groq`*[
       ${i18nField('text')},
       xPosition,
       yPosition,
+      textPosition,
       side,
       width
     }

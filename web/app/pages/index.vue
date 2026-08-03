@@ -1,5 +1,5 @@
 <template>
-  <div class="home-page px-base enter-in-fade-up">
+  <div class="home-page enter-in-fade-up">
     <component
       :is="moduleComponents[m._type]"
       v-for="m in modules"
@@ -66,11 +66,15 @@ const liveByGid = computed(() => {
 
 <style scoped>
 .home-page {
-  padding-top: calc(var(--spacing-button-lg-height) + var(--spacing-base) * 2);
+  padding-top: var(--spacing-page-top);
   padding-bottom: var(--spacing-base);
 
   & > section + section {
     margin-top: 10rem;
+  }
+
+  & > section.featured-product + section.marquee-module {
+    margin-top: 3rem;
   }
 }
 </style>

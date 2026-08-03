@@ -90,9 +90,13 @@ const selectedVariant = computed(() => pickVariant(variants.value, variantId.val
 
 const quantity = ref(1)
 
+// Reset only on a real product SWAP (quick-add A→B, colorway switch) — not
+// on first arrival, where wiping the model would clobber a wrapper-provided
+// selection (the PDP's ?variant= deep link).
 watch(
   () => props.product?.id,
-  () => {
+  (id, prevId) => {
+    if (!prevId || id === prevId) return
     variantId.value = null
     quantity.value = 1
     addState.value = 'idle'

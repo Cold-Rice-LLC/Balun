@@ -83,7 +83,7 @@ const title = computed(() => {
 }
 
 .image-frame {
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 3 / 2;
   background-color: var(--color-grey-2);
   border-radius: var(--radius-def);
   overflow: hidden;

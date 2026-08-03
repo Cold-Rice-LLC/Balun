@@ -62,7 +62,7 @@ const COPIES = 6
 
 .band {
   display: block;
-  padding: 0.5rem 0;
+  padding: 0.2rem 0;
 }
 
 .track {

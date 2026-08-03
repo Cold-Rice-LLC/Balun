@@ -5,7 +5,7 @@
   >
     <header
       v-if="module.heading || module.subheading"
-      class="flex flex-col items-center gap-base text-center py-base"
+      class="flex flex-col items-center gap-base text-center"
     >
       <h2
         v-if="module.heading"
@@ -29,72 +29,10 @@
       v-if="slides.length"
       class="carousel"
     >
-      <button
-        v-if="slides.length > 1"
-        class="nav nav-prev"
-        :aria-label="$t('carousel.prev')"
-        @click="swiper?.slidePrev()"
-      >
-        <IconsPixelArrow />
-      </button>
-
-      <Swiper
-        class="slides"
-        :slides-per-view="1"
-        :loop="slides.length > 1"
-        :speed="500"
-        @swiper="onSwiper"
-      >
-        <SwiperSlide
-          v-for="slide in slides"
-          :key="slide._key"
-          class="slide"
-        >
-          <!-- aspect-ratio from the asset's intrinsic dimensions keeps the
-               frame hugging the visible image exactly (so highlight %
-               coordinates stay true) while max-height caps it to the space
-               the 100svh module leaves. -->
-          <figure
-            class="slide-frame"
-            :style="{ aspectRatio: frameRatio(slide) }"
-          >
-            <img
-              :src="urlFor(slide, { w: 1600 })"
-              :alt="slide.alt || product?.title || ''"
-            />
-
-            <!-- Editor-positioned callouts. x/y are the ANCHOR the leader
-                 line points at (% of the image frame — the frame hugs the
-                 image, so anchors hold at every viewport size); the text
-                 block sits at the frame edge on the chosen side and the
-                 line spans the gap. -->
-            <p
-              v-for="(highlight, i) in slide.highlights ?? []"
-              :key="i"
-              class="highlight font-secondary uppercase text-2xs"
-              :class="highlight.side === 'right' ? 'side-right' : 'side-left'"
-              :style="highlightStyle(highlight)"
-            >
-              <span
-                class="hl-text"
-                :style="{ maxWidth: highlight.width ? `${highlight.width}vw` : undefined }"
-                >{{ highlight.text }}</span
-              >
-              <span class="hl-line"></span>
-              <span class="hl-dot"></span>
-            </p>
-          </figure>
-        </SwiperSlide>
-      </Swiper>
-
-      <button
-        v-if="slides.length > 1"
-        class="nav nav-next"
-        :aria-label="$t('carousel.next')"
-        @click="swiper?.slideNext()"
-      >
-        <IconsPixelArrow />
-      </button>
+      <ProductFeatureCarousel
+        :slides="slides"
+        :alt="product?.title || ''"
+      />
     </div>
 
     <p
@@ -129,17 +67,14 @@
 
 <script setup>
 /**
- * Home module: a single product given prominence — heading/subheading, an
- * image carousel with editor-positioned text highlights, caption, and quick
- * add / learn more CTAs. `module.product` is the Sanity editorial doc; live
- * market price/availability comes from `liveByGid` (hydrated client-side by
- * the page) — quick add only renders when the product is live and buyable.
+ * Home module: a single product given prominence — heading/subheading, the
+ * product's feature carousel (ProductFeatureCarousel, shared with the PDP),
+ * caption, and quick add / learn more CTAs. `module.product` is the Sanity
+ * editorial doc; live market price/availability comes from `liveByGid`
+ * (hydrated client-side by the page) — quick add only renders when the
+ * product is live and buyable.
  */
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import 'swiper/css'
-
 const localePath = useLocalePath()
-const urlFor = useSanityImage()
 
 const props = defineProps({
   module: { type: Object, required: true },
@@ -156,36 +91,16 @@ const slides = computed(() => props.module.images ?? [])
 // and stack their CTAs in the same fixed slot.
 const moduleEl = ref(null)
 const ctasVisible = useInView(moduleEl, { threshold: 0.5 })
-
-// Highlight geometry: the element spans from the image-frame edge to the
-// anchor, so the text hugs the edge and the leader line fills the gap.
-const highlightStyle = (highlight) => {
-  const base = { top: `${highlight.yPosition}%` }
-  return highlight.side === 'right'
-    ? { ...base, left: `${highlight.xPosition}%`, right: '0' }
-    : { ...base, left: '0', width: `${highlight.xPosition}%` }
-}
-
-// Swiper instance (from @swiper) drives the arrow buttons; loop mode makes
-// prev/next wrap around.
-const swiper = ref(null)
-const onSwiper = (instance) => {
-  swiper.value = instance
-}
-
-// Sanity asset refs embed intrinsic dimensions (image-<id>-1600x900-jpg) —
-// the frame's CSS aspect-ratio comes from there.
-const frameRatio = (slide) => {
-  const dims = slide.asset?._ref?.split('-')[2]?.split('x').map(Number)
-  return dims?.[0] && dims?.[1] ? `${dims[0]} / ${dims[1]}` : undefined
-}
 </script>
 
 <style scoped>
-/* The module always fills the viewport: header up top, caption/CTAs below,
-   and the carousel absorbing (and capped to) the leftover space. */
+/* The module fills the viewport below the page's top padding: header up
+   top, caption below, the carousel absorbing the leftover space. A HARD
+   height, not min-height — a flex container with min-height grows to fit
+   its content, so the carousel's "leftover" would just be the image's
+   intrinsic size and the frames would never cap to the fold. */
 .featured-product {
-  min-height: 100svh;
+  height: calc(100svh - var(--spacing-page-top));
   display: flex;
   flex-direction: column;
 }
@@ -238,109 +153,11 @@ const frameRatio = (slide) => {
 }
 
 .carousel {
-  position: relative;
-  /* Absorb whatever the header/caption/CTAs leave of the 100svh; min-height 0
-     lets it SHRINK below content size so the frames cap to it. */
+  /* Absorb whatever the header/caption leaves of the module height;
+     min-height 0 lets it SHRINK below content size so the shared
+     carousel's frames cap to it. */
   flex: 1;
   min-height: 0;
-}
-
-.slides {
-  width: 100%;
-  height: 100%;
-}
-
-.slide {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* The inline aspect-ratio (from the asset's intrinsic dimensions) plus these
-   caps yields the largest image box that fits the slide — and because the
-   frame always matches the visible image exactly, highlight % positions hold
-   at every viewport size. */
-.slide-frame {
-  position: relative;
-  max-width: 100%;
-  max-height: 100%;
-
-  img {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-}
-
-.highlight {
-  position: absolute;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  transform: translateY(-50%);
-  color: var(--color-grey-6);
-
-  /* Anchor sits at the far end: text → line → dot. Reversed, the dot leads
-     and the text hugs the right edge. */
-  &.side-right {
-    flex-direction: row-reverse;
-  }
-}
-
-.hl-text {
-  flex: none;
-  /* Keep editor line breaks ("GLOSS 01\nWATERPROOF 02" stacks). */
-  white-space: pre-line;
-}
-
-.hl-line {
-  flex: 1;
-  height: 1px;
-  background-color: currentColor;
-  margin-inline: 0.6em;
-}
-
-.hl-dot {
-  flex: none;
-  width: 0.5em;
-  height: 0.5em;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-}
-
-.nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  width: 3.6rem;
-  height: 3.6rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-grey-5);
-  transition: color 0.2s;
-
-  &:hover {
-    color: var(--color-grey-7);
-  }
-}
-
-.nav :deep(.icon-pixel-arrow) {
-  width: 2.8rem;
-}
-
-.nav-prev {
-  left: 0;
-}
-
-.nav-next {
-  right: 0;
-}
-
-/* The icon points left; mirror it for next. */
-.nav-next :deep(.icon-pixel-arrow) {
-  transform: scaleX(-1);
 }
 
 /* Fixed in the quick-add drawer's slot above the "shop" button, fading with

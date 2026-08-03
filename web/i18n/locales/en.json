@@ -58,5 +58,8 @@
   "newsletter": {
     "heading": "Sign up for emails →",
     "placeholder": "Email Address"
+  },
+  "pdp": {
+    "closeOptions": "Close options"
   }
 }

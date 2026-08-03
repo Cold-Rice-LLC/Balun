@@ -50,7 +50,7 @@ export default defineNuxtConfig({
   sanity: {
     projectId: 'pful3cpt',
     dataset: 'production',
-    useCdn: true,
+    useCdn: false,
     apiVersion: '2024-10-01',
   },
 })

@@ -66,7 +66,7 @@ const formatDate = (iso) => new Intl.DateTimeFormat(market.value.locale, { dateS
 
 <style scoped>
 .feed-page {
-  padding-top: calc(var(--spacing-button-lg-height) + var(--spacing-base) * 2);
+  padding-top: var(--spacing-page-top);
   padding-bottom: var(--spacing-base);
   max-width: 48rem;
 }

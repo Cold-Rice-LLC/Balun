@@ -43,21 +43,44 @@ export default {
               name: 'xPosition',
               type: 'number',
               title: 'Anchor X (%)',
-              description: 'Where the line points: 0 = left edge of the image, 100 = right edge.',
+              description:
+                'The exact spot on the image the line points at: 0 = left edge, 100 = right edge. The anchor is fixed — Text Side never changes what this means.',
               validation: (Rule) => Rule.required().min(0).max(100),
             },
             {
               name: 'yPosition',
               type: 'number',
               title: 'Anchor Y (%)',
-              description: 'Where the line points: 0 = top edge of the image, 100 = bottom edge.',
+              description:
+                'The exact spot on the image the line points at: 0 = top edge, 100 = bottom edge. The line and text are vertically centered on this.',
               validation: (Rule) => Rule.required().min(0).max(100),
+            },
+            {
+              name: 'textPosition',
+              type: 'number',
+              title: 'Text X (%)',
+              description:
+                'Optional. Where the TEXT end of the line sits — same 0–100 scale across the image as Anchor X. Leave blank to sit at the image edge; set it to pull the text and its line in toward the middle.',
+              validation: (Rule) =>
+                Rule.min(0)
+                  .max(100)
+                  .custom((value, context) => {
+                    if (value == null) return true
+                    const {xPosition, side} = context.parent || {}
+                    if (xPosition == null) return true
+                    if (side === 'right' && value <= xPosition)
+                      return 'With Text Side "Right", this must be greater than Anchor X.'
+                    if (side !== 'right' && value >= xPosition)
+                      return 'With Text Side "Left", this must be less than Anchor X.'
+                    return true
+                  }),
             },
             {
               name: 'side',
               type: 'string',
               title: 'Text Side',
-              description: 'Which side of the anchor the text sits on; the line runs from the text to the anchor.',
+              description:
+                'Where the text sits, not where the line points. Left: text at the left image edge, line runs right to the anchor. Right: text at the right image edge, line runs left to the anchor.',
               options: {
                 list: [
                   {title: 'Left', value: 'left'},
@@ -70,8 +93,9 @@ export default {
             {
               name: 'width',
               type: 'number',
-              title: 'Width (vw)',
-              description: 'Optional max width of the text block, in vw.',
+              title: 'Max Width (% of image)',
+              description:
+                'Optional. Wraps the text once it reaches this share of the image width (50 = half the image), so it scales with the image rather than the window. Leave blank to keep the text on one line, breaking only where you break it.',
               validation: (Rule) => Rule.min(0).max(100),
             },
           ],
