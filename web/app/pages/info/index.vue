@@ -26,14 +26,15 @@
 <script setup>
 import { infoQuery } from '~/utils/queries'
 
-// Info content is translated: keyed by language so each caches separately and
-// switching language refetches in place.
+// $market selects the market's info page or the default; $lang resolves the
+// translated fields inside it. Keyed by both so each combo caches its own
+// shell and switching either refetches in place.
 const market = useMarket()
 const sanity = useSanity()
 const { data: page } = await useAsyncData(
-  () => `info-${market.value.lang}`,
-  () => sanity.fetch(infoQuery, { lang: market.value.lang }),
-  { watch: [() => market.value.lang] },
+  () => `info-${market.value.market}-${market.value.lang}`,
+  () => sanity.fetch(infoQuery, { market: market.value.market, lang: market.value.lang }),
+  { watch: [() => market.value.market, () => market.value.lang] },
 )
 </script>
 

@@ -22,12 +22,18 @@ const slug = computed(() => String(route.params.slug))
 const market = useMarket()
 const sanity = useSanity()
 
-// Keyed by slug + language: content is translated, so each language caches
-// separately and switching language refetches in place.
+// Keyed by slug + market + language: $market selects the market's page for
+// this slug or the default, $lang resolves the translated fields inside it —
+// each combo caches separately and switching any refetches in place.
 const { data: page } = await useAsyncData(
-  () => `legal-${slug.value}-${market.value.lang}`,
-  () => sanity.fetch(legalPageQuery, { slug: slug.value, lang: market.value.lang }),
-  { watch: [slug, () => market.value.lang] },
+  () => `legal-${slug.value}-${market.value.market}-${market.value.lang}`,
+  () =>
+    sanity.fetch(legalPageQuery, {
+      slug: slug.value,
+      market: market.value.market,
+      lang: market.value.lang,
+    }),
+  { watch: [slug, () => market.value.market, () => market.value.lang] },
 )
 
 // SSR miss.

@@ -1,5 +1,6 @@
 import {PlayIcon} from '@sanity/icons'
 import {englishIfAny} from '../lib/i18nValidation'
+import {marketField, marketPreviewTitle} from '../lib/marketField'
 
 /**
  * The Live page. For now only the featured overlay is editorial: a location
@@ -7,6 +8,8 @@ import {englishIfAny} from '../lib/i18nValidation'
  * "featured product" button opens (image + variant picker, added in place).
  * `streamUrl` is a placeholder for the eventual live-stream integration —
  * nothing renders it yet.
+ * Not a singleton: one default (no market) + optional per-market overrides,
+ * resolved like the home page (document-level Pattern B).
  */
 export default {
   name: 'livePage',
@@ -14,6 +17,7 @@ export default {
   title: 'Live Page',
   icon: PlayIcon,
   fields: [
+    marketField('livePage'),
     {
       name: 'location',
       type: 'internationalizedArrayString',
@@ -43,6 +47,7 @@ export default {
     },
   ],
   preview: {
-    prepare: () => ({title: 'Live'}),
+    select: {market: 'market'},
+    prepare: ({market}) => ({title: marketPreviewTitle('Live', market)}),
   },
 }

@@ -10,9 +10,10 @@ import {
 } from '@sanity/icons'
 
 // Singleton document types: edited as a single fixed document, not a list.
-// homePage is intentionally NOT a singleton — it's a default page plus optional
-// per-market override pages (see homePage schema / adding-a-market.md).
-export const singletonTypes = ['siteSettings', 'infoPage', 'feedPage', 'livePage']
+// homePage/infoPage/livePage/legalPage are intentionally NOT singletons — each
+// is a default page plus optional per-market override pages (see the marketField
+// helper / adding-a-market.md).
+export const singletonTypes = ['siteSettings', 'feedPage']
 
 // Helper to build a singleton list item with a fixed document id.
 const singleton = (S, schemaType, title, icon) =>
@@ -33,7 +34,8 @@ export const myStructure = (S) =>
           S.list()
             .title('Pages')
             .items([
-              // Home pages: the default + any per-market override pages.
+              // Each page type: the default + any per-market override pages.
+              // Ordering by market puts the default (no market) first.
               S.listItem()
                 .title('Home Pages')
                 .icon(HomeIcon)
@@ -42,13 +44,35 @@ export const myStructure = (S) =>
                     .title('Home Pages')
                     .defaultOrdering([{field: 'market', direction: 'asc'}]),
                 ),
-              singleton(S, 'infoPage', 'Info Page', InfoOutlineIcon),
-              singleton(S, 'livePage', 'Live Page', PlayIcon),
-              // Reusable policy pages: Terms, Returns, Privacy, … (slug-driven).
+              S.listItem()
+                .title('Info Pages')
+                .icon(InfoOutlineIcon)
+                .child(
+                  S.documentTypeList('infoPage')
+                    .title('Info Pages')
+                    .defaultOrdering([{field: 'market', direction: 'asc'}]),
+                ),
+              S.listItem()
+                .title('Live Pages')
+                .icon(PlayIcon)
+                .child(
+                  S.documentTypeList('livePage')
+                    .title('Live Pages')
+                    .defaultOrdering([{field: 'market', direction: 'asc'}]),
+                ),
+              // Reusable policy pages: Terms, Returns, Privacy, … (slug-driven,
+              // market variants of the same slug grouped together).
               S.listItem()
                 .title('Legal Pages')
                 .icon(DocumentTextIcon)
-                .child(S.documentTypeList('legalPage').title('Legal Pages')),
+                .child(
+                  S.documentTypeList('legalPage')
+                    .title('Legal Pages')
+                    .defaultOrdering([
+                      {field: 'slug.current', direction: 'asc'},
+                      {field: 'market', direction: 'asc'},
+                    ]),
+                ),
             ]),
         ),
       // Collections (custom titles; schema type titles stay singular for the editor UI).

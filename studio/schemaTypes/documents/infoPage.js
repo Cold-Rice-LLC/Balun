@@ -1,12 +1,14 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {requireEnglish} from '../lib/i18nValidation'
+import {marketField, marketPreviewTitle} from '../lib/marketField'
 
 /**
  * The Info/About page: modular (page builder) — text (4 cols), image (6 cols),
  * and intermingled text+images (full width) modules on a black background.
- * Same content in every market, translated per language — text fields are
- * internationalized arrays resolved by $lang (the language axis; see
- * docs/shopify-and-localization-strategy.md §3).
+ * Not a singleton: one default (no market) + optional per-market overrides,
+ * resolved like the home page (document-level Pattern B). Within each document,
+ * text fields are internationalized arrays resolved by $lang (the language
+ * axis; see docs/shopify-and-localization-strategy.md §3).
  */
 export default {
   name: 'infoPage',
@@ -14,6 +16,7 @@ export default {
   title: 'Info Page',
   icon: InfoOutlineIcon,
   fields: [
+    marketField('infoPage'),
     {
       name: 'title',
       type: 'internationalizedArrayString',
@@ -29,6 +32,7 @@ export default {
     },
   ],
   preview: {
-    prepare: () => ({title: 'Info'}),
+    select: {market: 'market'},
+    prepare: ({market}) => ({title: marketPreviewTitle('Info', market)}),
   },
 }

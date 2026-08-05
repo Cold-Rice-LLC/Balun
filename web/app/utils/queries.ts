@@ -66,7 +66,11 @@ export const homeQuery = groq`*[
 
 // Modular since the info rebuild; `body` is the legacy single-field shape,
 // kept selected so the current page renders until the module UI ships.
-export const infoQuery = groq`*[_type == "infoPage"][0]{
+// Market-scoped at the document level like home: the market's page if it
+// exists, else the default (no market).
+export const infoQuery = groq`*[
+  _type == "infoPage" && (market == $market || !defined(market))
+] | order(defined(market) desc)[0]{
   ${i18nField('title')},
   ${i18nField('body')},
   "modules": modules[]{
@@ -87,8 +91,12 @@ export const infoQuery = groq`*[_type == "infoPage"][0]{
 // A reusable policy page by slug. Title/body are internationalized arrays
 // (sanity-plugin-internationalized-array): resolve the current $lang, falling
 // back to English so an untranslated page still renders. Slug is language-
-// agnostic — the {lang} URL prefix carries language, not the path.
-export const legalPageQuery = groq`*[_type == "legalPage" && slug.current == $slug][0]{
+// agnostic — the {lang} URL prefix carries language, not the path. Market-
+// scoped at the document level like home: per slug, the market's page if it
+// exists, else the default (no market).
+export const legalPageQuery = groq`*[
+  _type == "legalPage" && slug.current == $slug && (market == $market || !defined(market))
+] | order(defined(market) desc)[0]{
   ${i18nField('title')},
   ${i18nField('body')}
 }`
@@ -108,7 +116,11 @@ export const feedQuery = groq`{
   }
 }`
 
-export const liveQuery = groq`*[_type == "livePage"][0]{
+// Market-scoped at the document level like home: the market's page if it
+// exists, else the default (no market).
+export const liveQuery = groq`*[
+  _type == "livePage" && (market == $market || !defined(market))
+] | order(defined(market) desc)[0]{
   ${i18nField('location')},
   ${i18nField('description')},
   streamUrl,

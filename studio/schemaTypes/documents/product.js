@@ -17,12 +17,8 @@ export default {
   title: 'Product',
   icon: TagIcon,
   fields: [
-    {
-      name: 'store',
-      type: 'shopifyProduct',
-      title: 'Shopify',
-      description: 'Synced from Shopify by Sanity Connect. Read-only.',
-    },
+    // Editorial fields first — they're what editors actually work in. The
+    // machine-owned `store` object sits collapsed at the bottom.
     // Editorial siblings are translated in Sanity; Shopify-owned strings
     // (title/description) are translated in Shopify (Translate & Adapt) and
     // fetched with @inContext(language:) — never re-typed here.
@@ -69,6 +65,14 @@ export default {
       description:
         'Product images with text highlights. Shown in the home Featured Product module and on the PDP — one place to keep them in sync.',
       of: [{type: 'featureImage'}],
+    },
+    {
+      name: 'store',
+      type: 'shopifyProduct',
+      title: 'Shopify (synced)',
+      description:
+        'Synced from Shopify by Sanity Connect. Read-only — edit these in Shopify, not here.',
+      options: {collapsible: true, collapsed: true},
     },
   ],
   preview: {
