@@ -28,7 +28,10 @@
         </div>
       </div>
 
-      <div class="details">
+      <div
+        class="details"
+        :class="{ 'no-description': !doc.body?.length }"
+      >
         <header class="pdp-header text-center px-base">
           <h1 class="uppercase text-lg leading-none">{{ live?.title || doc.title }}</h1>
 
@@ -88,7 +91,7 @@
                 :disabled="!live || !live.availableForSale"
                 aria-haspopup="dialog"
                 aria-controls="quick-add-drawer"
-                @click="openQuickAdd({ doc, live, learnMore: false, backdrop: false })"
+                @click="openQuickAdd({ doc, live, learnMore: false, backdrop: false, anchor: 'cart' })"
               >
                 {{ buyLabel }}
               </button>
@@ -368,7 +371,10 @@ useHead({
 
 .buy-row {
   z-index: 10;
-  margin-top: auto;
+  /* Grow, not margin-top:auto — the leftover height (the details column is
+     stretched to the 100svh media at minimum) becomes the grid row's, so the
+     sticky buy-col always has room to pin in view even with no description. */
+  flex-grow: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-base);
@@ -376,9 +382,33 @@ useHead({
   padding-block: var(--spacing-base);
 }
 
-/* Sticky as a UNIT (rail + button) within the tall grid area the description
-   creates — sticky on the button alone would clamp to the area's top while
-   the row is below the fold and ride up over the rail. */
+/* No description = no tall grid area for the sticky buy-col to travel in, so
+   in-flow it would rest at the column's bottom edge — which sits page-top
+   below the fold (the column stretches to the 100svh media). Cap the column
+   (the natural height is content-driven, so a bottom reserve would otherwise
+   just grow it) and reserve the overhang plus the fixed bar's height below
+   the row (the bar's base-gap clearance cancels against the row's own
+   padding-bottom): the rail and button then rest exactly where the sticky
+   would pin them, with the carousel shrinking below 32svh to make the room
+   on shorter viewports. */
+.details.no-description {
+  max-height: 100svh;
+}
+
+.details.no-description .buy-row {
+  margin-bottom: calc(var(--spacing-page-top) + var(--spacing-button-lg-height));
+}
+
+/* The flex minimum of the fixed-height region is its specified 32svh, which
+   would win over the cap and push the reserve below the fold invisibly —
+   zero it so the region actually yields. */
+.details.no-description .carousel-region {
+  min-height: 0;
+}
+
+/* Sticky as a UNIT (rail + button) within the tall grid area — sticky on the
+   button alone would clamp to the area's top while the row is below the fold
+   and ride up over the rail. */
 .buy-col {
   position: sticky;
   bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));

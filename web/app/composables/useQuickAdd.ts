@@ -22,6 +22,10 @@ interface QuickAddPayload {
   // false where the page should stay usable alongside the drawer (the PDP,
   // whose own buy button and colorway rail must stay visible and clickable).
   backdrop?: boolean
+  // Which nav column the drawer hangs above. Default 'shop' (bottom left);
+  // 'cart' left-aligns it with the cart button instead (the PDP, where the
+  // buy flow lives in the right column).
+  anchor?: 'shop' | 'cart'
 }
 
 export const useQuickAdd = () => {

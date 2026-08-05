@@ -11,7 +11,7 @@
   <aside
     id="quick-add-drawer"
     class="quick-add-drawer"
-    :class="{ active: isOpen }"
+    :class="{ active: isOpen, 'anchor-cart': anchorCart }"
     aria-label="Quick add"
   >
     <NotchPanel class="quick-add-body text-green">
@@ -143,11 +143,15 @@ const quantity = ref(1)
 // link doesn't pop back in mid close-transition when `active` nulls.
 const showLearnMore = ref(true)
 
+// Latched per open too, so the drawer doesn't jump columns mid close.
+const anchorCart = ref(false)
+
 watch(active, (payload) => {
   if (!payload?.live?.handle) return
   quantity.value = 1
   showLearnMore.value = payload.learnMore !== false
   showBackdrop.value = payload.backdrop !== false
+  anchorCart.value = payload.anchor === 'cart'
   activeGid.value = payload.live.id ?? ''
   // Stale if it's a different product OR the kept response was fetched for
   // another market (its prices are in the wrong currency) — show the loading
@@ -264,6 +268,12 @@ watch(cartOpen, (open) => {
   }
 }
 
+/* Cart-anchored opens (the PDP): same left edge as the cart drawer's, so the
+   panel hangs above the cart button instead of the shop side. */
+.quick-add-drawer.anchor-cart {
+  left: calc(50% + var(--spacing-base) / 2);
+}
+
 /* Tab shape/background/fillet come from NotchPanel — this is just the
    button's own size and content layout. */
 .close {
@@ -302,7 +312,11 @@ watch(cartOpen, (open) => {
 }
 
 @media (max-width: 768px) {
-  .quick-add-drawer {
+  /* Full width regardless of anchor — half a phone screen fits nothing
+     (the cart drawer resets its left the same way). */
+  .quick-add-drawer,
+  .quick-add-drawer.anchor-cart {
+    left: var(--spacing-base);
     right: var(--spacing-base);
     width: auto;
   }
