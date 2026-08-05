@@ -1,9 +1,30 @@
 <template>
-  <!-- Falls back to the stub until real (i18n) content exists — a pre-migration
-       plain-string title resolves to null in the query. -->
+  <!-- Modular render; falls back to the legacy single-body layout until the
+       modules are populated, then to the stub if neither exists. -->
   <article
-    v-if="page?.title || page?.body"
+    v-if="modules.length"
     class="info-page px-base enter-in-fade-up"
+  >
+    <!-- Shoe outlines overlaid on the content block: absolute over the
+         article's full box, so it scrolls with the page. width/height 100%
+         + slice = the SVG crops like background-size: cover on that area. -->
+    <div
+      class="shoe-overlay"
+      aria-hidden="true"
+    >
+      <IconsShoeOutlines preserveAspectRatio="xMidYMid slice" />
+    </div>
+    <component
+      :is="moduleComponents[m._type]"
+      v-for="m in modules"
+      :key="m._key"
+      :module="m"
+    />
+  </article>
+
+  <article
+    v-else-if="page?.title || page?.body"
+    class="info-legacy px-base enter-in-fade-up"
   >
     <h1 class="uppercase text-lg">{{ page.title }}</h1>
 
@@ -36,10 +57,57 @@ const { data: page } = await useAsyncData(
   () => sanity.fetch(infoQuery, { market: market.value.market, lang: market.value.lang }),
   { watch: [() => market.value.market, () => market.value.lang] },
 )
+
+// String names don't resolve components in dynamic :is at runtime.
+const moduleComponents = {
+  moduleInfoText: resolveComponent('InfoText'),
+  moduleInfoImage: resolveComponent('InfoImage'),
+}
+
+// moduleInfoProse renders nothing yet — filtered so an editor adding one
+// early doesn't crash the dynamic :is with an undefined component.
+const modules = computed(() => (page.value?.modules ?? []).filter((m) => m._type in moduleComponents))
+
+useHead({
+  // Schema title is tab/SEO only — the modular page renders no heading.
+  title: () => `${page.value?.title || 'Info'} — Balun`,
+  bodyAttrs: { class: 'template-info' },
+})
 </script>
 
 <style scoped>
+.shoe-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  /* Decor only — clicks and scroll pass through to the page. */
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* Child component root node, so plain scoped descendant selection reaches it. */
+.shoe-overlay .icon-shoe-outlines {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The page IS the 12-col grid — each module component places itself via
+   grid-column on its own root (text 5/4, image 4/6). relative anchors the
+   absolute shoe overlay to this box. */
 .info-page {
+  position: relative;
+  padding-top: var(--spacing-page-top);
+  padding-bottom: var(--spacing-base);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: var(--spacing-base);
+  row-gap: 10rem;
+  align-items: start;
+  min-height: 100svh;
+}
+
+.info-legacy {
   padding-top: var(--spacing-page-top);
   padding-bottom: var(--spacing-base);
   max-width: 48rem;

@@ -56,7 +56,8 @@ footer {
   overflow: hidden;
 }
 
-body.template-home footer {
+body.template-home footer,
+body.template-info footer {
   margin-top: 20rem;
 }
 

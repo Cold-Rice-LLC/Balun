@@ -99,14 +99,15 @@ nav {
       color: var(--color-grey-7);
       border-top-left-radius: var(--radius-def);
       border-top-right-radius: var(--radius-def);
+      /* Both buttons cross-fade with the body bg on template changes (the
+         info override below) and the cart button's checkout state. */
+      transition:
+        background-color 0.3s,
+        color 0.3s;
     }
   }
 
   .cart-button {
-    transition:
-      background-color 0.3s,
-      color 0.3s;
-
     &.is-checkout {
       background-color: var(--color-yellow);
       color: var(--color-green);
@@ -120,6 +121,17 @@ nav {
         opacity: 1;
       }
     }
+  }
+}
+
+/* Info page: darker buttons for the black page — grey-6, white text. The
+   checkout state's own rule out-specifies this (three classes vs two), so
+   an open filled cart stays yellow. */
+body.template-info nav li {
+  a,
+  button {
+    background-color: var(--color-grey-6);
+    color: var(--color-white);
   }
 }
 </style>

@@ -32,6 +32,13 @@ Fonts
   font-style: italic;
 }
 
+@font-face {
+  font-family: 'ABC Monument Grotesk Mono';
+  src: url('/fonts/ABCMonumentGroteskMonoTrial-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* 
 Tailwind Config
 */
@@ -69,6 +76,7 @@ Tailwind Config
   --font-primary: 'ABC Maxi Round', Monospace, sans-serif;
   --font-secondary: 'ABC Monument Grotesk', sans-serif;
   --font-tertiary: 'ABC Maxi Round Mono', Monospace, sans-serif;
+  --font-quaternary: 'ABC Monument Grotesk Mono', Monospace, sans-serif;
 
   /* Spacing */
   --spacing-xs: 0.8rem;
@@ -110,6 +118,10 @@ body {
 
   &.template-pdp {
     background-color: var(--color-grey-6);
+  }
+
+  &.template-info {
+    background-color: var(--color-black);
   }
 }
 

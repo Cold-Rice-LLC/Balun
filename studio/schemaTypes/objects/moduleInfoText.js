@@ -2,8 +2,8 @@ import {BlockContentIcon} from '@sanity/icons'
 import {requireEnglish} from '../lib/i18nValidation'
 
 /**
- * Info page module: a small mono text block (4 of 12 grid columns).
- * Line breaks are kept.
+ * Info page module: a small centered text block (4 of 12 grid columns,
+ * Monument Grotesk Mono caps). Line breaks are kept.
  */
 export default {
   name: 'moduleInfoText',
