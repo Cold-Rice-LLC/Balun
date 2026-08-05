@@ -4,6 +4,7 @@
   <article
     v-if="modules.length"
     class="info-page px-base enter-in-fade-up"
+    :class="{ 'leads-prose': leadsProse }"
   >
     <!-- Shoe outlines overlaid on the content block: absolute over the
          article's full box, so it scrolls with the page. width/height 100%
@@ -62,11 +63,16 @@ const { data: page } = await useAsyncData(
 const moduleComponents = {
   moduleInfoText: resolveComponent('InfoText'),
   moduleInfoImage: resolveComponent('InfoImage'),
+  moduleInfoProse: resolveComponent('InfoProse'),
 }
 
-// moduleInfoProse renders nothing yet — filtered so an editor adding one
-// early doesn't crash the dynamic :is with an undefined component.
+// Filtered to known types so a module added in the Studio before its
+// component ships doesn't crash the dynamic :is with undefined.
 const modules = computed(() => (page.value?.modules ?? []).filter((m) => m._type in moduleComponents))
+
+// The prose module leads with huge display type whose own line box carries
+// visual space — the page top tightens when it comes first.
+const leadsProse = computed(() => modules.value[0]?._type === 'moduleInfoProse')
 
 useHead({
   // Schema title is tab/SEO only — the modular page renders no heading.
@@ -82,7 +88,7 @@ useHead({
   z-index: 20;
   /* Decor only — clicks and scroll pass through to the page. */
   pointer-events: none;
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 /* Child component root node, so plain scoped descendant selection reaches it. */
@@ -93,18 +99,26 @@ useHead({
 }
 
 /* The page IS the 12-col grid — each module component places itself via
-   grid-column on its own root (text 5/4, image 4/6). relative anchors the
-   absolute shoe overlay to this box. */
+   grid-column on its own root (text 5/4, image 4/6, prose full). relative
+   anchors the absolute shoe overlay to this box. align-content centers the
+   rows as a block when the content is shorter than the viewport; taller
+   content just grows the container past min-height and flows normally. */
 .info-page {
   position: relative;
-  padding-top: var(--spacing-page-top);
-  padding-bottom: var(--spacing-base);
+  padding: 14rem var(--spacing-base);
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   column-gap: var(--spacing-base);
-  row-gap: 10rem;
+  row-gap: 7rem;
   align-items: start;
+  align-content: center;
   min-height: 100svh;
+}
+
+/* Display type leading the page brings its own headroom — tuck the top
+   padding in. Other first modules keep the standard page top above. */
+.info-page.leads-prose {
+  padding-top: var(--spacing-base);
 }
 
 .info-legacy {

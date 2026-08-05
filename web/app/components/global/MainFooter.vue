@@ -56,12 +56,12 @@ footer {
   overflow: hidden;
 }
 
-body.template-home footer,
-body.template-info footer {
+body.template-home footer {
   margin-top: 20rem;
 }
 
-body.template-pdp footer {
+body.template-pdp footer,
+body.template-info footer {
   margin-top: 10rem;
 }
 
