@@ -84,7 +84,9 @@ convention, and for this project it is **load-bearing**:
 - Only ship combos we actually support — never the cartesian product of languages × markets.
 - **Launch with one language but keep the prefix** if Markets is live at launch (`/en-us`,
   `/en-gb`). Retrofitting URLs later is an SEO migration; starting with them is nearly free.
-- Use `@nuxtjs/i18n` (prefix strategy) for routing, `hreflang`, and canonicals.
+- Use `@nuxtjs/i18n` (prefix strategy) for routing, `hreflang`, and canonicals. Routing and
+  `<html lang>` are live; `hreflang`/canonicals wait on a production domain — see
+  [launch-checklist.md](./launch-checklist.md) §1.
 
 ### Currency
 
