@@ -1,5 +1,8 @@
 <template>
-  <div class="home-page enter-in-fade-up">
+  <div
+    class="home-page enter-in-fade-up"
+    :class="{ 'hero-first': heroFirst }"
+  >
     <component
       :is="moduleComponents[m._type]"
       v-for="m in modules"
@@ -34,6 +37,13 @@ const moduleComponents = {
 }
 
 const modules = computed(() => home.value?.modules ?? [])
+
+// A big-image/logo module in the first slot is a hero: it's built to meet the
+// top of the viewport, with the fixed header floating over it and its own
+// height already leaving room for the bottom nav. The page's top padding
+// exists to clear that header, so here it would only push the hero past the
+// fold — drop it. Any other opening module keeps the padding.
+const heroFirst = computed(() => modules.value[0]?._type === 'moduleBigImageLogo')
 
 // Every product gid referenced by any module (grid arrays + featured singles),
 // fetched live in one batch so the cached shell stays geo-agnostic.
@@ -75,6 +85,10 @@ useHead({
 .home-page {
   padding-top: var(--spacing-page-top);
   padding-bottom: var(--spacing-base);
+
+  &.hero-first {
+    padding-top: 0;
+  }
 
   & > section + section {
     margin-top: 20rem;
