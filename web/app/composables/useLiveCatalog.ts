@@ -9,8 +9,9 @@
  * render FROM the catalog instead of their own fetch result, which buys:
  *
  * 1. No flicker on back-nav: pages force a background refetch on remount
- *    (bounding staleness to the server cache's ~60s window) while the last
- *    known data keeps painting until the fresh response lands.
+ *    (bounding staleness to the server cache's window — ~60s listings, ~15s
+ *    detail) while the last known data keeps painting until the fresh
+ *    response lands.
  * 2. Cross-surface consistency: whatever the user just saw is what every
  *    surface shows — a product seen sold out on the PDP can't reappear
  *    available on a home card.

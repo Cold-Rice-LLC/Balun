@@ -5,9 +5,11 @@
  * images) — keep the two routes separate so listing payloads stay lean.
  * Product copy is NOT fetched here: the PDP renders the Sanity `body` field,
  * so Shopify's descriptionHtml would be an unread HTML blob on every request.
- * Same caching contract: short SWR cache keyed by handle+country
- * so drop traffic on a single product collapses to ~1 Shopify request/min
- * per market (see docs/performance-caching.md).
+ * Same caching contract as /api/products but a tighter window: this is the
+ * buy surface, where availability should read as close to live as the cache
+ * allows, so the SWR cache (keyed by handle+country) holds 15s instead of
+ * 60s. Drop traffic on a single product still collapses to ~4 Shopify
+ * requests/min per market (see docs/performance-caching.md).
  *
  * `product: null` means Shopify doesn't sell this product to the requested
  * country (or the handle is unknown) — the PDP renders its unavailable state,
@@ -140,7 +142,11 @@ export default defineCachedEventHandler(
     }
   },
   {
-    maxAge: 60,
+    // Tighter than /api/products' 60s: this feeds the buy box and the
+    // failed-add recovery refetch, so a sell-out should stop reading as
+    // available within ~15s. Upstream cost is still tiny (~4 requests/min
+    // per handle+market, per instance).
+    maxAge: 15,
     swr: true,
     getKey: (event) => {
       const { handle, country, language } = getQuery(event)

@@ -183,7 +183,7 @@ const live = computed(() => liveData.value?.product ?? null)
 
 // A back-nav remount serves this useFetch from Nuxt's payload cache — instant
 // paint, but session-stale. Revalidate in the background so availability here
-// is never staler than the server cache's ~60s window. Skip when there's no
+// is never staler than the server cache's ~15s window. Skip when there's no
 // cached data: the initial fetch is already in flight.
 onMounted(() => {
   if (liveData.value) refreshLive()

@@ -61,7 +61,8 @@ A spike on one product then hits the edge cache, not Shopify's Storefront API.
 
 ### Client-side consistency layer (useLiveCatalog)
 
-The cached API routes bound staleness to ~60s per surface, but Nuxt's payload cache would otherwise
+The cached API routes bound staleness per surface (~60s for listings via `/api/products`, ~15s for
+the buy surface via `/api/product`), but Nuxt's payload cache would otherwise
 pin a page's live data for the whole session (back-nav remounts reuse the first response — a product
 could look available an hour after selling out). So on the client:
 
