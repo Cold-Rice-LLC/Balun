@@ -2,7 +2,7 @@
   <button
     v-if="showBackdrop"
     class="quick-add-backdrop"
-    :class="{ active: isOpen }"
+    :class="{ active: isOpen && revealed }"
     @click="close"
   >
     <span class="sr-only">{{ $t('quickAdd.close') }}</span>
@@ -11,7 +11,7 @@
   <aside
     id="quick-add-drawer"
     class="quick-add-drawer"
-    :class="{ active: isOpen, 'anchor-cart': anchorCart }"
+    :class="{ active: isOpen && revealed, 'anchor-cart': anchorCart }"
     aria-label="Quick add"
   >
     <NotchPanel class="quick-add-body text-green">
@@ -28,15 +28,6 @@
             </p>
           </div>
         </header>
-
-        <!-- Bare loading only when there's nothing to show — a same-product
-           reopen keeps the sizes visible through the background refresh. -->
-        <p
-          v-if="pending && !variants.length"
-          class="font-secondary uppercase state-note"
-        >
-          {{ $t('quickAdd.loadingSizes') }}
-        </p>
       </div>
 
       <ProductOptionsPanel
@@ -48,10 +39,11 @@
         @add-failed="execute"
       />
 
-      <!-- Only after a completed fetch — before the first open there's no
-         data at all, and "not available" would be wrong. -->
+      <!-- Only once an open's fetch has settled (revealed covers errors too,
+         where `data` stays null) — before the first open there's no data at
+         all, and "not available" would be wrong. -->
       <p
-        v-else-if="data"
+        v-else-if="revealed && !pending"
         class="text-base-plus uppercase state-note"
       >
         {{ $t('quickAdd.unavailable') }}
@@ -96,7 +88,7 @@
  * ProductOptionsPanel; this wrapper owns fetching, the title/price header,
  * the catalog report, and the drawer chrome (NotchPanel + learn more).
  */
-const { active, isOpen, close } = useQuickAdd()
+const { active, isOpen, pendingOpen, close } = useQuickAdd()
 const localePath = useLocalePath()
 const market = useMarket()
 const route = useRoute()
@@ -146,7 +138,18 @@ const showLearnMore = ref(true)
 // Latched per open too, so the drawer doesn't jump columns mid close.
 const anchorCart = ref(false)
 
-watch(active, (payload) => {
+// The drawer doesn't slide up on open until it has something to show: a cold
+// open holds `revealed` off through the fetch (triggers show a progress
+// cursor via `pendingOpen` meanwhile), so the panel never appears empty and
+// pops to height. A fresh same-product reopen was revealed before and stays
+// so — the background refresh remains invisible.
+const revealed = ref(false)
+
+// Guards the awaits below against a second open racing the first (click A,
+// then B while A's fetch is in flight): only the latest open may reveal.
+let openToken = 0
+
+watch(active, async (payload) => {
   if (!payload?.live?.handle) return
   quantity.value = 1
   showLearnMore.value = payload.learnMore !== false
@@ -154,14 +157,27 @@ watch(active, (payload) => {
   anchorCart.value = payload.anchor === 'cart'
   activeGid.value = payload.live.id ?? ''
   // Stale if it's a different product OR the kept response was fetched for
-  // another market (its prices are in the wrong currency) — show the loading
-  // state instead of flashing the old data.
+  // another market (its prices are in the wrong currency) — hold the reveal
+  // instead of flashing the old data.
   if (payload.live.handle !== handle.value || data.value?.country !== market.value.country) {
     handle.value = payload.live.handle
     data.value = null
+    revealed.value = false
+    pendingOpen.value = true
   }
-  // Refresh on every open; cheap thanks to the 60s SWR cache server-side.
-  execute()
+  const token = ++openToken
+  // Refresh on every open; cheap thanks to the 15s SWR cache server-side.
+  try {
+    await execute()
+  } finally {
+    if (token === openToken) {
+      pendingOpen.value = false
+      // A close during the fetch (route change, cart opening) wins — don't
+      // reveal over whatever the user moved on to. An error still reveals:
+      // the panel shows "unavailable" rather than swallowing the click.
+      if (isOpen.value) revealed.value = true
+    }
+  }
 })
 
 // Report what the detail fetch learned to the shared catalog so the cards

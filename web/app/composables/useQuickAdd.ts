@@ -32,6 +32,11 @@ export const useQuickAdd = () => {
   const active = useState<QuickAddPayload | null>('quick-add-product', () => null)
   const isOpen = computed(() => active.value !== null)
 
+  // True while the drawer is holding its reveal for the variants fetch (a
+  // cold open — see QuickAddDrawer); triggers read it to show a progress
+  // cursor on the button that was just clicked.
+  const pendingOpen = useState<boolean>('quick-add-pending-open', () => false)
+
   const { close: closeCart } = useCart()
 
   const open = (payload: QuickAddPayload) => {
@@ -41,11 +46,15 @@ export const useQuickAdd = () => {
 
   const close = () => {
     active.value = null
+    // A close mid-fetch (route change, cart opening) also ends the wait the
+    // triggers are showing a cursor for.
+    pendingOpen.value = false
   }
 
   return {
     active,
     isOpen,
+    pendingOpen,
     open,
     close,
   }

@@ -21,7 +21,6 @@
   "quickAdd": {
     "trigger": "Compra rápida {title}",
     "close": "Cerrar compra rápida",
-    "loadingSizes": "Cargando tallas…",
     "sizeFallback": "Talla",
     "quantity": "Cantidad",
     "addToCart": "agregar al carrito",

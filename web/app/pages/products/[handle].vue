@@ -88,6 +88,7 @@
             <ClientOnly>
               <button
                 class="open-options text-base-plus font-primary"
+                :class="{ 'is-pending': quickAddPending }"
                 :disabled="!live || !live.availableForSale"
                 aria-haspopup="dialog"
                 aria-controls="quick-add-drawer"
@@ -246,7 +247,7 @@ const compareAt = computed(() => {
 
 // The main button only OPENS the shared quick-add drawer — the add itself
 // happens on the drawer's panel (its state machine owns adding/added/failed).
-const { open: openQuickAdd } = useQuickAdd()
+const { open: openQuickAdd, pendingOpen: quickAddPending } = useQuickAdd()
 
 const buyLabel = computed(() => {
   if (!live.value) return livePending.value ? t('buyBox.loading') : t('buyBox.unavailable')
@@ -432,6 +433,14 @@ useHead({
   &:disabled {
     cursor: not-allowed;
     opacity: 0.6;
+  }
+
+  /* The drawer is holding its reveal for the variants fetch — mirror the
+     cart controls' in-flight feedback. Custom over Tailwind's
+     cursor-progress: global.css's unlayered `button { cursor: pointer }`
+     outranks layered utilities. */
+  &.is-pending {
+    cursor: progress;
   }
 }
 

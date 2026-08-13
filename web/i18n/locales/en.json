@@ -21,7 +21,6 @@
   "quickAdd": {
     "trigger": "Quick add {title}",
     "close": "Close quick add",
-    "loadingSizes": "Loading sizes…",
     "sizeFallback": "Size",
     "quantity": "Quantity",
     "addToCart": "add to cart",

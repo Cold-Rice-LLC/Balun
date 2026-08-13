@@ -2,10 +2,11 @@
   <button
     v-if="live?.availableForSale"
     class="quick-add-trigger text-base"
+    :class="{ 'is-pending': pendingOpen }"
     :aria-label="$t('quickAdd.trigger', { title: live.title })"
     aria-haspopup="dialog"
     aria-controls="quick-add-drawer"
-    @click.stop.prevent="quickAdd.open({ doc, live })"
+    @click.stop.prevent="open({ doc, live })"
   >
     <slot>+</slot>
   </button>
@@ -30,7 +31,9 @@ const props = defineProps({
   live: { type: Object, default: null },
 })
 
-const quickAdd = useQuickAdd()
+// Destructured so pendingOpen unwraps in the template (a `quickAdd.pendingOpen`
+// member expression yields the Ref itself, which is always truthy).
+const { open, pendingOpen } = useQuickAdd()
 </script>
 
 <style scoped>
@@ -51,6 +54,14 @@ const quickAdd = useQuickAdd()
   &:hover {
     background-color: var(--color-yellow);
     color: var(--color-black);
+  }
+
+  /* The drawer is holding its reveal for the variants fetch — mirror the
+     cart controls' in-flight feedback. Custom over Tailwind's
+     cursor-progress: global.css's unlayered `button { cursor: pointer }`
+     outranks layered utilities. */
+  &.is-pending {
+    cursor: progress;
   }
 }
 </style>
