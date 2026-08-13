@@ -38,7 +38,8 @@
     <!-- Teleported: the home page's entrance animation leaves a transform on
          its wrapper, and a transformed ancestor becomes the containing block
          for position:fixed — which pinned these to the bottom of the page
-         instead of the viewport. Out here they fix to the viewport again. -->
+         instead of the viewport. Out here they fix to the viewport again.
+         Must stay the only body teleport — LocaleModal explains why. -->
     <Teleport to="body">
       <div
         v-if="product"

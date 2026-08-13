@@ -12,8 +12,25 @@
   </button>
 
   <!-- Teleported: the footer wraps its content in pointer-events/overflow
-       rules that a fixed overlay shouldn't inherit. -->
-  <Teleport to="body">
+       rules that a fixed overlay shouldn't inherit.
+
+       Target is Nuxt's #teleports div, NOT `body`, because the home page's
+       fixed CTAs already teleport to body. Vue writes SSR teleport buffers
+       into a target in the order they RESOLVE but hydrates them in
+       component-TREE order, claiming one block per teleport — and the home
+       page awaits useAsyncData, so its teleport resolved after this
+       synchronous footer's while hydrating before it. Sharing body made
+       every teleport adopt the previous one's DOM: the market picker
+       hydrated onto the language picker's markup, labels, and hrefs.
+
+       These are the only two SSR-injected targets (see Nuxt's renderer —
+       other selectors render client-side only), so a third body teleport
+       from a synchronous component would reintroduce the shift.
+
+       Both LocaleModals share this target safely: they're synchronous
+       siblings in MainFooter, so their resolve order already matches tree
+       order. Making either switcher async would break that. -->
+  <Teleport to="#teleports">
     <button
       class="locale-backdrop"
       :class="{ active: open }"
