@@ -60,9 +60,16 @@
           role="option"
           :aria-selected="item.active"
         >
+          <!-- external: a locale switch is a full page load, not a client-side
+               transition. In-app it swaps vue-i18n's locale while the OLD page
+               is still on screen, so its text/prices re-render in place — a
+               flash — before the new page mounts; it also runs the loading
+               indicator, which could wedge mid-switch. A hard navigation keeps
+               the old paint untouched until the per-locale SSR shell arrives. -->
           <NuxtLink
             :to="switchLocalePath(item.code)"
             :class="{ 'is-active': item.active }"
+            external
             @click="open = false"
           >
             {{ item.name }}
@@ -77,7 +84,9 @@
 /**
  * Presentational modal for a locale switcher (market or language). `items`
  * are { name, code, active }; each option is a nuxt-link to switchLocalePath so
- * navigation stays real links (prefetch/SEO), not JS-driven. The trigger opens
+ * navigation stays real links (prefetch/SEO), not JS-driven — and `external`
+ * ones at that, so switching is a full page load (see the template comment).
+ * The trigger opens
  * a centered grey panel over a blurred backdrop (same pattern as the cart and
  * quick-add overlays); closes on backdrop click, Escape, or selection.
  */
