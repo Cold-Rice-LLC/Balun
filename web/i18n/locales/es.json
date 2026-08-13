@@ -61,5 +61,15 @@
   },
   "pdp": {
     "closeOptions": "Cerrar opciones"
+  },
+  "feed": {
+    "filter": "filtrar:",
+    "categories": {
+      "stream": "stream",
+      "products": "productos",
+      "events": "eventos",
+      "blog": "blog"
+    },
+    "empty": "Aún no hay publicaciones aquí."
   }
 }

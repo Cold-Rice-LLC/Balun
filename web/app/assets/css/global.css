@@ -120,7 +120,8 @@ body {
     background-color: var(--color-grey-6);
   }
 
-  &.template-info {
+  &.template-info,
+  &.template-feed {
     background-color: var(--color-black);
   }
 }

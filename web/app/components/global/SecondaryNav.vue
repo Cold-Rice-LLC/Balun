@@ -124,10 +124,11 @@ nav {
   }
 }
 
-/* Info page: darker buttons for the black page — grey-6, white text. The
-   checkout state's own rule out-specifies this (three classes vs two), so
-   an open filled cart stays yellow. */
-body.template-info nav li {
+/* Black-page templates (info, feed): darker buttons — grey-6, white text.
+   The checkout state's own rule out-specifies this (three classes vs two),
+   so an open filled cart stays yellow. */
+body.template-info nav li,
+body.template-feed nav li {
   a,
   button {
     background-color: var(--color-grey-6);

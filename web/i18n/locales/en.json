@@ -61,5 +61,15 @@
   },
   "pdp": {
     "closeOptions": "Close options"
+  },
+  "feed": {
+    "filter": "filter:",
+    "categories": {
+      "stream": "stream",
+      "products": "products",
+      "events": "events",
+      "blog": "blog"
+    },
+    "empty": "No posts here yet."
   }
 }
