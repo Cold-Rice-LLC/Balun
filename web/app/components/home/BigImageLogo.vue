@@ -3,12 +3,14 @@
     class="big-image-logo"
     :class="{ 'is-contained': contained }"
   >
-    <HomeModuleMedia
-      class="media"
-      :media="module"
-    />
+    <div class="inner">
+      <HomeModuleMedia
+        class="media"
+        :media="module"
+      />
 
-    <IconsWordmark class="wordmark" />
+      <IconsWordmark class="wordmark" />
+    </div>
   </section>
 </template>
 
@@ -30,19 +32,28 @@ const contained = computed(() => props.module.style === 'contained')
 .big-image-logo {
   position: relative;
   height: calc(100svh - var(--spacing-button-lg-height) - var(--spacing-base));
+  overflow: hidden;
+  min-height: 700px;
 
   &.is-contained {
-    height: calc(100svh - var(--spacing-base) * 2);
-    margin-inline: var(--spacing-base);
+    height: 100svh;
+    padding: var(--spacing-page-top) 8rem calc(var(--spacing-md) + var(--spacing-button-lg-height)) 8rem;
 
-    .media {
-      border-radius: var(--radius-def);
+    .inner {
+      border-top-left-radius: var(--radius-def);
+      border-top-right-radius: var(--radius-def);
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+      height: 100%;
     }
 
     .wordmark {
-      inset-inline: var(--spacing-base);
-      bottom: var(--spacing-base);
+      bottom: 0px;
+      width: calc(100% + 1px);
+      left: 0px;
       color: var(--color-yellow);
+      transform: translateY(1.6%);
     }
   }
 }
@@ -58,7 +69,7 @@ const contained = computed(() => props.module.style === 'contained')
   position: absolute;
   width: 100%;
   left: 0px;
-  bottom: -6px;
+  bottom: -7px;
   color: var(--color-white);
 }
 
