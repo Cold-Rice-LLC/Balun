@@ -41,7 +41,6 @@ export const homeQuery = groq`*[
     _type == "moduleFeaturedProduct" => {
       ${i18nField('heading')},
       ${i18nField('subheading')},
-      ${i18nField('caption')},
       "product": product->{${productProjection}},
       // Slides live on the product (featureCarousel, shared with the PDP);
       // none entered = no carousel (the component hides it).

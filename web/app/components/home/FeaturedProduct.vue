@@ -5,11 +5,11 @@
   >
     <header
       v-if="module.heading || module.subheading"
-      class="flex flex-col items-center gap-base text-center"
+      class="flex flex-col items-center gap-sm text-center"
     >
       <h2
         v-if="module.heading"
-        class="heading text-xl"
+        class="heading text-xl leading-none"
       >
         {{ module.heading }}
         <span class="heading-highlight">
@@ -34,13 +34,6 @@
         :alt="product?.title || ''"
       />
     </div>
-
-    <p
-      v-if="module.caption"
-      class="caption font-secondary uppercase text-center py-sm"
-    >
-      {{ module.caption }}
-    </p>
 
     <!-- Teleported: the home page's entrance animation leaves a transform on
          its wrapper, and a transformed ancestor becomes the containing block
@@ -75,7 +68,7 @@
 /**
  * Home module: a single product given prominence — heading/subheading, the
  * product's feature carousel (ProductFeatureCarousel, shared with the PDP),
- * caption, and quick add / learn more CTAs. `module.product` is the Sanity
+ * and quick add / learn more CTAs. `module.product` is the Sanity
  * editorial doc; live market price/availability comes from `liveByGid`
  * (hydrated client-side by the page) — quick add only renders when the
  * product is live and buyable.
@@ -91,12 +84,12 @@ const product = computed(() => props.module.product)
 const live = computed(() => props.liveByGid[product.value?.gid] ?? null)
 const slides = computed(() => props.module.images ?? [])
 
-// The CTAs are position:fixed and fade with the module's visibility. 0.5:
-// show only while the module holds the MAJORITY of the viewport — modules
-// are 100svh, so two featured modules can never both pass the threshold
+// The CTAs are position:fixed and fade with the module's visibility. 0.75:
+// fade out as soon as a quarter of the module has scrolled away — and since
+// modules are 100svh, two featured modules can never both pass the threshold
 // and stack their CTAs in the same fixed slot.
 const moduleEl = ref(null)
-const ctasVisible = useInView(moduleEl, { threshold: 0.5 })
+const ctasVisible = useInView(moduleEl, { threshold: 0.75 })
 
 // ...and drop out of the way once the drawer they opened is up. Destructured
 // so the template unwraps the ref — reaching through the returned object
@@ -106,14 +99,16 @@ const { isOpen: quickAddOpen } = useQuickAdd()
 
 <style scoped>
 /* The module fills the viewport below the page's top padding: header up
-   top, caption below, the carousel absorbing the leftover space. A HARD
-   height, not min-height — a flex container with min-height grows to fit
-   its content, so the carousel's "leftover" would just be the image's
-   intrinsic size and the frames would never cap to the fold. */
+   top, the carousel absorbing the leftover space. A HARD height, not
+   min-height — a flex container with min-height grows to fit its content,
+   so the carousel's "leftover" would just be the image's intrinsic size
+   and the frames would never cap to the fold. */
 .featured-product {
-  height: calc(88svh - var(--spacing-page-top));
+  height: calc(92svh - var(--spacing-page-top));
+  min-height: 600px;
   display: flex;
   flex-direction: column;
+  padding-bottom: 7.6rem;
 }
 
 .heading {
@@ -164,9 +159,9 @@ const { isOpen: quickAddOpen } = useQuickAdd()
 }
 
 .carousel {
-  /* Absorb whatever the header/caption leaves of the module height;
-     min-height 0 lets it SHRINK below content size so the shared
-     carousel's frames cap to it. */
+  /* Absorb whatever the header leaves of the module height; min-height 0
+     lets it SHRINK below content size so the shared carousel's frames cap
+     to it. */
   flex: 1;
   min-height: 0;
 }

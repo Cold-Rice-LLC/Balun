@@ -3,7 +3,7 @@ import {englishIfAny} from '../lib/i18nValidation'
 
 /**
  * Home page module: a single product given prominence — heading/subheading
- * and a caption around the product's feature carousel. The carousel slides
+ * above the product's feature carousel. The carousel slides
  * (images + highlights) live on the product document (featureCarousel) so
  * the PDP shows the same ones. Live price/availability still comes from the
  * buy-box fetch at render time; text fields are language-axis
@@ -35,13 +35,6 @@ export default {
       title: 'Product',
       to: [{type: 'product'}],
       validation: (Rule) => Rule.required(),
-    },
-    {
-      name: 'caption',
-      type: 'internationalizedArrayString',
-      title: 'Caption',
-      description: 'Optional caption shown below the carousel.',
-      validation: englishIfAny,
     },
   ],
   preview: {
