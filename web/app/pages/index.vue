@@ -29,6 +29,8 @@ const moduleComponents = {
   moduleProductGrid: resolveComponent('HomeProductGrid'),
   moduleFeaturedProduct: resolveComponent('HomeFeaturedProduct'),
   moduleMarquee: resolveComponent('HomeMarquee'),
+  moduleBigImageLogo: resolveComponent('HomeBigImageLogo'),
+  moduleBigImageHeadline: resolveComponent('HomeBigImageHeadline'),
 }
 
 const modules = computed(() => home.value?.modules ?? [])

@@ -7,6 +7,8 @@ import shopifyCollection from './objects/shopifyCollection'
 import moduleProductGrid from './objects/moduleProductGrid'
 import moduleFeaturedProduct from './objects/moduleFeaturedProduct'
 import moduleMarquee from './objects/moduleMarquee'
+import moduleBigImageLogo from './objects/moduleBigImageLogo'
+import moduleBigImageHeadline from './objects/moduleBigImageHeadline'
 import moduleInfoText from './objects/moduleInfoText'
 import moduleInfoImage from './objects/moduleInfoImage'
 import moduleInfoProse from './objects/moduleInfoProse'
@@ -36,6 +38,8 @@ export const schemaTypes = [
   moduleProductGrid,
   moduleFeaturedProduct,
   moduleMarquee,
+  moduleBigImageLogo,
+  moduleBigImageHeadline,
   // Info page modules (page builder)
   moduleInfoText,
   moduleInfoImage,

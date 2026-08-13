@@ -59,6 +59,25 @@ export const homeQuery = groq`*[
     _type == "moduleMarquee" => {
       ${i18nField('text')},
       link{linkType, internalPath, externalUrl}
+    },
+    // Media heroes: images keep the raw ref (useSanityImage builds the CDN
+    // URL); file assets have no ref-encoded URL, so videos dereference here.
+    _type == "moduleBigImageLogo" => {
+      mediaType,
+      image,
+      "videoUrl": video.asset->url,
+      style
+    },
+    _type == "moduleBigImageHeadline" => {
+      mediaType,
+      image,
+      "videoUrl": video.asset->url,
+      ${i18nField('headline')},
+      links[]{
+        _key,
+        ${i18nField('label')},
+        link{linkType, internalPath, externalUrl}
+      }
     }
   }
 }`

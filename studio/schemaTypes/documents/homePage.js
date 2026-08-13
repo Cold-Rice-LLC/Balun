@@ -16,7 +16,13 @@ export default {
       type: 'array',
       title: 'Modules',
       description: 'Page builder — add and reorder modules to compose the page.',
-      of: [{type: 'moduleProductGrid'}, {type: 'moduleFeaturedProduct'}, {type: 'moduleMarquee'}],
+      of: [
+        {type: 'moduleProductGrid'},
+        {type: 'moduleFeaturedProduct'},
+        {type: 'moduleMarquee'},
+        {type: 'moduleBigImageLogo'},
+        {type: 'moduleBigImageHeadline'},
+      ],
     },
   ],
   preview: {
