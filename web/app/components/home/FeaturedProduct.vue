@@ -106,7 +106,7 @@ const { isOpen: quickAddOpen } = useQuickAdd()
    and the frames would never cap to the fold. */
 .featured-product {
   height: calc(92svh - var(--spacing-page-top));
-  min-height: 600px;
+  min-height: 60rem;
   display: flex;
   flex-direction: column;
   padding-bottom: 7.6rem;
@@ -175,8 +175,8 @@ const { isOpen: quickAddOpen } = useQuickAdd()
   position: fixed;
   z-index: 4000;
   bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
-  left: var(--spacing-base);
-  width: calc(50vw - (var(--spacing-base) * 1.5));
+  /* Full width on mobile; from 768px up, the quick-add drawer's left column. */
+  inset-inline: var(--spacing-base);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-base);
@@ -223,12 +223,10 @@ const { isOpen: quickAddOpen } = useQuickAdd()
       color: var(--color-grey-7);
     }
   }
-}
 
-@media (max-width: 768px) {
-  .ctas {
-    right: var(--spacing-base);
-    width: auto;
+  @media (min-width: 768px) {
+    right: auto;
+    width: calc(50vw - (var(--spacing-base) * 1.5));
   }
 }
 </style>

@@ -160,7 +160,8 @@ const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.f
   z-index: 4900;
   bottom: 0;
   right: var(--spacing-base);
-  left: calc(50% + var(--spacing-base) / 2);
+  /* Full width on mobile; the right column from 768px up. */
+  left: var(--spacing-base);
   height: 50rem;
   display: flex;
   flex-direction: column;
@@ -175,6 +176,10 @@ const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.f
 
   &.active {
     transform: translateY(0);
+  }
+
+  @media (min-width: 768px) {
+    left: calc(50% + var(--spacing-base) / 2);
   }
 }
 
@@ -250,9 +255,4 @@ const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.f
   height: 100%;
 }
 
-@media (max-width: 768px) {
-  .cart-drawer {
-    left: var(--spacing-base);
-  }
-}
 </style>

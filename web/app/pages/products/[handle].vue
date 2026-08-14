@@ -266,14 +266,23 @@ useHead({
   padding-top: var(--spacing-page-top);
 }
 
+/* Static half-height panel on mobile; from 768px up it pins sticky beside
+   the scrolling details column, radii moving to the left edge. */
 .media {
-  position: sticky;
-  top: 0px;
-  height: 100svh;
+  position: static;
+  height: 50svh;
   border-top-left-radius: var(--radius-def);
-  border-bottom-left-radius: var(--radius-def);
+  border-top-right-radius: var(--radius-def);
   overflow: hidden;
   background-color: var(--color-grey-2);
+
+  @media (min-width: 768px) {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: var(--radius-def);
+  }
 }
 
 .media-col {
@@ -295,13 +304,20 @@ useHead({
    own context. The stuck panel's bottom edge is the viewport bottom, so the
    inset clears the fixed shop button (top edge = button-lg-height from the
    bottom) plus a spacing-base gap. */
+/* Hug the panel on mobile (static media — its bottom edge is nowhere near
+   the fixed nav); clear the nav from 768px up, where the media is viewport
+   height. */
 .media-dots {
   position: absolute;
   z-index: 2;
-  bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  bottom: var(--spacing-base);
   left: 0;
   width: 100%;
   text-align: center;
+
+  @media (min-width: 768px) {
+    bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  }
 }
 
 .media :deep(.swiper-pagination-bullet) {
@@ -377,10 +393,14 @@ useHead({
      sticky buy-col always has room to pin in view even with no description. */
   flex-grow: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: var(--spacing-base);
   align-items: end;
   padding-block: var(--spacing-base);
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* No description = no tall grid area for the sticky buy-col to travel in, so
@@ -448,22 +468,4 @@ useHead({
   color: var(--color-grey-6);
 }
 
-@media (max-width: 768px) {
-  .media {
-    position: static;
-    height: 50svh;
-    border-top-right-radius: var(--radius-def);
-    border-bottom-left-radius: 0;
-  }
-
-  /* Static media here — its bottom edge is nowhere near the fixed nav, so
-     the dots go back to hugging the panel. */
-  .media-dots {
-    bottom: var(--spacing-base);
-  }
-
-  .buy-row {
-    grid-template-columns: 1fr;
-  }
-}
 </style>

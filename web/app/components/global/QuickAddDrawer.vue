@@ -239,8 +239,11 @@ watch(cartOpen, (open) => {
   position: fixed;
   z-index: 4900;
   bottom: var(--spacing-button-lg-height);
+  /* Full width on mobile regardless of anchor — half a phone screen fits
+     nothing (the cart drawer goes full width the same way). Column-sized
+     from 768px up. */
   left: var(--spacing-base);
-  width: calc(50vw - (var(--spacing-base) * 1.5));
+  right: var(--spacing-base);
   max-height: calc(100svh - var(--spacing-button-lg-height) - var(--spacing-base) * 4);
   display: flex;
   align-items: flex-end;
@@ -282,12 +285,20 @@ watch(cartOpen, (open) => {
       opacity: 1;
     }
   }
+
+  @media (min-width: 768px) {
+    right: auto;
+    width: calc(50vw - (var(--spacing-base) * 1.5));
+  }
 }
 
 /* Cart-anchored opens (the PDP): same left edge as the cart drawer's, so the
-   panel hangs above the cart button instead of the shop side. */
+   panel hangs above the cart button instead of the shop side. Desktop-only —
+   mobile is full width for every anchor. */
 .quick-add-drawer.anchor-cart {
-  left: calc(50% + var(--spacing-base) / 2);
+  @media (min-width: 768px) {
+    left: calc(50% + var(--spacing-base) / 2);
+  }
 }
 
 /* Tab shape/background/fillet come from NotchPanel — this is just the
@@ -327,14 +338,4 @@ watch(cartOpen, (open) => {
     color 0.3s;
 }
 
-@media (max-width: 768px) {
-  /* Full width regardless of anchor — half a phone screen fits nothing
-     (the cart drawer resets its left the same way). */
-  .quick-add-drawer,
-  .quick-add-drawer.anchor-cart {
-    left: var(--spacing-base);
-    right: var(--spacing-base);
-    width: auto;
-  }
-}
 </style>

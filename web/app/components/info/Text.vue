@@ -20,14 +20,12 @@ defineProps({
 
 <style scoped>
 .text-module {
-  grid-column: 5 / span 4;
+  grid-column: 1 / -1;
   color: var(--color-white);
   white-space: pre-line;
-}
 
-@media (max-width: 768px) {
-  .text-module {
-    grid-column: 1 / -1;
+  @media (min-width: 768px) {
+    grid-column: 5 / span 4;
   }
 }
 </style>

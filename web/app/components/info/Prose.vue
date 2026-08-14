@@ -40,9 +40,14 @@ const components = {
 .prose-module {
   grid-column: 1 / -1;
   color: var(--color-purple);
-  font-size: 9.4vw;
+  /* Placeholder mobile scale until there's a spec for small screens. */
+  font-size: 8rem;
   line-height: 0.84;
   padding-right: 4rem;
+
+  @media (min-width: 768px) {
+    font-size: 9.4vw;
+  }
 }
 
 /* Serializer-rendered nodes carry no scope attr — flat :deep, never nested
@@ -54,12 +59,5 @@ const components = {
   width: auto;
   height: 1.5ex;
   vertical-align: middle;
-}
-
-@media (max-width: 768px) {
-  .prose-module {
-    /* Placeholder mobile scale until there's a spec for small screens. */
-    font-size: 8rem;
-  }
 }
 </style>

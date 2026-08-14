@@ -169,8 +169,10 @@ useHead({
   min-height: 100svh;
 }
 
+/* Filters, posts, and the empty note share the column: full width on
+   mobile, the center 6 from 768px up. */
 .filters {
-  grid-column: 4 / span 6;
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
@@ -178,6 +180,10 @@ useHead({
   border-top: 1px dotted var(--color-grey-5);
   border-bottom: 1px dotted var(--color-grey-5);
   color: var(--color-grey-1);
+
+  @media (min-width: 768px) {
+    grid-column: 4 / span 6;
+  }
 }
 
 .filter-pill {
@@ -197,14 +203,22 @@ useHead({
 }
 
 .posts {
-  grid-column: 4 / span 6;
+  grid-column: 1 / -1;
   color: var(--color-grey-1);
+
+  @media (min-width: 768px) {
+    grid-column: 4 / span 6;
+  }
 }
 
 .feed-empty {
-  grid-column: 4 / span 6;
+  grid-column: 1 / -1;
   color: var(--color-grey-5);
   padding-block: var(--spacing-base);
+
+  @media (min-width: 768px) {
+    grid-column: 4 / span 6;
+  }
 }
 
 .stub {
@@ -242,11 +256,4 @@ useHead({
   }
 }
 
-@media (max-width: 768px) {
-  .filters,
-  .posts,
-  .feed-empty {
-    grid-column: 1 / -1;
-  }
-}
 </style>

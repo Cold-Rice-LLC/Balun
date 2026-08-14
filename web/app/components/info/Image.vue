@@ -25,18 +25,16 @@ const urlFor = useSanityImage()
 
 <style scoped>
 .image-module {
-  grid-column: 4 / span 6;
+  grid-column: 1 / -1;
 
   & img {
     width: 100%;
     height: auto;
     border-radius: var(--radius-def);
   }
-}
 
-@media (max-width: 768px) {
-  .image-module {
-    grid-column: 1 / -1;
+  @media (min-width: 768px) {
+    grid-column: 4 / span 6;
   }
 }
 </style>

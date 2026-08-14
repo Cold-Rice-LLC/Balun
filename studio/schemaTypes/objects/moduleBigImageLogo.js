@@ -3,8 +3,8 @@ import {ImagesIcon} from '@sanity/icons'
 /**
  * Home page module: a large media hero with the balun wordmark overlaid near
  * the bottom. Full Width bleeds edge to edge (white wordmark); Contained
- * insets the media by the page gutter with rounded corners (yellow wordmark).
- * Media is an image or an uploaded video (autoplaying muted loop).
+ * insets the media into a rounded-top panel (yellow wordmark). Media is an
+ * image or an uploaded video (autoplaying muted loop).
  */
 export default {
   name: 'moduleBigImageLogo',
