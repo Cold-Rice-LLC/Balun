@@ -61,6 +61,9 @@
   "pdp": {
     "closeOptions": "Cerrar opciones"
   },
+  "video": {
+    "watch": "ver"
+  },
   "feed": {
     "filter": "filtrar:",
     "categories": {

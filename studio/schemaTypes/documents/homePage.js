@@ -22,6 +22,8 @@ export default {
         {type: 'moduleMarquee'},
         {type: 'moduleBigImageLogo'},
         {type: 'moduleBigImageHeadline'},
+        {type: 'moduleHeadlineOverImage'},
+        {type: 'moduleVideo'},
       ],
     },
   ],

@@ -79,6 +79,20 @@ export const homeQuery = groq`*[
         link{linkType, internalPath, externalUrl}
       },
       style
+    },
+    _type == "moduleHeadlineOverImage" => {
+      mediaType,
+      image,
+      "videoUrl": video.asset->url,
+      ${i18nField('headline')},
+      ${i18nField('linkLabel')},
+      link{linkType, internalPath, externalUrl}
+    },
+    _type == "moduleVideo" => {
+      videoType,
+      "videoUrl": video.asset->url,
+      youtubeUrl,
+      poster
     }
   }
 }`

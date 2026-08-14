@@ -34,16 +34,18 @@ const moduleComponents = {
   moduleMarquee: resolveComponent('HomeMarquee'),
   moduleBigImageLogo: resolveComponent('HomeBigImageLogo'),
   moduleBigImageHeadline: resolveComponent('HomeBigImageHeadline'),
+  moduleHeadlineOverImage: resolveComponent('HomeHeadlineOverImage'),
+  moduleVideo: resolveComponent('HomeVideo'),
 }
 
 const modules = computed(() => home.value?.modules ?? [])
 
-// A big-image/logo module in the first slot is a hero: it's built to meet the
-// top of the viewport, with the fixed header floating over it and its own
-// height already leaving room for the bottom nav. The page's top padding
-// exists to clear that header, so here it would only push the hero past the
-// fold — drop it. Any other opening module keeps the padding.
-const heroFirst = computed(() => modules.value[0]?._type === 'moduleBigImageLogo')
+// A full-viewport module in the first slot is a hero: it meets the top of the
+// viewport with the fixed header floating over it (big image + logo) or
+// centers its content in the full height itself (headline over image). The
+// page's top padding exists to clear that header, so here it would only push
+// the hero past the fold — drop it. Any other opening module keeps the padding.
+const heroFirst = computed(() => ['moduleBigImageLogo', 'moduleHeadlineOverImage'].includes(modules.value[0]?._type))
 
 // Every product gid referenced by any module (grid arrays + featured singles),
 // fetched live in one batch so the cached shell stays geo-agnostic.
@@ -94,10 +96,14 @@ useHead({
     margin-top: 20rem;
   }
 
-  & > section.featured-product + section.marquee-module {
+  & > section.featured-product + section.marquee-module,
+  & > section.headline-over-image + section {
     margin-top: 3rem;
   }
 
+  /* Headline over image joins the contained panels here: it centers its
+     content inside 100svh, so its own whitespace already does most of the
+     separating. */
   & > section.big-image-logo.is-contained + section,
   & > section.big-image-headline.is-contained + section,
   & > section + section.big-image-logo.is-contained,

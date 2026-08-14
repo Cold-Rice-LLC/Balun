@@ -9,6 +9,8 @@ import moduleFeaturedProduct from './objects/moduleFeaturedProduct'
 import moduleMarquee from './objects/moduleMarquee'
 import moduleBigImageLogo from './objects/moduleBigImageLogo'
 import moduleBigImageHeadline from './objects/moduleBigImageHeadline'
+import moduleHeadlineOverImage from './objects/moduleHeadlineOverImage'
+import moduleVideo from './objects/moduleVideo'
 import moduleInfoText from './objects/moduleInfoText'
 import moduleInfoImage from './objects/moduleInfoImage'
 import moduleInfoProse from './objects/moduleInfoProse'
@@ -40,6 +42,8 @@ export const schemaTypes = [
   moduleMarquee,
   moduleBigImageLogo,
   moduleBigImageHeadline,
+  moduleHeadlineOverImage,
+  moduleVideo,
   // Info page modules (page builder)
   moduleInfoText,
   moduleInfoImage,
