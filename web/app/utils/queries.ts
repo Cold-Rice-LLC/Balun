@@ -77,7 +77,8 @@ export const homeQuery = groq`*[
         _key,
         ${i18nField('label')},
         link{linkType, internalPath, externalUrl}
-      }
+      },
+      style
     }
   }
 }`

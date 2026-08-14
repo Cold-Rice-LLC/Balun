@@ -97,5 +97,12 @@ useHead({
   & > section.featured-product + section.marquee-module {
     margin-top: 3rem;
   }
+
+  & > section.big-image-logo.is-contained + section,
+  & > section.big-image-headline.is-contained + section,
+  & > section + section.big-image-logo.is-contained,
+  & > section + section.big-image-headline.is-contained {
+    margin-top: 10rem;
+  }
 }
 </style>

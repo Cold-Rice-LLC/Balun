@@ -2,11 +2,12 @@ import {BlockElementIcon} from '@sanity/icons'
 import {englishIfAny, requireEnglish} from '../lib/i18nValidation'
 
 /**
- * Home page module: a full-bleed media hero with a large yellow headline
- * over the media and a row of links pinned to the bottom. Media is an image
- * or an uploaded video (autoplaying muted loop). Headline and link labels
- * are language-axis (internationalized arrays); link targets reuse
- * linkTarget (internal path or external URL).
+ * Home page module: a media hero with a large yellow headline over the media
+ * and a row of links pinned to the bottom. Full Width bleeds edge to edge;
+ * Contained insets the media into a rounded panel, matching Big Image +
+ * Logo. Media is an image or an uploaded video (autoplaying muted loop).
+ * Headline and link labels are language-axis (internationalized arrays);
+ * link targets reuse linkTarget (internal path or external URL).
  */
 export default {
   name: 'moduleBigImageHeadline',
@@ -94,13 +95,27 @@ export default {
         },
       ],
     },
+    {
+      name: 'style',
+      type: 'string',
+      title: 'Style',
+      options: {
+        list: [
+          {title: 'Full Width', value: 'fullWidth'},
+          {title: 'Contained', value: 'contained'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'fullWidth',
+      validation: (Rule) => Rule.required(),
+    },
   ],
   preview: {
-    select: {media: 'image', headline: 'headline.0.value', mediaType: 'mediaType'},
-    prepare({media, headline, mediaType}) {
+    select: {media: 'image', headline: 'headline.0.value', style: 'style', mediaType: 'mediaType'},
+    prepare({media, headline, style, mediaType}) {
       return {
         title: headline || 'Big Image + Headline',
-        subtitle: `Big image + headline · ${mediaType === 'video' ? 'video' : 'image'}`,
+        subtitle: `${style === 'contained' ? 'Contained' : 'Full width'} · ${mediaType === 'video' ? 'video' : 'image'}`,
         media,
       }
     },
