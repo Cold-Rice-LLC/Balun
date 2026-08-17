@@ -25,18 +25,31 @@
           :key="line.id"
           class="line font-secondary"
         >
-          <span class="thumb">
+          <!-- Thumb and title link back to the line's PDP; navigating away
+               closes the drawer over it. -->
+          <NuxtLink
+            class="thumb"
+            :to="pdpPath(line)"
+            :aria-label="line.merchandise.product.title"
+            @click="close"
+          >
             <img
               v-if="lineImage(line)"
               :src="lineImage(line).url"
               :alt="lineImage(line).altText || line.merchandise.product.title"
               class="w-full h-full object-cover"
             />
-          </span>
+          </NuxtLink>
 
           <div class="flex justify-between gap-base">
             <div class="flex flex-col gap-2">
-              <p class="title text-base uppercase leading-none">{{ baseName(line.merchandise.product.title) }}</p>
+              <NuxtLink
+                class="title text-base uppercase leading-none"
+                :to="pdpPath(line)"
+                @click="close"
+              >
+                {{ baseName(line.merchandise.product.title) }}
+              </NuxtLink>
 
               <div class="opacity-50 text-sm flex flex-col gap-1">
                 <p
@@ -135,6 +148,10 @@ const colorName = (title = '') => (title.includes('·') ? title.split('·').pop(
 
 // Prefer the variant image; fall back to the product's featured image.
 const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.featuredImage ?? null
+
+// The line's PDP (handle rides along on the cart query's product).
+const localePath = useLocalePath()
+const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handle}`)
 </script>
 
 <style scoped>
@@ -227,6 +244,11 @@ const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.f
   background-color: var(--color-white);
   border-radius: calc(var(--radius-def) / 2);
   overflow: hidden;
+}
+
+.title:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .line-controls {
