@@ -47,7 +47,7 @@
               />
             </svg>
 
-            {{ $t('video.watch') }}
+            {{ module.buttonText || $t('video.watch') }}
           </span>
         </button>
       </Transition>
@@ -57,7 +57,7 @@
 
 <script setup>
 /**
- * Home module: a click-to-play video in the headline-over-image media
+ * Home + info module: a click-to-play video in the headline-over-image media
  * geometry — centered, rounded, 16:9. The poster (with a "watch" pill) fades
  * out on click, revealing an uploaded MP4 with native controls or a YouTube
  * embed that autoplays. Renders nothing without a playable source, so a
@@ -94,6 +94,9 @@ const play = () => {
 
 <style scoped>
 .video-module {
+  /* Inert in home's block flow; spans the info page's 12-col grid, where
+     modules place themselves. */
+  grid-column: 1 / -1;
   display: flex;
   justify-content: center;
 }

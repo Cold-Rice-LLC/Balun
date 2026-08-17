@@ -64,6 +64,7 @@ const moduleComponents = {
   moduleInfoText: resolveComponent('InfoText'),
   moduleInfoImage: resolveComponent('InfoImage'),
   moduleInfoProse: resolveComponent('InfoProse'),
+  moduleVideo: resolveComponent('HomeVideo'),
 }
 
 // Filtered to known types so a module added in the Studio before its

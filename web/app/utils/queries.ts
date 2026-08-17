@@ -7,6 +7,16 @@ import { groq } from '#imports'
 const i18nField = (name: string) =>
   `"${name}": coalesce(${name}[language == $lang][0].value, ${name}[language == "en"][0].value)`
 
+// The click-to-play video module, shared by the home and info page builders.
+// File assets have no ref-encoded URL, so the video dereferences here.
+const moduleVideoProjection = `
+  videoType,
+  "videoUrl": video.asset->url,
+  youtubeUrl,
+  ${i18nField('buttonText')},
+  poster
+`
+
 // Shared product projection. Product docs are synced by Sanity Connect:
 // identity/title/slug live under the machine-owned `store` object (flattened
 // here so components don't care), editorial fields are siblings. Live market
@@ -88,12 +98,7 @@ export const homeQuery = groq`*[
       ${i18nField('linkLabel')},
       link{linkType, internalPath, externalUrl}
     },
-    _type == "moduleVideo" => {
-      videoType,
-      "videoUrl": video.asset->url,
-      youtubeUrl,
-      poster
-    }
+    _type == "moduleVideo" => {${moduleVideoProjection}}
   }
 }`
 
@@ -117,7 +122,8 @@ export const infoQuery = groq`*[
     },
     _type == "moduleInfoProse" => {
       ${i18nField('body')}
-    }
+    },
+    _type == "moduleVideo" => {${moduleVideoProjection}}
   }
 }`
 

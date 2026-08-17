@@ -1,4 +1,5 @@
 import {PlayIcon} from '@sanity/icons'
+import {englishIfAny} from '../lib/i18nValidation'
 
 // Matches watch?v=, youtu.be/, shorts/ and embed/ URLs; group 1 is the ID.
 const YOUTUBE_ID_PATTERN = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/
@@ -52,6 +53,13 @@ export default {
           if (!value) return 'YouTube URL is required.'
           return YOUTUBE_ID_PATTERN.test(value) ? true : 'Not a recognizable YouTube video URL.'
         }),
+    },
+    {
+      name: 'buttonText',
+      type: 'internationalizedArrayString',
+      title: 'Button Text',
+      description: 'Label on the play pill. Leave empty for "watch".',
+      validation: englishIfAny,
     },
     {
       name: 'poster',

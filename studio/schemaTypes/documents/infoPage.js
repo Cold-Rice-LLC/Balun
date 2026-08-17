@@ -4,7 +4,8 @@ import {marketField, marketPreviewTitle} from '../lib/marketField'
 
 /**
  * The Info/About page: modular (page builder) — text (4 cols), image (6 cols),
- * and intermingled text+images (full width) modules on a black background.
+ * intermingled text+images (full width) and click-to-play video (shared with
+ * the home page) modules on a black background.
  * Not a singleton: one default (no market) + optional per-market overrides,
  * resolved like the home page (document-level Pattern B). Within each document,
  * text fields are internationalized arrays resolved by $lang (the language
@@ -28,7 +29,12 @@ export default {
       name: 'modules',
       type: 'array',
       title: 'Modules',
-      of: [{type: 'moduleInfoText'}, {type: 'moduleInfoImage'}, {type: 'moduleInfoProse'}],
+      of: [
+        {type: 'moduleInfoText'},
+        {type: 'moduleInfoImage'},
+        {type: 'moduleInfoProse'},
+        {type: 'moduleVideo'},
+      ],
     },
   ],
   preview: {
