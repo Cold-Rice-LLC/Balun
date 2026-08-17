@@ -89,6 +89,14 @@ export const useShopifyClient = () => {
                 }
             })
 
+            // A stored id resolving to no cart is dead (expired, or its
+            // checkout completed) — forget it so the next add creates a
+            // fresh cart instead of failing forever. Only on a real "no
+            // such cart" response: a thrown request (network) skips this.
+            if (!data?.cart && id === localStorage.getItem('balunCartId')) {
+                localStorage.removeItem('balunCartId')
+            }
+
             Cart.value = data?.cart || null;
 
             return data?.cart
@@ -106,7 +114,17 @@ export const useShopifyClient = () => {
 
         if(cartId || Cart.value?.id){
             const id = cartId || Cart.value?.id;
-            return await AddLineItems(id, [{ merchandiseId: variantId, quantity: quantity }], language)
+            const result = await AddLineItems(id, [{ merchandiseId: variantId, quantity: quantity }], language)
+            if (result) return result
+            // The add failed — find out whether the cart itself is gone
+            // (expired, or its checkout completed; Shopify then rejects the
+            // id with "cart does not exist" userErrors forever). If so,
+            // forget it and retry on a fresh cart. A cart that's alive but
+            // refused the line (sold out) stays a real failure.
+            const existing = await FetchCart(id, false, language)
+            if (existing) return null
+            localStorage.removeItem('balunCartId')
+            return await CreateCart([{ merchandiseId: variantId, quantity: quantity }], countryCode, language)
         }else{
             // create new cart if no Id exists
             return await CreateCart([{ merchandiseId: variantId, quantity: quantity }], countryCode, language)
