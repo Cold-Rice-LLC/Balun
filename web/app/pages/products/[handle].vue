@@ -10,31 +10,58 @@
              switch remounts the swiper (fresh slides, back to slide one) and
              the new gallery animates in. -->
         <div class="media">
+          <!-- The key lives on the Transition's DIRECT child — one level
+               deeper and the swap happens invisibly, with no animation. -->
           <Transition
             name="colorway"
             mode="out-in"
           >
-            <Swiper
+            <div
               v-if="doc.gallery?.length"
               :key="doc.gid"
-              class="media-slides"
-              :modules="[Pagination]"
-              :slides-per-view="1"
-              :loop="true"
-              :grab-cursor="true"
+              class="carousel-outer absolute top-0 left-0 w-full h-full flex flex-col justify-end"
             >
-              <SwiperSlide
-                v-for="(image, i) in doc.gallery"
-                :key="i"
-                class="media-slide"
+              <Swiper
+                class="media-slides"
+                :slides-per-view="1"
+                :loop="true"
+                :grab-cursor="true"
+                @swiper="onGallerySwiper"
+                @slide-change="(s) => (activeIndex = s.realIndex)"
               >
-                <img
-                  :src="urlFor(image, { w: 1400 })"
-                  :alt="liveForDoc?.title || doc.title"
-                  class="media-cover"
-                />
-              </SwiperSlide>
-            </Swiper>
+                <SwiperSlide
+                  v-for="(image, i) in doc.gallery"
+                  :key="i"
+                  class="media-slide"
+                >
+                  <img
+                    :src="urlFor(image, { w: 1400 })"
+                    :alt="liveForDoc?.title || doc.title"
+                    class="media-cover"
+                  />
+                </SwiperSlide>
+              </Swiper>
+
+              <div
+                v-if="doc.gallery.length > 1"
+                class="pagination flex justify-center gap-3 py-base"
+              >
+                <!-- Loop mode renders clone slides, so navigation and the
+                     active marker go through slideToLoop/realIndex, which
+                     map back to gallery indexes. -->
+                <button
+                  v-for="(image, i) in doc.gallery"
+                  :key="i"
+                  class="pagination-button"
+                  :class="{ 'is-active': i === activeIndex }"
+                  @click="gallerySwiper?.slideToLoop(i)"
+                >
+                  <span class="sr-only">
+                    {{ i + 1 }}
+                  </span>
+                </button>
+              </div>
+            </div>
           </Transition>
         </div>
       </div>
@@ -128,9 +155,7 @@
 
 <script setup>
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Pagination } from 'swiper/modules'
 import 'swiper/css'
-import 'swiper/css/pagination'
 import { productPageQuery, colorwaysQuery } from '~/utils/queries'
 
 // Handle is reactive so colorway navigation (same route component, new param)
@@ -270,6 +295,16 @@ const compareAt = computed(() => {
   return price && Number(price.amount) > 0 ? formatMoney(price) : null
 })
 
+// The gallery swiper instance, captured for the custom pagination. A
+// colorway swap remounts the swiper (the keyed Transition above), so the
+// capture also re-syncs the active marker to the fresh instance's start.
+const gallerySwiper = ref(null)
+const activeIndex = ref(0)
+const onGallerySwiper = (swiper) => {
+  gallerySwiper.value = swiper
+  activeIndex.value = swiper.realIndex
+}
+
 useHead({
   title: () => `${doc.value?.title ?? 'Product'} — Balun`,
   bodyAttrs: { class: 'template-pdp' },
@@ -289,27 +324,54 @@ useHead({
   cursor: progress;
 }
 
-/* Static half-height panel on mobile; from 768px up it pins sticky beside
-   the scrolling details column, radii moving to the left edge. */
+/* Half-height panel on mobile; from 768px up it pins sticky beside the
+   scrolling details column. relative so the absolute carousel wrapper
+   anchors here at every width (sticky covers it from 768px up, but static
+   would hand mobile off to the transformed page content). Radius and clip
+   live on the swiper itself. */
 .media {
-  position: static;
+  position: relative;
   height: 50svh;
-  border-top-left-radius: var(--radius-def);
-  border-top-right-radius: var(--radius-def);
-  overflow: hidden;
 
   @media (min-width: 768px) {
     position: sticky;
     top: 0;
     height: 100svh;
-    border-top-right-radius: 0;
-    border-bottom-left-radius: var(--radius-def);
   }
 }
 
 .media-col {
   width: calc(50% - 1rem);
   flex: none;
+
+  .swiper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-top-left-radius: var(--radius-def);
+    border-bottom-left-radius: var(--radius-def);
+  }
+
+  .pagination {
+    z-index: 10;
+    position: sticky;
+    bottom: var(--spacing-button-lg-height);
+  }
+
+  .pagination-button {
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--color-white);
+    opacity: 0.5;
+    border-radius: 50%;
+
+    &.is-active {
+      opacity: 1;
+    }
+  }
 }
 
 .media-slides {
@@ -319,36 +381,6 @@ useHead({
 
 .media-slide img {
   display: block;
-}
-
-/* Swiper renders the bullets into this SIBLING of the swiper (pagination.el),
-   so they're positioned against the panel rather than inside the swiper's
-   own context. The stuck panel's bottom edge is the viewport bottom, so the
-   inset clears the fixed shop button (top edge = button-lg-height from the
-   bottom) plus a spacing-base gap. */
-/* Hug the panel on mobile (static media — its bottom edge is nowhere near
-   the fixed nav); clear the nav from 768px up, where the media is viewport
-   height. */
-.media-dots {
-  position: absolute;
-  z-index: 2;
-  bottom: var(--spacing-base);
-  left: 0;
-  width: 100%;
-  text-align: center;
-
-  @media (min-width: 768px) {
-    bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
-  }
-}
-
-.media :deep(.swiper-pagination-bullet) {
-  background-color: var(--color-white);
-  opacity: 0.5;
-}
-
-.media :deep(.swiper-pagination-bullet-active) {
-  opacity: 1;
 }
 
 .details {
