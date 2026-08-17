@@ -38,7 +38,7 @@
   },
   "buyBox": {
     "loading": "loading…",
-    "purchase": "purchase",
+    "purchase": "buy now",
     "seeOptions": "see other options",
     "soldOut": "sold out",
     "unavailable": "Not available in your region"
