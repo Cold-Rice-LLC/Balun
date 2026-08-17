@@ -194,10 +194,18 @@ const { data: liveData, pending: livePending, refresh: refreshLive } = useShopif
 const live = computed(() => liveData.value?.product ?? null)
 
 // `live` outlives `doc` during an in-place switch (useFetch keeps the
-// previous response, and either fetch can land first) — pair them only when
-// they describe the same product, so the outgoing content can't preview the
-// next colorway's title/price before the swap animates in.
-const liveForDoc = computed(() => (live.value?.id === doc.value?.gid ? live.value : null))
+// previous response, and either fetch can land first) — render from the
+// pair only when they describe the same product, so the outgoing content
+// can't preview the next colorway's title/price before the swap animates
+// in. A latch, not a strict computed: when live lands first, the outgoing
+// content keeps ITS matched pair (old price) instead of blanking; the
+// latch clears once doc moves on, so the entering content never inherits
+// the old product's values.
+const liveForDoc = ref(null)
+watchEffect(() => {
+  if (live.value?.id === doc.value?.gid) liveForDoc.value = live.value
+  else if (liveForDoc.value?.id !== doc.value?.gid) liveForDoc.value = null
+})
 
 // A back-nav remount serves this useFetch from Nuxt's payload cache — instant
 // paint, but session-stale. Revalidate in the background so availability here
