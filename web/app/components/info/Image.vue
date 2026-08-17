@@ -7,6 +7,7 @@
       :src="urlFor(module.image, { w: 1400 })"
       :alt="module.image.alt || ''"
       loading="lazy"
+      v-bind="sanityImageDimensions(module.image)"
     />
   </figure>
 </template>
