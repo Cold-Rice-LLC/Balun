@@ -113,7 +113,7 @@ const colorName = (title = '') => (title.includes('·') ? title.split('·').pop(
 .colorway-link {
   .thumb {
     position: relative;
-    aspect-ratio: 3 / 2;
+    aspect-ratio: 2/1;
     border-radius: calc(var(--radius-def) / 2);
     overflow: hidden;
     border: 1px solid var(--color-grey-1);
@@ -121,7 +121,7 @@ const colorName = (title = '') => (title.includes('·') ? title.split('·').pop(
     img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       object-position: center;
     }
 

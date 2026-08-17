@@ -37,10 +37,9 @@
     "next": "Next image"
   },
   "buyBox": {
-    "loading": "loading price…",
-    "optionFallback": "Option",
-    "addToCart": "add to cart",
-    "adding": "adding…",
+    "loading": "loading…",
+    "purchase": "purchase",
+    "seeOptions": "see other options",
     "soldOut": "sold out",
     "unavailable": "Not available in your region"
   },

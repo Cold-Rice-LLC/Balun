@@ -1,5 +1,6 @@
 /**
- * Quick-add state: which product the home-page quick-add drawer is showing.
+ * Quick-add state: which product the quick-add drawer is showing (opened
+ * from product cards; the PDP has its own integrated buy panel).
  *
  * Mirrors the cart's pattern — a shared useState so the card triggers, the
  * drawer, and the nav all see the same selection. `active` holds the pair the
@@ -14,18 +15,6 @@
 interface QuickAddPayload {
   doc: Record<string, unknown> | null
   live: Record<string, any>
-  // Show the drawer's "learn more" link to the product's PDP. Default true;
-  // pass false where the link is pointless (the PDP opening quick add for
-  // the product already on screen).
-  learnMore?: boolean
-  // Dim/blur the page behind the drawer and lock scroll. Default true; pass
-  // false where the page should stay usable alongside the drawer (the PDP,
-  // whose own buy button and colorway rail must stay visible and clickable).
-  backdrop?: boolean
-  // Which nav column the drawer hangs above. Default 'shop' (bottom left);
-  // 'cart' left-aligns it with the cart button instead (the PDP, where the
-  // buy flow lives in the right column).
-  anchor?: 'shop' | 'cart'
 }
 
 export const useQuickAdd = () => {

@@ -39,7 +39,7 @@
     </div>
 
     <button
-      class="add-to-cart text-base-plus"
+      class="add-to-cart text-base-plus font-primary"
       :class="{
         'is-adding': addState === 'adding',
         'is-added': addState === 'added',

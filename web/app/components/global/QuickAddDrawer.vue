@@ -1,6 +1,5 @@
 <template>
   <button
-    v-if="showBackdrop"
     class="quick-add-backdrop"
     :class="{ active: isOpen && revealed }"
     @click="close"
@@ -11,7 +10,7 @@
   <aside
     id="quick-add-drawer"
     class="quick-add-drawer"
-    :class="{ active: isOpen && revealed, 'anchor-cart': anchorCart }"
+    :class="{ active: isOpen && revealed }"
     aria-label="Quick add"
   >
     <NotchPanel class="quick-add-body text-green">
@@ -61,10 +60,7 @@
       </template>
     </NotchPanel>
 
-    <div
-      v-if="showLearnMore"
-      class="learn-more-container w-1/2"
-    >
+    <div class="learn-more-container w-1/2">
       <NuxtLink
         v-if="pdpPath"
         :to="pdpPath"
@@ -93,17 +89,11 @@ const localePath = useLocalePath()
 const market = useMarket()
 const route = useRoute()
 
-// Latched per open like `handle` (not read from `active` directly), so the
-// backdrop doesn't flash back in mid close-transition when `active` nulls.
-const showBackdrop = ref(true)
+useScrollLock(isOpen)
 
-// Backdrop-less opens (the PDP) leave the page scrollable and clickable —
-// only lock scroll when the page is actually covered.
-useScrollLock(computed(() => isOpen.value && showBackdrop.value))
-
-// With no backdrop there's nothing stopping navigation while open (e.g. the
-// PDP's colorway rail switches products in place) — close instead of
-// lingering over the new page with the old product's sizes.
+// The backdrop blocks clicks but not navigation itself (back button,
+// programmatic) — close instead of lingering over the new page with the old
+// product's sizes.
 watch(
   () => route.fullPath,
   () => close(),
@@ -131,13 +121,6 @@ const activeGid = ref('')
 // is never what someone reopening quick add means.
 const quantity = ref(1)
 
-// Latched per open like `handle` (not read from `active` directly), so the
-// link doesn't pop back in mid close-transition when `active` nulls.
-const showLearnMore = ref(true)
-
-// Latched per open too, so the drawer doesn't jump columns mid close.
-const anchorCart = ref(false)
-
 // The drawer doesn't slide up on open until it has something to show: a cold
 // open holds `revealed` off through the fetch (triggers show a progress
 // cursor via `pendingOpen` meanwhile), so the panel never appears empty and
@@ -152,9 +135,6 @@ let openToken = 0
 watch(active, async (payload) => {
   if (!payload?.live?.handle) return
   quantity.value = 1
-  showLearnMore.value = payload.learnMore !== false
-  showBackdrop.value = payload.backdrop !== false
-  anchorCart.value = payload.anchor === 'cart'
   activeGid.value = payload.live.id ?? ''
   // Stale if it's a different product OR the kept response was fetched for
   // another market (its prices are in the wrong currency) — hold the reveal
@@ -289,15 +269,6 @@ watch(cartOpen, (open) => {
   @media (min-width: 768px) {
     right: auto;
     width: calc(50vw - (var(--spacing-base) * 1.5));
-  }
-}
-
-/* Cart-anchored opens (the PDP): same left edge as the cart drawer's, so the
-   panel hangs above the cart button instead of the shop side. Desktop-only —
-   mobile is full width for every anchor. */
-.quick-add-drawer.anchor-cart {
-  @media (min-width: 768px) {
-    left: calc(50% + var(--spacing-base) / 2);
   }
 }
 

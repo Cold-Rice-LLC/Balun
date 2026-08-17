@@ -38,9 +38,8 @@
   },
   "buyBox": {
     "loading": "Cargando precio…",
-    "optionFallback": "Opción",
-    "addToCart": "Agregar al carrito",
-    "adding": "Agregando…",
+    "purchase": "Comprar",
+    "seeOptions": "Ver otras opciones",
     "soldOut": "Agotado",
     "unavailable": "No disponible en tu región"
   },

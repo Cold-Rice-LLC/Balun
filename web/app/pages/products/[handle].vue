@@ -1,123 +1,127 @@
 <template>
-  <div class="pdp px-base flex-1 flex flex-col">
+  <div
+    class="pdp px-base flex-1 flex flex-col"
+    :class="{ 'is-switching': switching }"
+  >
     <div class="pdp-content flex flex-1 enter-in-fade-up">
       <div class="media-col">
         <!-- Draggable lifestyle gallery (no arrows — dots only), pinned
-             while the details column scrolls. -->
+             while the details column scrolls. Keyed by product so a colorway
+             switch remounts the swiper (fresh slides, back to slide one) and
+             the new gallery animates in. -->
         <div class="media">
-          <Swiper
-            v-if="doc.gallery?.length"
-            class="media-slides"
-            :modules="[Pagination]"
-            :slides-per-view="1"
-            :loop="true"
-            :grab-cursor="true"
+          <Transition
+            name="colorway"
+            mode="out-in"
           >
-            <SwiperSlide
-              v-for="(image, i) in doc.gallery"
-              :key="i"
-              class="media-slide"
+            <Swiper
+              v-if="doc.gallery?.length"
+              :key="doc.gid"
+              class="media-slides"
+              :modules="[Pagination]"
+              :slides-per-view="1"
+              :loop="true"
+              :grab-cursor="true"
             >
-              <img
-                :src="urlFor(image, { w: 1400 })"
-                :alt="live?.title || doc.title"
-                class="media-cover"
-              />
-            </SwiperSlide>
-          </Swiper>
+              <SwiperSlide
+                v-for="(image, i) in doc.gallery"
+                :key="i"
+                class="media-slide"
+              >
+                <img
+                  :src="urlFor(image, { w: 1400 })"
+                  :alt="liveForDoc?.title || doc.title"
+                  class="media-cover"
+                />
+              </SwiperSlide>
+            </Swiper>
+          </Transition>
         </div>
       </div>
 
-      <div
-        class="details"
-        :class="{ 'no-description': !doc.body?.length }"
+      <!-- Keyed like the gallery: the whole column (title, carousel, buy
+           row, description) re-enters when a new colorway's doc lands. -->
+      <Transition
+        name="colorway"
+        mode="out-in"
       >
-        <header class="pdp-header text-center px-base">
-          <h1 class="uppercase text-lg leading-none">{{ live?.title || doc.title }}</h1>
-
-          <!-- Live price is the geo-varying client island; SSR renders the
-               placeholder line so nothing shifts when it arrives. -->
-          <ClientOnly>
-            <p class="price font-secondary">
-              <template v-if="live">
-                {{ formatMoney(selectedVariant?.price ?? live.priceRange.minVariantPrice) }}
-                <s
-                  v-if="compareAt"
-                  class="compare-at"
-                  >{{ compareAt }}</s
-                >
-                <span
-                  v-if="!live.availableForSale"
-                  class="sold-out uppercase"
-                  >{{ $t('buyBox.soldOut') }}</span
-                >
-              </template>
-              <template v-else-if="!livePending">{{ $t('buyBox.unavailable') }}</template>
-              <template v-else>&nbsp;</template>
-            </p>
-
-            <template #fallback>
-              <p class="price font-secondary">&nbsp;</p>
-            </template>
-          </ClientOnly>
-        </header>
-
-        <div class="carousel-region">
-          <ProductFeatureCarousel
-            :slides="doc.featureCarousel ?? []"
-            :alt="live?.title || doc.title"
-          />
-        </div>
-
-        <p
-          v-if="doc.tagline"
-          class="tagline font-secondary uppercase text-center"
+        <div
+          :key="doc.gid"
+          class="details"
+          :class="{ 'no-description': !doc.body?.length }"
         >
-          {{ doc.tagline }}
-        </p>
+          <header class="pdp-header text-center px-base">
+            <h1 class="uppercase text-lg leading-none">{{ liveForDoc?.title || doc.title }}</h1>
 
-        <!-- Sticky purchase row: pinned above the bottom nav while the
-             column scrolls. The button opens the shared quick-add drawer
-             (sizes/quantity/add live there); colorway switching stays on the
-             page, above the button, so siblings are one click with no drawer
-             in between. -->
-        <div class="buy-row font-secondary px-base">
-          <div class="buy-col flex flex-col justify-end gap-base">
-            <ProductColorwaysRail :items="colorways" />
-
+            <!-- Live price is the geo-varying client island; SSR renders the
+                 placeholder line so nothing shifts when it arrives. -->
             <ClientOnly>
-              <button
-                class="open-options text-base-plus font-primary"
-                :class="{ 'is-pending': quickAddPending }"
-                :disabled="!live || !live.availableForSale"
-                aria-haspopup="dialog"
-                aria-controls="quick-add-drawer"
-                @click="openQuickAdd({ doc, live, learnMore: false, backdrop: false, anchor: 'cart' })"
-              >
-                {{ buyLabel }}
-              </button>
+              <p class="price font-secondary">
+                <template v-if="liveForDoc">
+                  {{ formatMoney(selectedVariant?.price ?? liveForDoc.priceRange.minVariantPrice) }}
+                  <s
+                    v-if="compareAt"
+                    class="compare-at"
+                    >{{ compareAt }}</s
+                  >
+                  <span
+                    v-if="!liveForDoc.availableForSale"
+                    class="sold-out uppercase"
+                    >{{ $t('buyBox.soldOut') }}</span
+                  >
+                </template>
+                <template v-else-if="!livePending && !switching">{{ $t('buyBox.unavailable') }}</template>
+                <template v-else>&nbsp;</template>
+              </p>
 
               <template #fallback>
-                <button
-                  class="open-options text-base-plus font-primary"
-                  disabled
-                >
-                  {{ $t('buyBox.loading') }}
-                </button>
+                <p class="price font-secondary">&nbsp;</p>
               </template>
             </ClientOnly>
+          </header>
+
+          <div class="carousel-region">
+            <ProductFeatureCarousel
+              :slides="doc.featureCarousel ?? []"
+              :alt="liveForDoc?.title || doc.title"
+            />
           </div>
 
-          <div class="flex flex-col gap-sm">
-            <div
-              v-if="doc.body?.length"
-              class="description text-sm rich-text"
-            >
-              <SanityContent :value="doc.body" />
+          <p
+            v-if="doc.tagline"
+            class="tagline font-secondary uppercase text-center"
+          >
+            {{ doc.tagline }}
+          </p>
+
+          <!-- Sticky purchase row: pinned above the bottom nav while the
+               column scrolls. The buy panel owns the whole flow in place —
+               "purchase" expands it into sizes, the colorway rail, quantity,
+               and add to cart. -->
+          <div class="buy-row font-secondary px-base">
+            <div class="buy-col">
+              <div class="buy-col-inner">
+                <ProductBuyPanel
+                  v-model:variant-id="selectedVariantId"
+                  :live="liveForDoc"
+                  :live-pending="livePending || switching"
+                  :colorways="colorways"
+                  @add-failed="refreshLive"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-sm">
+              <div
+                v-if="doc.body?.length"
+                class="description text-sm rich-text"
+              >
+                <SanityContent :value="doc.body" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -130,12 +134,14 @@ import 'swiper/css/pagination'
 import { productPageQuery, colorwaysQuery } from '~/utils/queries'
 
 // Handle is reactive so colorway navigation (same route component, new param)
-// re-fetches data IN PLACE. No page `key`/remount — the shell, carousels, and
-// buy row persist and only the changed data updates, which avoids the
-// full-page flash on colorway switches.
+// re-fetches data IN PLACE — the shell and buy row persist and only the
+// changed data updates (the keyed Transitions above animate it in), which
+// avoids the full-page flash on colorway switches. The static key opts out of
+// Nuxt's default route key, which interpolates the path and would remount the
+// page on every handle change.
+definePageMeta({ key: 'products-handle' })
 const route = useRoute()
 const router = useRouter()
-const { t } = useI18n()
 const handle = computed(() => String(route.params.handle))
 const sanity = useSanity()
 const market = useMarket()
@@ -144,7 +150,7 @@ const urlFor = useSanityImage()
 // SSR shell (cached per locale URL): Sanity editorial + synced identity.
 // $lang resolves the translated tagline/body; watched so an in-place language
 // switch (same route component, new prefix) refetches.
-const { data: doc } = await useAsyncData(
+const { data: doc, status: docStatus } = await useAsyncData(
   // Handle+lang key: each product/language caches separately, and the key
   // changing on navigation triggers a fresh fetch (a static key would serve
   // the previous product's cached payload).
@@ -152,6 +158,11 @@ const { data: doc } = await useAsyncData(
   () => sanity.fetch(productPageQuery, { handle: handle.value, lang: market.value.lang }),
   { watch: [() => market.value.lang] },
 )
+
+// An in-place switch is loading the next product's doc — the page shows a
+// busy cursor meanwhile. Never pending on first paint: setup awaits the
+// initial fetch before rendering.
+const switching = computed(() => docStatus.value === 'pending')
 
 // Initial / SSR miss.
 if (!doc.value) {
@@ -181,6 +192,12 @@ const { data: colorwayDocs } = await useAsyncData(
 // collapsing to a loading state.
 const { data: liveData, pending: livePending, refresh: refreshLive } = useShopifyProduct(handle)
 const live = computed(() => liveData.value?.product ?? null)
+
+// `live` outlives `doc` during an in-place switch (useFetch keeps the
+// previous response, and either fetch can land first) — pair them only when
+// they describe the same product, so the outgoing content can't preview the
+// next colorway's title/price before the swap animates in.
+const liveForDoc = computed(() => (live.value?.id === doc.value?.gid ? live.value : null))
 
 // A back-nav remount serves this useFetch from Nuxt's payload cache — instant
 // paint, but session-stale. Revalidate in the background so availability here
@@ -214,7 +231,7 @@ const colorways = computed(() =>
   })),
 )
 
-const variants = computed(() => live.value?.variants.nodes ?? [])
+const variants = computed(() => liveForDoc.value?.variants.nodes ?? [])
 
 // Shopify variant GIDs are gid://shopify/ProductVariant/<numericId>; the URL
 // carries just the numeric id (Shopify's ?variant= convention) so links are
@@ -245,16 +262,6 @@ const compareAt = computed(() => {
   return price && Number(price.amount) > 0 ? formatMoney(price) : null
 })
 
-// The main button only OPENS the shared quick-add drawer — the add itself
-// happens on the drawer's panel (its state machine owns adding/added/failed).
-const { open: openQuickAdd, pendingOpen: quickAddPending } = useQuickAdd()
-
-const buyLabel = computed(() => {
-  if (!live.value) return livePending.value ? t('buyBox.loading') : t('buyBox.unavailable')
-  if (!live.value.availableForSale) return t('buyBox.soldOut')
-  return t('buyBox.addToCart')
-})
-
 useHead({
   title: () => `${doc.value?.title ?? 'Product'} — Balun`,
   bodyAttrs: { class: 'template-pdp' },
@@ -266,6 +273,14 @@ useHead({
   padding-top: var(--spacing-page-top);
 }
 
+/* An in-place product switch (colorway hop) is loading the next doc — show
+   busy everywhere until it lands; the * covers buttons and links, whose own
+   cursor rules would win otherwise. */
+.pdp.is-switching,
+.pdp.is-switching * {
+  cursor: progress;
+}
+
 /* Static half-height panel on mobile; from 768px up it pins sticky beside
    the scrolling details column, radii moving to the left edge. */
 .media {
@@ -274,7 +289,6 @@ useHead({
   border-top-left-radius: var(--radius-def);
   border-top-right-radius: var(--radius-def);
   overflow: hidden;
-  background-color: var(--color-grey-2);
 
   @media (min-width: 768px) {
     position: sticky;
@@ -395,7 +409,7 @@ useHead({
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--spacing-base);
-  align-items: end;
+  align-items: start;
   padding-block: var(--spacing-base);
 
   @media (min-width: 768px) {
@@ -409,8 +423,8 @@ useHead({
    (the natural height is content-driven, so a bottom reserve would otherwise
    just grow it) and reserve the overhang plus the fixed bar's height below
    the row (the bar's base-gap clearance cancels against the row's own
-   padding-bottom): the rail and button then rest exactly where the sticky
-   would pin them, with the carousel shrinking below 32svh to make the room
+   padding-bottom): the buy panel then rests exactly where the sticky
+   would pin it, with the carousel shrinking below 32svh to make the room
    on shorter viewports. */
 .details.no-description {
   max-height: 100svh;
@@ -427,40 +441,17 @@ useHead({
   min-height: 0;
 }
 
-/* Sticky as a UNIT (rail + button) within the tall grid area — sticky on the
-   button alone would clamp to the area's top while the row is below the fold
-   and ride up over the rail. */
+/* Sticky within the tall grid area, pinned above the bottom nav — the buy
+   panel expands upward from here. */
 .buy-col {
-  position: sticky;
-  bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
-}
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 
-.open-options {
-  height: var(--spacing-button-lg-height);
-  width: 100%;
-  border-radius: var(--radius-def);
-  background-color: var(--color-grey-7);
-  color: var(--color-white);
-  transition:
-    background-color 0.3s,
-    color 0.3s;
-
-  &:hover:enabled {
-    background-color: var(--color-yellow);
-    color: var(--color-green);
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-
-  /* The drawer is holding its reveal for the variants fetch — mirror the
-     cart controls' in-flight feedback. Custom over Tailwind's
-     cursor-progress: global.css's unlayered `button { cursor: pointer }`
-     outranks layered utilities. */
-  &.is-pending {
-    cursor: progress;
+  .buy-col-inner {
+    position: sticky;
+    bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
   }
 }
 
@@ -468,4 +459,25 @@ useHead({
   color: var(--color-grey-6);
 }
 
+/* The colorway swap: outgoing content slips away, then the incoming gallery
+   and details column enter in the house fade-up motion (the keyed
+   Transitions fire when the new doc lands). */
+.colorway-enter-active {
+  transition:
+    opacity 0.6s var(--curve),
+    transform 0.6s var(--curve);
+}
+
+.colorway-enter-from {
+  opacity: 0;
+  transform: translateY(5rem);
+}
+
+.colorway-leave-active {
+  transition: opacity 0.2s;
+}
+
+.colorway-leave-to {
+  opacity: 0;
+}
 </style>
