@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
-  modules: ['@nuxtjs/sanity', '@nuxtjs/i18n'],
+  modules: ['@nuxtjs/sanity', '@nuxtjs/i18n', '@vueuse/nuxt'],
 
   // Market/locale URL prefixes: /{lang}-{country} (e.g. /en-us, /en-gb) is the
   // single source of truth for language AND market — it selects Sanity content

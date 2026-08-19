@@ -1,4 +1,12 @@
 <template>
+  <!-- Sibling of .home-page, not a child: enter-in-fade-up animates opacity
+  and transform there, which would hide the overlay and re-root its fixed
+  positioning. Always in the cached shell; shows itself pre-paint via a head
+  script + html class when the intro should play. See the component. -->
+  <HomeIntro
+    v-if="showIntro"
+    @done="showIntro = false"
+  />
   <div
     class="home-page enter-in-fade-up"
     :class="{ 'hero-first': heroFirst }"
@@ -39,6 +47,10 @@ const moduleComponents = {
 }
 
 const modules = computed(() => home.value?.modules ?? [])
+
+// SSR-rendered unconditionally (the shell is edge-cached, so it can't vary);
+// the component removes itself on mount when it shouldn't play.
+const showIntro = ref(true)
 
 // A full-viewport module in the first slot is a hero: it meets the top of the
 // viewport with the fixed header floating over it (big image + logo) or
