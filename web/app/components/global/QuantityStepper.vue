@@ -51,6 +51,10 @@ const step = (delta) => {
     border-radius: 50%;
     width: 2.4rem;
     height: 2.4rem;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
   }
 
   .qty {

@@ -28,12 +28,18 @@
            colorway switcher). -->
       <slot />
 
-      <div class="quantity flex items-center justify-between">
+      <!-- Nothing purchasable (sold-out product / OOS deep link): quantity
+           is meaningless, so it grays out with the add button. -->
+      <div
+        class="quantity flex items-center justify-between"
+        :class="{ 'is-oos': !selectedVariant?.availableForSale }"
+      >
         <p class="uppercase label">{{ $t('quickAdd.quantity') }}</p>
 
         <QuantityStepper
           v-model="quantity"
           class="text-base"
+          :disabled="!selectedVariant?.availableForSale"
         />
       </div>
     </div>
@@ -150,6 +156,12 @@ onUnmounted(() => clearTimeout(addedTimer))
 <style scoped>
 .label {
   color: var(--color-grey-6);
+}
+
+/* Matches .size-pill.is-oos so the dead controls read as one state. */
+.quantity.is-oos {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .sizes .label {

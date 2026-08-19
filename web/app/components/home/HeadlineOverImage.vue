@@ -4,6 +4,7 @@
       <HomeModuleMedia
         class="media"
         :media="module"
+        :mobile-image="module.mobileImage"
       />
 
       <h2
@@ -27,10 +28,12 @@
 
 <script setup>
 /**
- * Home module: a full-viewport panel with the media (image or silent video
- * loop) inset to about half the window width — rounded, centered — and a
- * large yellow headline spanning the window width, overlapping the media at
- * its center. An optional caption-style link sits under the media.
+ * Home module: a panel with the media (image or silent video loop) rounded
+ * and centered — full-width portrait on mobile, inset to about half the
+ * window width from 768px — and a large yellow headline spanning the window
+ * width, overlapping the media at its center. Editors can supply a portrait
+ * mobileImage; phones fall back to the main media (cover-cropped) without
+ * one. An optional caption-style link sits under the media.
  */
 const props = defineProps({
   module: { type: Object, required: true },
@@ -46,21 +49,27 @@ const showLink = computed(() => props.module.linkLabel && props.module.link?.lin
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100svh;
+  padding: 0 var(--spacing-base);
+
+  @media (min-width: 768px) {
+    height: 100svh;
+  }
 }
 
 /* Positioning context for the headline: its center is the media's center, so
-   the caption below doesn't shift the overlap point. max-height keeps short
-   viewports from letting the aspect ratio outgrow the panel (the media
-   cover-fits whatever box remains). */
+   the caption below doesn't shift the overlap point. Portrait on mobile,
+   16:9 at half the window from 768px. max-height keeps short viewports from
+   letting the aspect ratio outgrow the panel (the media cover-fits whatever
+   box remains). */
 .media-wrap {
   position: relative;
-  width: 85%;
-  aspect-ratio: 16 / 9;
+  width: 100%;
+  aspect-ratio: 3 / 4;
   max-height: 55svh;
 
   @media (min-width: 768px) {
     width: 55%;
+    aspect-ratio: 16 / 9;
   }
 }
 
@@ -69,7 +78,7 @@ const showLink = computed(() => props.module.linkLabel && props.module.link?.lin
 }
 
 /* Sized against the window, not the media-wrap: the headline spans (nearly)
-   the full window width while the media stays at half. No z-index needed —
+   the full window width while the media stays narrower. No z-index needed —
    absolute positioning already paints it over the static media. */
 .headline {
   position: absolute;

@@ -54,8 +54,9 @@
     "closePicker": "Cerrar selector de {label}"
   },
   "newsletter": {
-    "heading": "Suscríbete para recibir correos →",
-    "placeholder": "Correo electrónico"
+    "heading": "Suscríbete para recibir correos",
+    "placeholder": "Correo electrónico",
+    "submit": "Suscríbete"
   },
   "pdp": {
     "closeOptions": "Cerrar opciones"

@@ -58,13 +58,21 @@ const links = computed(() => (props.module.links ?? []).filter((item) => item.li
 <style scoped>
 .big-image-headline {
   position: relative;
-  height: 100svh;
+  height: 80svh;
+
+  @media (min-width: 768px) {
+    height: 100svh;
+  }
 
   /* Same inset as Big Image + Logo's contained style: clears the fixed
      header above and the bottom nav below, so the panel sits in the space
      between them. */
   &.is-contained {
-    padding: var(--spacing-page-top) 8rem calc(var(--spacing-md) + var(--spacing-button-lg-height));
+    padding: var(--spacing-base);
+
+    @media (min-width: 768px) {
+      padding: var(--spacing-page-top) 8rem calc(var(--spacing-md) + var(--spacing-button-lg-height));
+    }
 
     .inner {
       position: relative;
@@ -122,12 +130,13 @@ const links = computed(() => (props.module.links ?? []).filter((item) => item.li
   right: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-base);
   padding: var(--spacing-base);
   color: var(--color-white);
+  gap: var(--spacing-sm);
 
   @media (min-width: 768px) {
     flex-direction: row;
+    gap: var(--spacing-base);
   }
 }
 

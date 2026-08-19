@@ -1,5 +1,8 @@
 <template>
-  <div class="feature-carousel">
+  <div
+    class="feature-carousel"
+    :class="{ 'is-nav-below': mobileNavBelow }"
+  >
     <button
       v-if="slides.length > 1"
       class="nav nav-prev"
@@ -15,6 +18,7 @@
       :loop="slides.length > 1"
       :speed="500"
       @swiper="onSwiper"
+      @slide-change="(s) => (activeIndex = s.realIndex)"
     >
       <SwiperSlide
         v-for="slide in slides"
@@ -58,6 +62,23 @@
       </SwiperSlide>
     </Swiper>
 
+    <!-- Loop mode renders clone slides, so navigation and the active marker
+         go through slideToLoop/realIndex, like the PDP gallery's. -->
+    <div
+      v-if="mobileNavBelow && slides.length > 1"
+      class="dots"
+    >
+      <button
+        v-for="(slide, i) in slides"
+        :key="slide._key"
+        class="dot"
+        :class="{ 'is-active': i === activeIndex }"
+        @click="swiper?.slideToLoop(i)"
+      >
+        <span class="sr-only">{{ i + 1 }}</span>
+      </button>
+    </div>
+
     <button
       v-if="slides.length > 1"
       class="nav nav-next"
@@ -92,13 +113,18 @@ defineProps({
   slides: { type: Array, default: () => [] },
   // Fallback alt text when a slide has none (e.g. the product title).
   alt: { type: String, default: '' },
+  // Mobile variant (the home featured module): full-width slides with the
+  // arrows and dot pagination in a row beneath. Desktop is unchanged.
+  mobileNavBelow: { type: Boolean, default: false },
 })
 
 // Swiper instance (from @swiper) drives the arrow buttons; loop mode makes
 // prev/next wrap around.
 const swiper = ref(null)
+const activeIndex = ref(0)
 const onSwiper = (instance) => {
   swiper.value = instance
+  activeIndex.value = instance.realIndex
 }
 
 // Sanity asset refs embed intrinsic dimensions (image-<id>-1600x900-jpg) —
@@ -147,6 +173,97 @@ const highlightTextStyle = (highlight) => {
   position: relative;
   width: 100%;
   height: 100%;
+}
+
+/* The mobile bottom-nav variant: slides span the full width up top, with
+   prev / dots / next in a row beneath. Everything is explicitly placed —
+   the DOM order (prev, slides, dots, next) serves the desktop layout. */
+.feature-carousel.is-nav-below {
+  @media (max-width: 767px) {
+    /* Half the default arrow size — the bottom row doesn't need the big
+       side-rail arrows. */
+    --arrow-width-resolved: 4.3rem;
+
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    /* Outer tracks hold arrow + edge gutter, so the margins below fit. */
+    grid-template-columns:
+      calc(var(--arrow-width-resolved) + var(--spacing-base))
+      1fr
+      calc(var(--arrow-width-resolved) + var(--spacing-base));
+    row-gap: var(--spacing-base);
+
+    .slides {
+      grid-area: 1 / 1 / 2 / -1;
+    }
+
+    .slide {
+      padding-inline: 0;
+    }
+
+    /* Landscape crop: the frame's inline aspect-ratio (the asset's own) is
+       the preferred height, but the cap clamps squarish assets to ~5:3 and
+       the image cover-crops into it. */
+    .slide-frame {
+      width: 100%;
+      max-height: 60vw;
+
+      img {
+        object-fit: cover;
+      }
+    }
+
+    /* Highlight coordinates are true to the UNCROPPED frame, so they'd
+       drift on the cropped one — hidden here for now. */
+    .highlight {
+      display: none;
+    }
+
+    .nav {
+      position: static;
+      transform: none;
+    }
+
+    /* The margins keep the arrows a gutter off the window edge without
+       insetting the grid itself — the slides span it full-bleed. */
+    .nav-prev {
+      grid-area: 2 / 1;
+      left: auto;
+      margin-left: var(--spacing-base);
+    }
+
+    .nav-next {
+      grid-area: 2 / 3;
+      right: auto;
+      margin-right: var(--spacing-base);
+    }
+  }
+}
+
+/* Dot pagination between the arrows — mobile-variant only; the element only
+   renders when the variant is on, and only shows under 768px. */
+.dots {
+  display: none;
+
+  @media (max-width: 767px) {
+    grid-area: 2 / 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+  }
+}
+
+.dot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background-color: var(--color-grey-2);
+  transition: background-color 0.2s;
+
+  &.is-active {
+    background-color: var(--color-grey-5);
+  }
 }
 
 .slides {

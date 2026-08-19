@@ -9,7 +9,7 @@
   />
   <div
     class="home-page enter-in-fade-up"
-    :class="{ 'hero-first': heroFirst }"
+    :class="{ 'hero-first': heroFirst, 'featured-first': featuredFirst }"
   >
     <component
       :is="moduleComponents[m._type]"
@@ -59,6 +59,10 @@ const showIntro = ref(true)
 // the hero past the fold — drop it. Any other opening module keeps the padding.
 const heroFirst = computed(() => ['moduleBigImageLogo', 'moduleHeadlineOverImage'].includes(modules.value[0]?._type))
 
+// On mobile the page opens with extra headroom — except when a featured
+// product leads, which wants to meet the header like a hero.
+const featuredFirst = computed(() => modules.value[0]?._type === 'moduleFeaturedProduct')
+
 // Every product gid referenced by any module (grid arrays + featured singles),
 // fetched live in one batch so the cached shell stays geo-agnostic.
 const gids = computed(() => {
@@ -100,17 +104,35 @@ useHead({
   padding-top: var(--spacing-page-top);
   padding-bottom: var(--spacing-base);
 
+  /* Mobile opens with extra headroom unless a featured product leads. */
+  @media (max-width: 767px) {
+    &:not(.featured-first) {
+      margin-top: 15rem;
+    }
+  }
+
   &.hero-first {
     padding-top: 0;
   }
 
   & > section + section {
-    margin-top: 20rem;
+    margin-top: 12rem;
+
+    @media (min-width: 768px) {
+      margin-top: 20rem;
+    }
   }
 
-  & > section.featured-product + section.marquee-module,
-  & > section.headline-over-image + section {
+  & > section.featured-product + section.marquee-module {
     margin-top: 3rem;
+  }
+
+  & > section.headline-over-image + section {
+    margin-top: 15rem;
+
+    @media (min-width: 768px) {
+      margin-top: 3rem;
+    }
   }
 
   /* Headline over image joins the contained panels here: it centers its

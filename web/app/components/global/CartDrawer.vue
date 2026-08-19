@@ -106,7 +106,7 @@
       v-else
       class="cart-empty"
     >
-      <p class="text-lg uppercase">{{ $t('cart.empty') }}</p>
+      <p class="text-base-plus lg:text-lg uppercase">{{ $t('cart.empty') }}</p>
     </div>
   </aside>
 </template>
@@ -188,7 +188,7 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
   padding-bottom: var(--spacing-button-lg-height);
   overflow: hidden;
   color: var(--color-green);
-  transform: translateY(calc(100% - var(--spacing-button-lg-height)));
+  transform: translateY(100%);
   transition: transform 0.3s;
 
   &.active {
@@ -197,6 +197,7 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
 
   @media (min-width: 768px) {
     left: calc(50% + var(--spacing-base) / 2);
+    transform: translateY(calc(100% - var(--spacing-button-lg-height)));
   }
 }
 
@@ -276,5 +277,4 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
   text-align: center;
   height: 100%;
 }
-
 </style>

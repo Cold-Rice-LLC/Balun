@@ -1,14 +1,15 @@
 <template>
   <footer class="relative">
-    <IconsWordmark />
-
-    <div class="links-container absolute inset-0 grid grid-cols-2 px-base">
+    <!-- Mobile stacks in DOM order: newsletter, the links row, wordmark at
+         the very bottom. From 768px the links-container overlays the
+         wordmark absolutely, so the order change is invisible there. -->
+    <div class="links-container md:absolute md:inset-0 grid md:grid-cols-2 gap-y-base md:gap-y-0 px-base">
       <div class="newsletter">
         <EmailSignup />
       </div>
 
       <div class="footer-links flex justify-between items-start">
-        <nav class="text-lg text-left uppercase leading-none">
+        <nav class="text-base md:text-lg text-left uppercase leading-none">
           <ul>
             <li
               v-for="(link, i) in primaryLinks"
@@ -38,6 +39,8 @@
         </div>
       </div>
     </div>
+
+    <IconsWordmark />
   </footer>
 </template>
 
@@ -51,13 +54,21 @@ const secondaryLinks = computed(() => settings.value?.footerSecondaryLinks ?? []
 
 <style scoped>
 footer {
-  padding-bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  padding-bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
   color: var(--color-grey-4);
   overflow: hidden;
+
+  @media (min-width: 768px) {
+    padding-bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  }
 }
 
 body.template-home footer {
-  margin-top: 20rem;
+  margin-top: 10rem;
+
+  @media (min-width: 768px) {
+    margin-top: 20rem;
+  }
 }
 
 body.template-pdp footer,
@@ -65,14 +76,27 @@ body.template-info footer {
   margin-top: 10rem;
 }
 
+/* Mobile: gutters + clearance above the bottom-of-stack wordmark. Desktop's
+   overlay layout keeps the deliberate full-bleed (the +1px kills a subpixel
+   edge gap). */
 :deep(.icon-wordmark) {
-  width: calc(100vw + 1px);
+  width: calc(100vw - var(--spacing-base) * 2);
   height: auto;
   pointer-events: auto;
+  margin-top: var(--spacing-base);
+  margin-inline: var(--spacing-base);
+
+  @media (min-width: 768px) {
+    width: calc(100vw + 1px);
+    margin-top: 0;
+    margin-inline: 0;
+  }
 }
 
 .newsletter {
-  padding-left: 8.1vw;
+  @media (min-width: 768px) {
+    padding-left: 8.1vw;
+  }
 }
 
 .newsletter :deep(p),
@@ -81,7 +105,9 @@ body.template-info footer {
 }
 
 .footer-links {
-  padding-left: 11.4vw;
+  @media (min-width: 768px) {
+    padding-left: 11.4vw;
+  }
 }
 
 /* :deep so the re-enable reaches into child components (switcher triggers)
@@ -98,6 +124,14 @@ body.template-info footer {
 
 .footer-links :deep(a:hover) {
   color: var(--color-grey-7);
+}
+
+/* The switchers' trigger is text-lg inside LocaleModal (right for desktop
+   everywhere it's used); the mobile footer runs a size down like its navs. */
+.footer-links :deep(.trigger) {
+  @media (max-width: 767px) {
+    font-size: var(--text-base);
+  }
 }
 
 .links-container {

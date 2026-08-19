@@ -1,6 +1,6 @@
 <template>
   <nav class="fixed bottom-0 left-0 w-full px-base">
-    <ul class="grid grid-cols-2 gap-base text-lg">
+    <ul class="grid grid-cols-2 gap-base text-base-plus lg:text-lg">
       <li>
         <NuxtLink
           :to="localePath('/')"
@@ -92,8 +92,10 @@ nav {
     button {
       background-color: var(--color-grey-1);
       width: 100%;
-      height: var(--spacing-button-lg-height);
-      display: block;
+      height: var(--spacing-button-md-height);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       text-align: center;
       padding: var(--spacing-sm);
       color: var(--color-grey-7);
@@ -104,6 +106,10 @@ nav {
       transition:
         background-color 0.3s,
         color 0.3s;
+
+      @media (min-width: 768px) {
+        height: var(--spacing-button-lg-height);
+      }
     }
   }
 

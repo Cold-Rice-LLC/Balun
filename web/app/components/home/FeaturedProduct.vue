@@ -32,6 +32,7 @@
       <ProductFeatureCarousel
         :slides="slides"
         :alt="product?.title || ''"
+        mobile-nav-below
       />
     </div>
 
@@ -105,11 +106,16 @@ const { isOpen: quickAddOpen } = useQuickAdd()
    so the carousel's "leftover" would just be the image's intrinsic size
    and the frames would never cap to the fold. */
 .featured-product {
-  height: calc(92svh - var(--spacing-page-top));
-  min-height: 60rem;
+  height: calc(65svh - var(--spacing-page-top));
+  min-height: 50rem;
   display: flex;
   flex-direction: column;
   padding-bottom: 7.6rem;
+
+  @media (min-width: 768px) {
+    height: calc(92svh - var(--spacing-page-top));
+    min-height: 60rem;
+  }
 }
 
 .heading {
@@ -174,16 +180,21 @@ const { isOpen: quickAddOpen } = useQuickAdd()
 .ctas {
   position: fixed;
   z-index: 4000;
-  bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
   /* Full width on mobile; from 768px up, the quick-add drawer's left column. */
   inset-inline: var(--spacing-base);
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* Quick add alone on mobile; learn more joins from 768px up. */
+  grid-template-columns: 1fr;
   gap: var(--spacing-base);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s;
   /* transition-delay: 0s; */
+
+  @media (min-width: 768px) {
+    bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  }
 
   &.is-visible {
     opacity: 1;
@@ -216,17 +227,23 @@ const { isOpen: quickAddOpen } = useQuickAdd()
   }
 
   .cta-learn-more {
+    display: none;
     background-color: var(--color-grey-2);
     color: var(--color-grey-6);
 
     &:hover {
       color: var(--color-grey-7);
     }
+
+    @media (min-width: 768px) {
+      display: flex;
+    }
   }
 
   @media (min-width: 768px) {
     right: auto;
     width: calc(50vw - (var(--spacing-base) * 1.5));
+    grid-template-columns: 1fr 1fr;
   }
 }
 </style>

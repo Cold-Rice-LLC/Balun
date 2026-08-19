@@ -93,6 +93,7 @@ export const homeQuery = groq`*[
     _type == "moduleHeadlineOverImage" => {
       mediaType,
       image,
+      mobileImage,
       "videoUrl": video.asset->url,
       ${i18nField('headline')},
       ${i18nField('linkLabel')},

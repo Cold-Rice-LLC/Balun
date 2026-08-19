@@ -131,7 +131,7 @@ onBeforeUnmount(() => {
   }
 
   svg {
-    width: 2.3rem;
+    width: 1.1em;
   }
 
   span {

@@ -53,6 +53,15 @@ export default {
         ),
     },
     {
+      name: 'mobileImage',
+      type: 'image',
+      title: 'Mobile Image',
+      description: 'Optional portrait image for phones. Falls back to the main image when empty.',
+      options: {hotspot: true},
+      fields: [{name: 'alt', type: 'string', title: 'Alt Text'}],
+      hidden: ({parent}) => parent?.mediaType !== 'image',
+    },
+    {
       name: 'headline',
       type: 'internationalizedArrayString',
       title: 'Headline',

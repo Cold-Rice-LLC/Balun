@@ -99,13 +99,14 @@ const play = () => {
   grid-column: 1 / -1;
   display: flex;
   justify-content: center;
+  padding: 0 var(--spacing-base);
 }
 
 /* The headline-over-image media geometry, so the two modules read as one
    family. overflow clips the video/iframe corners to the radius. */
 .media-wrap {
   position: relative;
-  width: 85%;
+  width: 100%;
   aspect-ratio: 16 / 9;
   max-height: 55svh;
   border-radius: var(--radius-def);

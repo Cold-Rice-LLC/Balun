@@ -14,28 +14,30 @@
       />
     </div>
 
-    <div class="card-meta uppercase flex items-center justify-between gap-base">
+    <div class="card-meta uppercase grid grid-cols-[1fr_auto] items-center gap-x-base">
       <p class="title">{{ title }}</p>
 
       <!-- Renders only when live and purchasable (the trigger's own v-if);
-           otherwise the row shows why there's no "+". No prices here — the
-           grid is editorial, price lives on the PDP/quick add. -->
+           otherwise the stock note below says why there's no "+". No prices
+           here — the grid is editorial, price lives on the PDP/quick add. -->
       <ProductQuickAddTrigger
-        class="quick-add"
+        class="quick-add col-start-2 row-start-1"
         :doc="doc"
         :live="live"
       />
 
+      <!-- col-start pins the note under the title (auto-placement would
+           fill the trigger's empty slot beside it instead). -->
       <p
         v-if="live && !live.availableForSale"
-        class="stock-note"
+        class="stock-note col-start-1"
       >
         {{ $t('product.outOfStock') }}
       </p>
 
       <p
         v-else-if="!live"
-        class="stock-note"
+        class="stock-note col-start-1"
       >
         {{ $t('product.unavailable') }}
       </p>
@@ -102,6 +104,7 @@ const cardImage = computed(() => productImage(props.doc, props.live, { w: 900 })
 
 .card-meta {
   padding: var(--spacing-sm) 0;
+  line-height: 1.2;
 
   .stock-note {
     color: var(--color-grey-4);

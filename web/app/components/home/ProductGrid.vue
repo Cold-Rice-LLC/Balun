@@ -1,5 +1,5 @@
 <template>
-  <section class="product-grid-module grid grid-cols-2 md:grid-cols-3 gap-48 px-base">
+  <section class="product-grid-module grid grid-cols-2 md:grid-cols-3 gap-md lg:gap-48 px-base">
     <!-- Animation on this stable wrapper (not ProductCard): the card root
          swaps div → NuxtLink once live data hydrates, which would remount and
          restart the animation. -->

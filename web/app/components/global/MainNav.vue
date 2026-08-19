@@ -11,8 +11,8 @@
       </NuxtLink>
     </div>
 
-    <nav class="flex justify-end items-center">
-      <ul class="text-xs flex gap-x-xs">
+    <nav class="flex justify-end items-start lg:items-center">
+      <ul class="text-base lg:text-xs flex gap-x-xs">
         <li>
           <NuxtLink
             :to="localePath('/feed')"
@@ -60,8 +60,12 @@ header {
 
 nav {
   a {
-    padding: var(--spacing-xs) var(--spacing-sm);
+    padding: var(--spacing-xs) 1.5rem;
     border-radius: calc(infinity * 1px);
+
+    @media (min-width: 768px) {
+      padding: var(--spacing-xs) var(--spacing-sm);
+    }
   }
 }
 
@@ -71,7 +75,8 @@ nav {
   top: 7.7rem;
   background-color: var(--color-grey-1);
   padding: var(--spacing-base) var(--spacing-sm);
-  display: flex;
+  /* display: flex; */
+  display: none;
   align-items: center;
   gap: var(--spacing-base);
   writing-mode: sideways-lr;

@@ -83,6 +83,7 @@ Tailwind Config
   --spacing-sm: 1.2rem;
   --spacing-base: 2rem;
   --spacing-md: 4rem;
+  --spacing-button-md-height: 5rem;
   --spacing-button-lg-height: 6.8rem;
   --spacing-page-top: 8.5rem;
 
