@@ -105,11 +105,11 @@ useHead({
   padding-bottom: var(--spacing-base);
 
   /* Mobile opens with extra headroom unless a featured product leads. */
-  @media (max-width: 767px) {
+  /* @media (max-width: 767px) {
     &:not(.featured-first) {
       margin-top: 15rem;
     }
-  }
+  } */
 
   &.hero-first {
     padding-top: 0;

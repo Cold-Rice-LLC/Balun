@@ -118,7 +118,7 @@ const links = computed(() => (props.module.links ?? []).filter((item) => item.li
   transform: translate(-50%, -50%);
   width: calc(100% - var(--spacing-base) * 2);
   color: var(--color-yellow);
-  font-size: clamp(4rem, 6.5vw, 13rem);
+  font-size: clamp(3.3rem, 6.5vw, 13rem);
   line-height: 1;
 }
 

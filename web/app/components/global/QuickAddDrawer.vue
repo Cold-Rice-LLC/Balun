@@ -13,19 +13,31 @@
     :class="{ active: isOpen && revealed }"
     aria-label="Quick add"
   >
-    <NotchPanel class="quick-add-body text-green">
+    <NotchPanel class="quick-add-body tab-top-max-md text-green">
       <div class="p-base space-y-base">
+        <!-- Mobile: title over price on the left, an underlined learn-more
+             link top-right. Desktop: the original title-left / price-right
+             row — learn more lives in the pill beside the panel instead. -->
         <header class="flex items-start justify-between gap-base font-secondary">
-          <p class="title text-base uppercase">{{ title }}</p>
+          <div class="md:flex md:flex-1 md:items-start md:justify-between md:gap-base">
+            <p class="title text-base uppercase leading-[1.2]">{{ title }}</p>
 
-          <div class="flex items-center gap-base">
             <p
               v-if="price"
-              class="text-base"
+              class="text-base leading-[1.2]"
             >
               {{ price }}
             </p>
           </div>
+
+          <NuxtLink
+            v-if="pdpPath"
+            :to="pdpPath"
+            class="learn-more text-base uppercase leading-[1.2] md:hidden"
+            @click="close"
+          >
+            {{ $t('quickAdd.learnMore') }}
+          </NuxtLink>
         </header>
       </div>
 
@@ -60,11 +72,13 @@
       </template>
     </NotchPanel>
 
-    <div class="learn-more-container w-1/2">
+    <!-- Desktop only: learn more as its own pill beside the panel (mobile
+         carries it as the header link instead). -->
+    <div class="learn-more-container hidden w-1/2 md:block">
       <NuxtLink
         v-if="pdpPath"
         :to="pdpPath"
-        class="learn-more text-base-plus"
+        class="learn-more-pill text-base-plus"
         @click="close"
       >
         {{ $t('quickAdd.learnMore') }}
@@ -218,13 +232,18 @@ watch(cartOpen, (open) => {
 .quick-add-drawer {
   position: fixed;
   z-index: 4900;
-  bottom: var(--spacing-button-lg-height);
+  bottom: var(--spacing-button-md-height);
   /* Full width on mobile regardless of anchor — half a phone screen fits
      nothing (the cart drawer goes full width the same way). Column-sized
      from 768px up. */
   left: var(--spacing-base);
   right: var(--spacing-base);
-  max-height: calc(100svh - var(--spacing-button-lg-height) - var(--spacing-base) * 4);
+  /* A definite height, not max-height: the body's max-height: 100% below
+     needs a resolvable parent height (percentages ignore an auto-height
+     parent's max-height), or tall content grows the bottom-anchored body up
+     over the tab headroom. The drawer is transparent, so the unused region
+     above short content shows nothing. */
+  height: calc(100svh - var(--spacing-button-lg-height) - var(--spacing-base) * 4);
   display: flex;
   align-items: flex-end;
   overflow: hidden;
@@ -232,6 +251,15 @@ watch(cartOpen, (open) => {
   gap: var(--spacing-base);
   pointer-events: none;
   padding-bottom: var(--spacing-base);
+  /* Headroom for the mobile tab-top close button — it hangs above the body,
+     and the drawer's overflow: hidden would clip it flush with the panel.
+     The desktop tab is back on the side and needs none. */
+  padding-top: 5.2rem;
+
+  @media (min-width: 768px) {
+    bottom: var(--spacing-button-lg-height);
+    padding-top: 0;
+  }
 
   .quick-add-body {
     --notch-tab-radius: 3rem;
@@ -239,12 +267,20 @@ watch(cartOpen, (open) => {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    width: 50%;
+    /* Cap to the drawer's content box: taller content would otherwise grow
+       the bottom-anchored body up into the tab's headroom (the padding-top
+       above) and clip the close button. */
+    max-height: 100%;
+    width: 100%;
     transform: translateY(3rem);
     transition:
       transform 0.3s,
       opacity 0.3s;
     opacity: 0;
+
+    @media (min-width: 768px) {
+      width: 50%;
+    }
   }
 
   .learn-more-container {
@@ -276,11 +312,15 @@ watch(cartOpen, (open) => {
    button's own size and content layout. */
 .close {
   width: 5rem;
-  height: 6.2rem;
+  height: 5.2rem;
   color: var(--color-grey-6);
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media (min-width: 768px) {
+    height: 6.2rem;
+  }
 }
 
 /* Top-level, not nested inside .close: the scoped-CSS compiler mangles
@@ -288,14 +328,49 @@ watch(cartOpen, (open) => {
    requires an intermediate scoped element and never matches here). */
 .close :deep(.icon-x) {
   width: 3rem;
-  transform: translateX(-0.5rem);
+
+  @media (min-width: 768px) {
+    transform: translateX(-0.5rem);
+  }
+}
+
+/* When the capped body is shorter than its content, the options region
+   scrolls and the add button stays pinned below it (the BuyPanel treatment)
+   — min-height: 0 down the chain so the flex columns may actually shrink. */
+.quick-add-body :deep(.panel-body) {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.quick-add-body :deep(.options-panel) {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.quick-add-body :deep(.options) {
+  overflow-y: auto;
 }
 
 .state-note {
   color: var(--color-grey-6);
 }
 
+/* Mobile: underlined text link in the header's top-right. */
 .learn-more {
+  color: var(--color-grey-6);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  transition: color 0.3s;
+
+  &:hover {
+    color: var(--color-grey-7);
+  }
+}
+
+/* Desktop: the pill beside the panel. */
+.learn-more-pill {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -307,6 +382,9 @@ watch(cartOpen, (open) => {
   transition:
     background-color 0.3s,
     color 0.3s;
-}
 
+  &:hover {
+    color: var(--color-grey-7);
+  }
+}
 </style>

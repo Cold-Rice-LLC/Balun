@@ -50,10 +50,7 @@ const showLink = computed(() => props.module.linkLabel && props.module.link?.lin
   justify-content: center;
   align-items: center;
   padding: 0 var(--spacing-base);
-
-  @media (min-width: 768px) {
-    height: 100svh;
-  }
+  height: 100svh;
 }
 
 /* Positioning context for the headline: its center is the media's center, so
@@ -65,7 +62,6 @@ const showLink = computed(() => props.module.linkLabel && props.module.link?.lin
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
-  max-height: 55svh;
 
   @media (min-width: 768px) {
     width: 55%;
@@ -87,7 +83,7 @@ const showLink = computed(() => props.module.linkLabel && props.module.link?.lin
   transform: translate(-50%, -50%);
   width: calc(100vw - var(--spacing-base) * 2);
   color: var(--color-yellow);
-  font-size: clamp(4rem, 8vw, 16rem);
+  font-size: clamp(3.3rem, 8vw, 16rem);
   line-height: 1;
 }
 

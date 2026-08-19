@@ -119,7 +119,11 @@ useHead({
 /* Display type leading the page brings its own headroom — tuck the top
    padding in. Other first modules keep the standard page top above. */
 .info-page.leads-prose {
-  padding-top: var(--spacing-base);
+  padding-top: 10rem;
+
+  @media (min-width: 768px) {
+    padding-top: var(--spacing-base);
+  }
 }
 
 .info-legacy {

@@ -79,4 +79,33 @@
   );
   pointer-events: none;
 }
+
+/* Mobile variant (`tab-top-max-md` class from the consumer): under 768px
+   the tab sits ABOVE the body, still flush right — same geometry rotated a
+   quarter turn. Top corners round, bottom-right stays square where the
+   tab's right edge continues the body's; the fillet square hangs to its
+   LEFT, carving the arc from the tab's left edge into the body's top edge.
+   The consumer must leave headroom for the tab (it's outside the body
+   rect). From 768px it's the default side tab. */
+.notch-panel.tab-top-max-md .panel-tab {
+  @media (max-width: 767px) {
+    transform: translateY(-100%);
+    border-top-left-radius: var(--notch-tab-radius, var(--notch-radius-resolved));
+    border-bottom-right-radius: 0;
+  }
+}
+
+.notch-panel.tab-top-max-md .panel-tab::after {
+  @media (max-width: 767px) {
+    top: auto;
+    left: auto;
+    bottom: 0;
+    right: 100%;
+    background: radial-gradient(
+      circle at 0 0,
+      transparent calc(var(--fillet) - 0.5px),
+      var(--notch-bg-resolved) var(--fillet)
+    );
+  }
+}
 </style>

@@ -9,7 +9,7 @@
     >
       <h2
         v-if="module.heading"
-        class="heading text-xl leading-none"
+        class="heading text-xl-minus lg:text-xl leading-none"
       >
         {{ module.heading }}
         <span class="heading-highlight">

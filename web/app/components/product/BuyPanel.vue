@@ -112,8 +112,7 @@ const hasAlternatives = computed(() => props.colorways.some((c) => !c.current &&
 
 const label = computed(() => {
   if (!props.live) return props.livePending ? t('buyBox.loading') : t('buyBox.unavailable')
-  if (!props.live.availableForSale)
-    return hasAlternatives.value ? t('buyBox.seeOptions') : t('buyBox.soldOut')
+  if (!props.live.availableForSale) return hasAlternatives.value ? t('buyBox.seeOptions') : t('buyBox.soldOut')
   return t('buyBox.purchase')
 })
 
@@ -224,16 +223,23 @@ watch(
    button's own size and content layout (mirrors the quick-add drawer's). */
 .close {
   width: 5rem;
-  height: 6.2rem;
+  height: 5.2rem;
   color: var(--color-grey-6);
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media (min-width: 768px) {
+    height: 6.2rem;
+  }
 }
 
 .close :deep(.icon-x) {
   width: 3rem;
-  transform: translateX(-0.5rem);
+
+  @media (min-width: 768px) {
+    transform: translateX(-0.5rem);
+  }
 }
 
 .state-note {
