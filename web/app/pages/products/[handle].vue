@@ -1,9 +1,9 @@
 <template>
   <div
-    class="pdp px-base flex-1 flex flex-col"
+    class="pdp lg:px-base flex-1 flex flex-col"
     :class="{ 'is-switching': switching }"
   >
-    <div class="pdp-content flex flex-1 enter-in-fade-up">
+    <div class="pdp-content flex flex-col-reverse md:flex-row md:gap-0 flex-1 enter-in-fade-up">
       <div class="media-col">
         <!-- Draggable lifestyle gallery (no arrows — dots only), pinned
              while the details column scrolls. Keyed by product so a colorway
@@ -19,8 +19,21 @@
             <div
               v-if="doc.gallery?.length"
               :key="doc.gid"
-              class="carousel-outer absolute top-0 left-0 w-full h-full flex flex-col justify-end"
+              class="carousel-outer md:absolute md:top-0 md:left-0 md:w-full md:h-full md:flex md:flex-col md:justify-end"
             >
+              <!-- Mobile: no carousel — the gallery stacks at the images'
+                   intrinsic ratios. Same srcs as the hidden swiper below, so
+                   nothing downloads twice. -->
+              <div class="media-stack lg:space-y-sm md:hidden">
+                <img
+                  v-for="(image, i) in doc.gallery"
+                  :key="i"
+                  :src="urlFor(image, { w: 1400 })"
+                  :alt="liveForDoc?.title || doc.title"
+                  class="w-full"
+                />
+              </div>
+
               <Swiper
                 class="media-slides"
                 :slides-per-view="1"
@@ -44,7 +57,7 @@
 
               <div
                 v-if="doc.gallery.length > 1"
-                class="pagination flex justify-center gap-3 py-base"
+                class="pagination hidden md:flex justify-center gap-3 py-base"
               >
                 <!-- Loop mode renders clone slides, so navigation and the
                      active marker go through slideToLoop/realIndex, which
@@ -111,6 +124,7 @@
             <ProductFeatureCarousel
               :slides="doc.featureCarousel ?? []"
               :alt="liveForDoc?.title || doc.title"
+              mobile-nav-below
             />
           </div>
 
@@ -324,14 +338,12 @@ useHead({
   cursor: progress;
 }
 
-/* Half-height panel on mobile; from 768px up it pins sticky beside the
-   scrolling details column. relative so the absolute carousel wrapper
-   anchors here at every width (sticky covers it from 768px up, but static
-   would hand mobile off to the transformed page content). Radius and clip
-   live on the swiper itself. */
+/* Mobile: a plain flow wrapper for the stacked gallery. From 768px up it
+   pins sticky beside the scrolling details column, and is the anchor for
+   the absolute carousel wrapper. Radius and clip live on the swiper
+   itself. */
 .media {
   position: relative;
-  height: 50svh;
 
   @media (min-width: 768px) {
     position: sticky;
@@ -341,18 +353,29 @@ useHead({
 }
 
 .media-col {
-  width: calc(50% - 1rem);
-  flex: none;
+  @media (min-width: 768px) {
+    width: calc(50% - 1rem);
+    flex: none;
+  }
 
+  /* Hidden on mobile (the stack replaces it) via display here, not a
+     `hidden` utility: Swiper's own stylesheet is unlayered, so its
+     `.swiper { display: block }` beats any layered Tailwind utility
+     regardless of specificity. */
   .swiper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    border-top-left-radius: var(--radius-def);
-    border-bottom-left-radius: var(--radius-def);
+    display: none;
+
+    @media (min-width: 768px) {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-top-left-radius: var(--radius-def);
+      border-bottom-left-radius: var(--radius-def);
+    }
   }
 
   .pagination {
@@ -383,6 +406,12 @@ useHead({
   display: block;
 }
 
+.media-stack {
+  border-bottom-left-radius: var(--radius-def);
+  border-bottom-right-radius: var(--radius-def);
+  overflow: hidden;
+}
+
 .details {
   /* Takes the row's leftover beside the fixed-width media column. min-width 0
      because a flex item defaults to min-width:auto, which refuses to shrink
@@ -395,11 +424,18 @@ useHead({
   gap: var(--spacing-base);
   color: var(--color-grey-3);
   background-color: var(--color-white);
-  /* Bottom out the sticky buy row on short content: the column always
-     spans at least the visible panel height. */
-  min-height: calc(100svh - var(--spacing-page-top) - var(--spacing-button-lg-height) - var(--spacing-base));
+  border-top-left-radius: var(--radius-def);
   border-top-right-radius: var(--radius-def);
-  border-bottom-right-radius: var(--radius-def);
+
+  /* Longhand corner resets per the house partial-radius rule. */
+  @media (min-width: 768px) {
+    /* Bottom out the sticky buy row on short content: the column always
+       spans at least the visible panel height. */
+    min-height: calc(100svh - var(--spacing-page-top) - var(--spacing-button-lg-height) - var(--spacing-base));
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: var(--radius-def);
+  }
 }
 
 .pdp-header {
@@ -444,16 +480,18 @@ useHead({
   z-index: 10;
   /* Grow, not margin-top:auto — the leftover height (the details column is
      stretched to the 100svh media at minimum) becomes the grid row's, so the
-     sticky buy-col always has room to pin in view even with no description. */
+     sticky buy-col always has room to pin in view even with no description.
+     Mobile is a flex column instead: description first, buy panel under it. */
   flex-grow: 1;
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: var(--spacing-base);
-  align-items: start;
   padding-block: var(--spacing-base);
 
   @media (min-width: 768px) {
+    display: grid;
     grid-template-columns: 1fr 1fr;
+    align-items: start;
   }
 }
 
@@ -467,31 +505,51 @@ useHead({
    would pin it, with the carousel shrinking below 32svh to make the room
    on shorter viewports. */
 .details.no-description {
-  max-height: 100svh;
+  @media (min-width: 768px) {
+    max-height: 100svh;
+  }
 }
 
 .details.no-description .buy-row {
-  margin-bottom: calc(var(--spacing-page-top) + var(--spacing-button-lg-height));
+  @media (min-width: 768px) {
+    margin-bottom: calc(var(--spacing-page-top) + var(--spacing-button-lg-height));
+  }
 }
 
 /* The flex minimum of the fixed-height region is its specified 32svh, which
    would win over the cap and push the reserve below the fold invisibly —
    zero it so the region actually yields. */
 .details.no-description .carousel-region {
-  min-height: 0;
+  @media (min-width: 768px) {
+    min-height: 0;
+  }
 }
 
-/* Sticky within the tall grid area, pinned above the bottom nav — the buy
-   panel expands upward from here. */
+/* Mobile: the buy-col itself is the sticky element, ordered under the
+   description — it pins above the bottom nav while its flow spot (the end
+   of the description) is below the fold, then scrolls away with the page.
+   The tall flex parent (.buy-row) is what gives it room to shift up.
+   Desktop: sticky on the inner within the tall grid area instead — the buy
+   panel expands upward from here either way. */
 .buy-col {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  @media (max-width: 767px) {
+    order: 1;
+    position: sticky;
+    bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
+  }
+
+  @media (min-width: 768px) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
 
   .buy-col-inner {
-    position: sticky;
-    bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+    @media (min-width: 768px) {
+      position: sticky;
+      bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+    }
   }
 }
 

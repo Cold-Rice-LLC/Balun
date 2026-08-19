@@ -4,7 +4,7 @@
       <Transition name="panel-pop">
         <NotchPanel
           v-if="expanded"
-          class="panel text-green"
+          class="panel tab-top-max-md text-green"
         >
           <ProductOptionsPanel
             v-if="variants.length"
@@ -168,17 +168,12 @@ watch(
   position: absolute;
   bottom: 0;
   left: 0;
-  /* Body + tab together span the column on mobile — the tab (5rem) would
-     otherwise jut past the page gutter into horizontal overflow. From 768px
-     up the body matches the purchase button's width and the tab hangs into
-     the column gap, like the quick-add drawer's does. */
-  width: calc(100% - 5rem);
+  /* Full width like the quick add: the mobile tab sits above the body
+     (tab-top-max-md); from 768px it hangs into the column gap, like the
+     quick-add drawer's does. */
+  width: 100%;
 
   --notch-tab-radius: 3rem;
-
-  @media (min-width: 768px) {
-    width: 100%;
-  }
 }
 
 /* Rising in and dropping out like the quick-add drawer. The leaving panel
@@ -216,7 +211,12 @@ watch(
 .panel :deep(.options) {
   padding-top: var(--spacing-base);
   overflow-y: auto;
-  max-height: calc(100svh - var(--spacing-button-lg-height) * 2 - var(--spacing-base) * 2);
+  /* Mobile also clears the tab-top close button (5.2rem) hanging above. */
+  max-height: calc(100svh - var(--spacing-button-lg-height) * 2 - var(--spacing-base) * 2 - 5.2rem);
+
+  @media (min-width: 768px) {
+    max-height: calc(100svh - var(--spacing-button-lg-height) * 2 - var(--spacing-base) * 2);
+  }
 }
 
 /* Tab shape/background/fillet come from NotchPanel — this is just the
