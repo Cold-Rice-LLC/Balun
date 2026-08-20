@@ -28,7 +28,9 @@ const components = {
   types: {
     image: ({ value }) =>
       h('img', {
-        src: urlFor(value, { w: 600 }),
+        // Wide enough for the full-width mobile rendering on high-DPI
+        // screens; desktop only draws it at inline-word size.
+        src: urlFor(value, { w: 1000 }),
         alt: value.alt || '',
         class: 'prose-image',
         // Intrinsic dimensions so the browser reserves the right width
@@ -57,11 +59,20 @@ const components = {
 /* Serializer-rendered nodes carry no scope attr — flat :deep, never nested
    (the compiler emits broken selectors otherwise). */
 .prose-module :deep(.prose-image) {
-  display: inline-block;
-  /* 1.5x the font's x-height (the ex unit IS the x-height), aspect kept by
-     the auto width. */
-  width: auto;
-  height: 1.5ex;
-  vertical-align: middle;
+  /* Mobile: a full-width block that breaks the text either side of it. */
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-block: 1rem;
+
+  @media (min-width: 768px) {
+    /* Back into the flow between words — 1.5x the font's x-height (the ex
+       unit IS the x-height), aspect kept by the auto width. */
+    display: inline-block;
+    width: auto;
+    height: 1.5ex;
+    margin-block: 0;
+    vertical-align: middle;
+  }
 }
 </style>
