@@ -9,10 +9,11 @@ const CATEGORIES = [
 ]
 
 /**
- * A post on the Feed page. Every post gets a detail page at /feed/<slug>
- * unless `link` is set — then the card links there instead (external opens a
- * new tab). Category drives styling only: events = yellow, blog = grey,
- * stream/products = cover-image background.
+ * A post on the Feed page. Every post gets a detail page at /feed/<slug>;
+ * stream posts link to /live instead while the live page's `isLive` toggle is
+ * on. Category drives the card's fallback background (events = yellow, blog =
+ * grey, products = light, stream = purple) and its extras: events get an RSVP
+ * link, streams get a detail-page recap video.
  *
  * Title/excerpt/body are translated (internationalized arrays resolved by
  * $lang); category, slug, date, image, and link are language-agnostic (the
@@ -82,10 +83,17 @@ export default {
     },
     {
       name: 'link',
-      type: 'linkTarget',
-      title: 'Link Override',
-      description:
-        'Optional. If set, the card links here instead of its detail page (external URLs open a new tab — e.g. an RSVP form).',
+      type: 'url',
+      title: 'RSVP Link',
+      description: 'Optional. Shown on the card as an RSVP link (opens a new tab — e.g. a form).',
+      hidden: ({parent}) => parent?.category !== 'events',
+    },
+    {
+      name: 'recapVideo',
+      type: 'moduleVideo',
+      title: 'Recap Video',
+      description: 'Detail-page recap of the stream, for once it is over.',
+      hidden: ({parent}) => parent?.category !== 'stream',
     },
   ],
   orderings: [

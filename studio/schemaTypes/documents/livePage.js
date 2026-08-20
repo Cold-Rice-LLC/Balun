@@ -45,6 +45,13 @@ export default {
       title: 'Stream URL',
       description: 'Placeholder for the live-stream integration — not rendered yet.',
     },
+    {
+      name: 'isLive',
+      type: 'boolean',
+      title: 'Live Now',
+      description: 'Flip on when the stream starts — feed stream cards link to /live while this is on.',
+      initialValue: false,
+    },
   ],
   preview: {
     select: {market: 'market'},
