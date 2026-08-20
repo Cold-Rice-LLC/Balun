@@ -15,21 +15,34 @@
       <p>{{ formatDate(post.publishedAt) }}</p>
       <h2>{{ cardTitle }}</h2>
 
-      <p
-        v-if="showExcerpt"
-        class="excerpt font-quaternary text-sm normal-case"
-      >
-        {{ post.excerpt }}
-      </p>
+      <div class="mt-12 flex items-end gap-base">
+        <a
+          v-if="post.category === 'events' && post.link"
+          class="rsvp text-lg bg-black text-grey-1 rounded-lg leading-none px-4 py-2 uppercase"
+          :href="post.link"
+          target="_blank"
+          rel="noopener"
+        >
+          {{ $t('feed.rsvp') }}
+        </a>
+
+        <p
+          v-if="showExcerpt"
+          class="excerpt font-secondary text-base normal-case"
+        >
+          {{ post.excerpt }}
+        </p>
+      </div>
     </div>
 
     <span
       v-if="post.category === 'stream'"
-      class="watch font-tertiary text-xs uppercase"
+      class="watch text-lg bg-black text-grey-1 rounded-lg leading-none px-4 py-2 uppercase"
       aria-hidden="true"
     >
-      <span class="watch-tri">&#9654;</span>
-      {{ $t('feed.watch') }}
+      <IconsPlay />
+
+      <span>{{ $t('feed.watch') }}</span>
     </span>
 
     <!-- Whole-card link; after .head in the DOM so it paints (and clicks)
@@ -39,16 +52,6 @@
       :to="destination"
       :aria-label="cardTitle"
     />
-
-    <a
-      v-if="post.category === 'events' && post.link"
-      class="rsvp font-tertiary text-xs"
-      :href="post.link"
-      target="_blank"
-      rel="noopener"
-    >
-      {{ $t('feed.rsvp') }}
-    </a>
 
     <!-- In the tab slot so the body's overflow clip can't cut them off: the
          row hugs the nipple's outer edge and runs back in over the card.
@@ -149,6 +152,15 @@ const formatDate = (iso) => {
 .feed-card :deep(.panel-body) {
   position: relative;
   padding: var(--spacing-base);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* Only covers hold the card open to the big media ratio — solid cards hug
+   their content. */
+.feed-card.has-cover :deep(.panel-body) {
   aspect-ratio: 4 / 5;
 
   @media (min-width: 768px) {
@@ -159,8 +171,7 @@ const formatDate = (iso) => {
 /* Over a photo the category text color can't be trusted to read — white
    text instead. The chips stay category-colored: they sit on the corner
    blend. */
-.feed-card.has-cover .head,
-.feed-card.has-cover .rsvp {
+.feed-card.has-cover .head {
   color: var(--color-white);
 }
 
@@ -235,48 +246,19 @@ const formatDate = (iso) => {
 
 .excerpt {
   max-width: 44rem;
-  margin-top: var(--spacing-sm);
-  line-height: 1.4;
-}
-
-/* RSVP sits above the whole-card link; watch is decoration (the card link
-   does the navigating). Both anchor to the bottom-left corner. */
-.rsvp,
-.watch {
-  position: absolute;
-  bottom: var(--spacing-base);
-  left: var(--spacing-base);
-}
-
-.rsvp {
-  z-index: 2;
-  border: 1px solid currentColor;
-  border-radius: 2rem;
-  padding: 0.2rem 1.2rem;
-  transition:
-    background-color 0.3s,
-    color 0.3s;
-
-  &:hover {
-    background-color: var(--color-black);
-    color: var(--color-grey-1);
-    border-color: var(--color-black);
-  }
+  line-height: 1.1;
 }
 
 .watch {
-  z-index: 1;
+  width: auto;
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  padding: 0.6rem 1.4rem;
-  border-radius: 0.6rem;
-  background-color: var(--color-black);
-  color: var(--color-red);
 }
 
-.watch-tri {
-  font-size: 0.8em;
+.watch :deep(.icon-play) {
+  width: 1em;
+  flex: none;
 }
 
 /* From 768px: anchored to the nipple's outer edge, running back in over
