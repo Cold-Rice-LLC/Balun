@@ -43,6 +43,10 @@
  *
  * Seen-state is a 15-minute cookie set at play start, so the intro returns
  * 15 minutes after it last played.
+ *
+ * A market/language switch is a hard reload of the same page (see
+ * LocaleModal) — it stamps sessionStorage, and a fresh stamp skips the play
+ * even while the demo flag forces it on every ordinary load.
  */
 
 // Demo flag: while showing the client, the intro plays on every reload.
@@ -83,7 +87,8 @@ useHead({
         '(function(){' +
         `var seen=document.cookie.indexOf('${COOKIE_NAME}=')!==-1;` +
         "var reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;" +
-        `if(reduced||!(${INTRO_ON_EVERY_LOAD}||!seen))return;` +
+        "var sw=false;try{var v=+sessionStorage.getItem('balun-intro-skip');sessionStorage.removeItem('balun-intro-skip');sw=Date.now()-v<60000}catch(e){}" +
+        `if(reduced||sw||!(${INTRO_ON_EVERY_LOAD}||!seen))return;` +
         "document.documentElement.classList.add('intro-pending');" +
         `${JSON.stringify(svgDefs.map((def) => def.src))}.forEach(function(src){` +
         "var link=document.createElement('link');link.rel='preload';link.as='image';link.href=src;document.head.appendChild(link)});" +
@@ -112,9 +117,6 @@ const { bodies, addBody, start, stop, explode } = usePhysics(containerW, contain
   frictionAir: 0.01,
   explosionIntensity: 60,
 })
-
-const playing = ref(false)
-useScrollLock(playing)
 
 const explosionX = ref(0)
 const explosionY = ref(0)
@@ -184,7 +186,6 @@ const armTimers = () => {
     }, EXPLOSION_DELAY_MS),
 
     setTimeout(() => {
-      playing.value = false
       document.documentElement.classList.remove('intro-pending')
       emit('done')
     }, EXPLOSION_DELAY_MS + REVEAL_DURATION_MS + FINISH_BUFFER_MS),
@@ -203,7 +204,6 @@ onMounted(() => {
   const introSeen = useCookie(COOKIE_NAME, { maxAge: COOKIE_MAX_AGE })
   introSeen.value = '1'
 
-  playing.value = true
   play()
 })
 
@@ -216,13 +216,24 @@ onUnmounted(() => {
 
 <style>
 /* Hidden in the cached SSR shell; the pre-paint head script shows it by
-   classing <html> when the intro should play. Above the drawers (4900). */
+   classing <html> when the intro should play. Above the drawers (4900).
+   touch-action covers iOS, where overflow: hidden alone doesn't stop touch
+   panning — the fixed overlay receives every touch while it's up. */
 .home-intro {
   display: none;
   z-index: 9000;
+  touch-action: none;
 }
 
 html.intro-pending .home-intro {
   display: block;
+}
+
+/* Page pinned for the whole play — keyed on the html class (not a JS lock,
+   which couldn't arm until hydration) so it holds from the first paint and
+   releases the instant the end timer pulls the class. */
+html.intro-pending,
+html.intro-pending body {
+  overflow: hidden;
 }
 </style>
