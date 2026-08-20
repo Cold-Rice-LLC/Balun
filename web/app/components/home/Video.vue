@@ -36,16 +36,7 @@
             :alt="module.poster.alt || ''"
           />
           <span class="watch uppercase">
-            <svg
-              viewBox="0 0 25 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M0 0L24.0146 9.59863L0 19.1973V0Z"
-                fill="currentColor"
-              />
-            </svg>
+            <IconsPlay />
 
             {{ module.buttonText || $t('video.watch') }}
           </span>
@@ -157,9 +148,10 @@ const play = () => {
   padding: 0.4rem 1rem;
   background-color: var(--color-black);
   color: var(--color-white);
+}
 
-  svg {
-    width: 1em;
-  }
+.watch :deep(.icon-play) {
+  width: 1em;
+  flex: none;
 }
 </style>
