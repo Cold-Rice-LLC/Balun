@@ -15,7 +15,7 @@
   >
     <div
       v-if="lines.length"
-      class="cart-body text-green pb-base h-full flex flex-col"
+      class="cart-body text-green md:pb-base h-full flex flex-col"
       :class="{ 'is-pending': pending }"
       :aria-busy="pending"
     >
@@ -62,8 +62,8 @@
               </div>
             </div>
 
-            <div class="flex flex-col justify-between items-end h-full">
-              <p class="line-price text-base">
+            <div class="ml-auto flex flex-col justify-between items-end h-full">
+              <p class="line-price text-base leading-none">
                 {{ formatMoney(line.cost.totalAmount) }}
               </p>
 
@@ -100,6 +100,17 @@
           <p class="text-sm note opacity-50">{{ $t('cart.taxesNote') }}</p>
         </div>
       </div>
+
+      <!-- Mobile: the drawer covers the secondary nav, so checkout lives
+           here, full width at the bottom edge. From 768px it stays the
+           nav's cart button. -->
+      <button
+        class="checkout md:hidden flex-none text-base-plus"
+        :disabled="pending"
+        @click="checkout"
+      >
+        {{ $t('nav.checkout') }}
+      </button>
     </div>
 
     <div
@@ -115,9 +126,10 @@
 /**
  * Cart overlay panel (see the cart-pass mockups). Filled state = line items +
  * subtotal; empty state = "Your cart is empty". Anchored bottom-right above the
- * SecondaryNav bar; the CHECKOUT action lives in that bar, not here.
+ * SecondaryNav bar. CHECKOUT: on mobile the drawer covers the nav and carries
+ * its own full-width button; from 768px the action is the nav's cart button.
  */
-const { isOpen, lines, lineCount, subtotal, close, updateLine, removeLine } = useCart()
+const { isOpen, lines, lineCount, subtotal, close, checkout, updateLine, removeLine } = useCart()
 
 useScrollLock(isOpen)
 
@@ -174,7 +186,6 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
 
 .cart-drawer {
   position: fixed;
-  z-index: 4900;
   bottom: 0;
   right: var(--spacing-base);
   /* Full width on mobile; the right column from 768px up. */
@@ -185,7 +196,6 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
   background-color: var(--color-grey-1);
   border-top-left-radius: var(--radius-def);
   border-top-right-radius: var(--radius-def);
-  padding-bottom: var(--spacing-button-lg-height);
   overflow: hidden;
   color: var(--color-green);
   transform: translateY(100%);
@@ -195,8 +205,16 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
     transform: translateY(0);
   }
 
+  /* Mobile covers the secondary nav (its button row sits at 4901 in the
+     shared stacking context) — the in-drawer checkout replaces it. From
+     768px the drawer ducks back under the nav, whose cart button is the
+     checkout action, and clears it with the bottom padding. */
+  z-index: 4902;
+
   @media (min-width: 768px) {
+    z-index: 4900;
     left: calc(50% + var(--spacing-base) / 2);
+    padding-bottom: var(--spacing-button-lg-height);
     transform: translateY(calc(100% - var(--spacing-button-lg-height)));
   }
 }
@@ -234,9 +252,15 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
 
 .line {
   display: grid;
-  grid-template-columns: 8rem 1fr;
+  /* Smaller thumb on mobile so price + stepper + remove fit beside the
+     title instead of wrapping below it. */
+  grid-template-columns: 5.5rem 1fr;
   gap: var(--spacing-base);
   align-items: start;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 8rem 1fr;
+  }
 }
 
 .thumb {
@@ -253,11 +277,19 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
 }
 
 .line-controls {
+  /* Mobile: remove sits under the stepper to keep the column narrow. */
   display: flex;
-  align-items: center;
-  gap: var(--spacing-base);
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-xs);
   margin-top: var(--spacing-xs);
   color: var(--color-grey-6);
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-base);
+  }
 
   .remove {
     text-decoration: underline;
@@ -267,6 +299,20 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
 
 .note {
   color: var(--color-grey-6);
+}
+
+/* Yellow like the nav button's checkout state — same action, same color. */
+.checkout {
+  height: var(--spacing-button-md-height);
+  background-color: var(--color-yellow);
+  color: var(--color-green);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+
+  &:disabled {
+    cursor: progress;
+  }
 }
 
 .cart-empty {
