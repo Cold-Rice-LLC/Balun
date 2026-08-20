@@ -11,7 +11,7 @@
     id="cart-drawer"
     class="cart-drawer"
     :class="{ active: isOpen }"
-    aria-label="Cart"
+    :aria-label="$t('cart.label')"
   >
     <div
       v-if="lines.length"

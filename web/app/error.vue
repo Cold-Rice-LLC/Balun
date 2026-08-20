@@ -9,7 +9,7 @@
         class="home-button uppercase text-xs bg-yellow"
         @click="handleClearError"
       >
-        Back to home
+        {{ $t('error.backHome') }}
       </button>
     </div>
   </NuxtLayout>
@@ -23,9 +23,8 @@ const props = defineProps({
   },
 })
 
-const message = computed(() =>
-  props.error?.statusCode === 404 ? 'Page not found' : 'Something went wrong',
-)
+const { t } = useI18n()
+const message = computed(() => (props.error?.statusCode === 404 ? t('error.notFound') : t('error.generic')))
 
 // The error page renders outside the normal page lifecycle, so the router's
 // scroll-to-top behavior never fires — do it ourselves.

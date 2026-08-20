@@ -15,7 +15,7 @@
            views are shareable URLs. Clicking the active pill clears it. -->
       <nav
         class="filters font-tertiary text-xs"
-        aria-label="Filter posts"
+        :aria-label="$t('feed.filterPosts')"
       >
         <span>{{ $t('feed.filter') }}</span>
 
@@ -85,6 +85,7 @@ const posts = computed(() => feed.value?.posts ?? [])
 
 // The URL is the filter state — SSR renders a shared ?filter= link already
 // filtered. Unknown values are ignored rather than showing an empty page.
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const activeFilter = computed(() => (CATEGORIES.includes(route.query.filter) ? route.query.filter : null))
@@ -101,7 +102,7 @@ const filteredPosts = computed(() =>
 )
 
 useHead({
-  title: () => `Feed — Balun`,
+  title: () => `${t('meta.feed')} — Balun`,
   bodyAttrs: { class: 'template-feed' },
 })
 </script>

@@ -86,10 +86,16 @@ const props = defineProps({
 // to refetch so the pills tell the truth.
 const emit = defineEmits(['added', 'addFailed'])
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 const variants = computed(() => props.product?.variants.nodes ?? [])
-const optionLabel = computed(() => props.product?.options?.[0]?.name || t('quickAdd.sizeFallback'))
+// Shopify sends option names in English ("Size"). Translate the ones we know
+// by name, and show anything unrecognized as Shopify worded it.
+const optionLabel = computed(() => {
+  const name = props.product?.options?.[0]?.name
+  if (!name) return t('quickAdd.sizeFallback')
+  return te(`productOptions.${name}`) ? t(`productOptions.${name}`) : name
+})
 
 const variantId = defineModel('variantId', { default: null })
 const selectedVariant = computed(() => pickVariant(variants.value, variantId.value))

@@ -12,7 +12,8 @@
     "subtotal": "Subtotal",
     "items": "{n} item | {n} items",
     "taxesNote": "Taxes and shipping calculated at checkout",
-    "remove": "Remove"
+    "remove": "Remove",
+    "label": "Cart"
   },
   "stepper": {
     "decrease": "Decrease quantity",
@@ -30,7 +31,8 @@
     "soldOut": "sold out",
     "unavailable": "Not available in your region",
     "learnMore": "learn more",
-    "cta": "quick add"
+    "cta": "quick add",
+    "label": "Quick add"
   },
   "carousel": {
     "prev": "Previous image",
@@ -44,9 +46,9 @@
     "unavailable": "Not available in your region"
   },
   "product": {
-    "soldOut": "sold out",
     "unavailable": "Unavailable",
-    "outOfStock": "out of stock"
+    "outOfStock": "out of stock",
+    "colorways": "Colorways"
   },
   "locale": {
     "market": "Market",
@@ -56,10 +58,8 @@
   "newsletter": {
     "heading": "Sign up for emails",
     "placeholder": "Email Address",
-    "submit": "Sign up"
-  },
-  "pdp": {
-    "closeOptions": "Close options"
+    "submit": "Sign up",
+    "subscribe": "Subscribe"
   },
   "video": {
     "watch": "watch"
@@ -76,6 +76,25 @@
     "liveStream": "live stream",
     "live": "live",
     "rsvp": "RSVP",
-    "watch": "watch"
+    "watch": "watch",
+    "filterPosts": "Filter posts"
+  },
+  "productOptions": {
+    "Size": "Size",
+    "Color": "Color"
+  },
+  "live": {
+    "viewing": "{count} Viewing",
+    "locationLabel": "Live in {city}"
+  },
+  "error": {
+    "notFound": "Page not found",
+    "generic": "Something went wrong",
+    "backHome": "Back to home"
+  },
+  "meta": {
+    "feed": "Feed",
+    "info": "Info",
+    "product": "Product"
   }
 }

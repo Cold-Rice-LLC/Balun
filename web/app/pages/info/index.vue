@@ -77,7 +77,7 @@ const leadsProse = computed(() => modules.value[0]?._type === 'moduleInfoProse')
 
 useHead({
   // Schema title is tab/SEO only — the modular page renders no heading.
-  title: () => `${page.value?.title || 'Info'} — Balun`,
+  title: () => `${page.value?.title || t('meta.info')} — Balun`,
   bodyAttrs: { class: 'template-info' },
 })
 </script>

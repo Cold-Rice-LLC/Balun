@@ -320,7 +320,7 @@ const onGallerySwiper = (swiper) => {
 }
 
 useHead({
-  title: () => `${doc.value?.title ?? 'Product'} — Balun`,
+  title: () => `${doc.value?.title ?? t('meta.product')} — Balun`,
   bodyAttrs: { class: 'template-pdp' },
 })
 </script>

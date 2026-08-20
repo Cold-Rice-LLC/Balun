@@ -2,7 +2,7 @@
   <nav
     v-if="items.length"
     class="colorways"
-    aria-label="Colorways"
+    :aria-label="$t('product.colorways')"
   >
     <ul class="grid grid-cols-3 gap-xs">
       <li

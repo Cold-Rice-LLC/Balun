@@ -36,8 +36,8 @@
       class="live-link"
     >
       <IconsRing />
-      <span>12M Viewing</span>
-      <span>Live in Beijing</span>
+      <span>{{ $t('live.viewing', { count: '12M' }) }}</span>
+      <span>{{ $t('live.locationLabel', { city: 'Beijing' }) }}</span>
     </NuxtLink>
   </header>
 </template>

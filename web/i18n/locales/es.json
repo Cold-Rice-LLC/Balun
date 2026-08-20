@@ -1,8 +1,8 @@
 {
   "nav": {
     "shop": "tienda",
-    "feed": "feed",
-    "info": "info",
+    "feed": "novedades",
+    "info": "información",
     "cart": "carrito ({n})",
     "checkout": "pagar"
   },
@@ -12,7 +12,8 @@
     "subtotal": "Subtotal",
     "items": "{n} artículo | {n} artículos",
     "taxesNote": "Impuestos y envío calculados al pagar",
-    "remove": "Eliminar"
+    "remove": "Eliminar",
+    "label": "Carrito"
   },
   "stepper": {
     "decrease": "Disminuir cantidad",
@@ -30,7 +31,8 @@
     "soldOut": "agotado",
     "unavailable": "No disponible en tu región",
     "learnMore": "ver más",
-    "cta": "compra rápida"
+    "cta": "compra rápida",
+    "label": "Compra rápida"
   },
   "carousel": {
     "prev": "Imagen anterior",
@@ -44,9 +46,9 @@
     "unavailable": "No disponible en tu región"
   },
   "product": {
-    "soldOut": "Agotado",
     "unavailable": "No disponible",
-    "outOfStock": "agotado"
+    "outOfStock": "agotado",
+    "colorways": "Colores"
   },
   "locale": {
     "market": "Mercado",
@@ -54,12 +56,10 @@
     "closePicker": "Cerrar selector de {label}"
   },
   "newsletter": {
-    "heading": "Suscríbete para recibir correos",
+    "heading": "Suscríbete",
     "placeholder": "Correo electrónico",
-    "submit": "Suscríbete"
-  },
-  "pdp": {
-    "closeOptions": "Cerrar opciones"
+    "submit": "Suscríbete",
+    "subscribe": "Suscríbete"
   },
   "video": {
     "watch": "ver"
@@ -76,6 +76,25 @@
     "liveStream": "transmisión en vivo",
     "live": "en vivo",
     "rsvp": "RSVP",
-    "watch": "ver"
+    "watch": "ver",
+    "filterPosts": "Filtrar publicaciones"
+  },
+  "productOptions": {
+    "Size": "Talla",
+    "Color": "Color"
+  },
+  "live": {
+    "viewing": "{count} Viendo",
+    "locationLabel": "En vivo desde {city}"
+  },
+  "error": {
+    "notFound": "Página no encontrada",
+    "generic": "Algo salió mal",
+    "backHome": "Volver al inicio"
+  },
+  "meta": {
+    "feed": "Novedades",
+    "info": "Información",
+    "product": "Producto"
   }
 }

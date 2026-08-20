@@ -11,7 +11,7 @@
     id="quick-add-drawer"
     class="quick-add-drawer"
     :class="{ active: isOpen && revealed }"
-    aria-label="Quick add"
+    :aria-label="$t('quickAdd.label')"
   >
     <NotchPanel class="quick-add-body tab-top-max-md text-green">
       <div class="p-base space-y-base">

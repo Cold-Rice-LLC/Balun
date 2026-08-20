@@ -16,7 +16,7 @@
       class="text-base md:text-lg uppercase leading-none flex-none"
       :aria-label="$t('newsletter.submit')"
     >
-      <span class="block lg:hidden">Subscribe</span>
+      <span class="block lg:hidden">{{ $t('newsletter.subscribe') }}</span>
       <span class="hidden lg:block">→</span>
     </button>
   </form>
