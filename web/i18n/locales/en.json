@@ -72,6 +72,10 @@
       "events": "events",
       "blog": "blog"
     },
-    "empty": "No posts here yet."
+    "empty": "No posts here yet.",
+    "liveStream": "live stream",
+    "live": "live",
+    "rsvp": "RSVP",
+    "watch": "watch"
   }
 }

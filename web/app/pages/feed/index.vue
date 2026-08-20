@@ -38,29 +38,11 @@
         <li
           v-for="post in filteredPosts"
           :key="post._id"
-          class="post"
         >
-          <p class="meta text-2xs uppercase">
-            <span class="category">{{ post.category }}</span>
-            <span v-if="post.publishedAt"> · {{ formatDate(post.publishedAt) }}</span>
-          </p>
-
-          <h2 class="uppercase text-lg">{{ post.title }}</h2>
-
-          <img
-            v-if="post.coverImage"
-            :src="urlFor(post.coverImage)"
-            :alt="post.title"
-            class="cover"
-            loading="lazy"
+          <FeedCard
+            :post="post"
+            :is-live="feed?.isLive"
           />
-
-          <div
-            v-if="post.body"
-            class="post-body space-y-base"
-          >
-            <SanityContent :value="post.body" />
-          </div>
         </li>
       </ul>
 
@@ -117,11 +99,6 @@ const toggleFilter = (cat) => {
 const filteredPosts = computed(() =>
   activeFilter.value ? posts.value.filter((p) => p.category === activeFilter.value) : posts.value,
 )
-
-const urlFor = useSanityImage()
-
-// Localized date, matching the active locale's language.
-const formatDate = (iso) => new Intl.DateTimeFormat(market.value.locale, { dateStyle: 'long' }).format(new Date(iso))
 
 useHead({
   title: () => `Feed — Balun`,
@@ -202,9 +179,25 @@ useHead({
   }
 }
 
+/* Same column as the filter row: full width on mobile, the center 6 from
+   768px up. Under 768px each card's chip tab hangs ABOVE its body (the
+   NotchPanel tab-top variant), so the list carries extra headroom per card
+   — overriding the space-y-base utility, which loses to unlayered scoped
+   CSS. */
 .posts {
   grid-column: 1 / -1;
-  color: var(--color-grey-1);
+  /* Above the shoe-outline overlay (z 20) — the outlines are page
+     background, not something to draw over the cards. */
+  position: relative;
+  z-index: 30;
+
+  @media (max-width: 767px) {
+    padding-top: 3rem;
+
+    > li + li {
+      margin-top: calc(var(--spacing-base) + 5rem);
+    }
+  }
 
   @media (min-width: 768px) {
     grid-column: 4 / span 6;
@@ -224,36 +217,4 @@ useHead({
 .stub {
   grid-column: 1 / -1;
 }
-
-.post {
-  padding-bottom: var(--spacing-base);
-  border-bottom: 1px solid var(--color-grey-7);
-
-  &:last-child {
-    border-bottom: none;
-  }
-}
-
-.meta {
-  color: var(--color-grey-4);
-  margin-bottom: var(--spacing-xs);
-}
-
-.cover {
-  width: 100%;
-  height: auto;
-  border-radius: var(--radius-def);
-  margin-top: var(--spacing-sm);
-}
-
-.post-body {
-  margin-top: var(--spacing-sm);
-  color: var(--color-grey-4);
-
-  :deep(a) {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-}
-
 </style>

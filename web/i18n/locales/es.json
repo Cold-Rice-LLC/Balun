@@ -72,6 +72,10 @@
       "events": "eventos",
       "blog": "blog"
     },
-    "empty": "Aún no hay publicaciones aquí."
+    "empty": "Aún no hay publicaciones aquí.",
+    "liveStream": "transmisión en vivo",
+    "live": "en vivo",
+    "rsvp": "RSVP",
+    "watch": "ver"
   }
 }

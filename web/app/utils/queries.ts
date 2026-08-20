@@ -143,6 +143,7 @@ export const legalPageQuery = groq`*[
 
 export const feedQuery = groq`{
   "page": *[_type == "feedPage"][0]{ title },
+  "isLive": count(*[_type == "livePage" && isLive == true]) > 0,
   "posts": *[_type == "feedPost"] | order(publishedAt desc){
     _id,
     ${i18nField('title')},
@@ -152,7 +153,7 @@ export const feedQuery = groq`{
     coverImage,
     ${i18nField('excerpt')},
     ${i18nField('body')},
-    link{linkType, internalPath, externalUrl}
+    link
   }
 }`
 
