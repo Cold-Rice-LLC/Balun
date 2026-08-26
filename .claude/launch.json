@@ -7,6 +7,12 @@
       "runtimeArgs": ["run", "--prefix", "web", "dev"],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "studio-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "--prefix", "studio", "dev"],
+      "port": 3333
     }
   ]
 }
