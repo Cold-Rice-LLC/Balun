@@ -2,6 +2,7 @@
   <NotchPanel
     class="feed-card tab-top-max-md"
     :class="[`cat-${post.category}`, { 'has-cover': !!post.coverImage }]"
+    :style="accentStyle"
   >
     <img
       v-if="post.coverImage"
@@ -76,13 +77,15 @@
  * poking out past the top-right corner (off the right edge; above it under
  * 768px, quick-add style), always in the category color — over a cover
  * image, a corner gradient fades that color into the photo so the nipple
- * blends in. The category chip (plus a "live" chip while the live page
- * toggle is on) anchors top-right and shifts out over the nipple. Cover
- * image full-bleed in the body when set; category fallback colors otherwise
- * (events yellow/black, blog grey-7/grey-1, products grey-1/grey-7, stream
- * purple/white). Date + title top-left (streams say "live stream" instead
- * of their title), events show the excerpt and an RSVP link, blog shows the
- * excerpt, streams get a watch affordance.
+ * blends in — and editors can recolor that accent per post (the schema's
+ * cardBackground, cover cards only). The category chip (plus a "live" chip
+ * while the live page toggle is on) anchors top-right and shifts out over
+ * the nipple. Cover image full-bleed in the body when set; category
+ * fallback colors otherwise (events yellow/black, blog grey-7/grey-1,
+ * products grey-1/grey-7, stream purple/white). Date + title top-left
+ * (streams say "live stream" instead of their title), events show the
+ * excerpt and an RSVP link, blog shows the excerpt, streams get a watch
+ * affordance.
  *
  * The card links to its detail page — except a stream while live, which
  * links to /live.
@@ -103,6 +106,22 @@ const destination = computed(() =>
 )
 
 const showExcerpt = computed(() => ['events', 'blog'].includes(props.post.category) && props.post.excerpt)
+
+// Per-post accent override: inline --notch-bg beats the .cat-* class, so the
+// nipple, fillet, and corner wash all recolor at once. Cover cards only — a
+// value orphaned by removing the cover must not recolor a solid card. Text
+// color is whichever of black/white contrasts more with the picked color
+// (WCAG relative luminance; the crossover sits at L = 0.179).
+const accentStyle = computed(() => {
+  if (!props.post.coverImage || !props.post.bgColor) return undefined
+  const lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+  const [r, g, b] = [1, 3, 5].map((i) => lin(parseInt(props.post.bgColor.slice(i, i + 2), 16) / 255))
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+  return {
+    '--notch-bg': props.post.bgColor,
+    color: luminance > 0.179 ? 'var(--color-black)' : 'var(--color-white)',
+  }
+})
 
 // Numeric mm.dd.yyyy per the card mockups — the same in every language.
 const formatDate = (iso) => {

@@ -151,6 +151,7 @@ export const feedQuery = groq`{
     category,
     publishedAt,
     coverImage,
+    "bgColor": cardBackground.hex,
     ${i18nField('excerpt')},
     ${i18nField('body')},
     link

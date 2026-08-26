@@ -68,6 +68,18 @@ export default {
       options: {hotspot: true},
     },
     {
+      name: 'cardBackground',
+      type: 'color',
+      title: 'Card Accent Color',
+      description:
+        'Recolors the corner tab and its fade over the cover image. Leave empty for the category default.',
+      options: {disableAlpha: true},
+      // Only meaningful over a cover (solid cards keep category colors), so
+      // only offered there. A value set and then orphaned by removing the
+      // cover lingers in the data; the card ignores it without a cover.
+      hidden: ({parent}) => !parent?.coverImage?.asset,
+    },
+    {
       name: 'excerpt',
       type: 'internationalizedArrayText',
       title: 'Excerpt',

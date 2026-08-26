@@ -2,6 +2,7 @@ import {defineConfig, defineField} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
+import {colorInput} from '@sanity/color-input'
 import {LANGUAGES, DEFAULT_LANGUAGE} from '../locales.mjs'
 import {schemaTypes} from './schemaTypes'
 import {myStructure, singletonTypes} from './myStructure'
@@ -40,7 +41,12 @@ export default defineConfig({
   projectId: 'pful3cpt',
   dataset: 'production',
 
-  plugins: [structureTool({structure: myStructure}), visionTool(), internationalizedArrayPlugin],
+  plugins: [
+    structureTool({structure: myStructure}),
+    visionTool(),
+    internationalizedArrayPlugin,
+    colorInput(),
+  ],
 
   schema: {
     types: schemaTypes,
