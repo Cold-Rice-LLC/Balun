@@ -47,11 +47,15 @@
   border-bottom-right-radius: var(--notch-radius-resolved);
 }
 
+/* Tucked 1px under the body edge: the tab paints separately from the body,
+   and two butted antialiased edges composite over the page behind them —
+   a hairline seam at the join. The overlap hides under the body's edge
+   pixels; same-color paint, so it never shows. */
 .panel-tab {
   position: absolute;
   top: 0;
   right: 0;
-  transform: translateX(100%);
+  transform: translateX(calc(100% - 1px));
   background-color: var(--notch-bg-resolved);
   border-top-right-radius: var(--notch-tab-radius, var(--notch-radius-resolved));
   border-bottom-right-radius: var(--notch-tab-radius, var(--notch-radius-resolved));
@@ -89,7 +93,8 @@
    rect). From 768px it's the default side tab. */
 .notch-panel.tab-top-max-md .panel-tab {
   @media (max-width: 767px) {
-    transform: translateY(-100%);
+    /* Same 1px seam-hiding overlap as the side tab, into the top edge. */
+    transform: translateY(calc(-100% + 1px));
     border-top-left-radius: var(--notch-tab-radius, var(--notch-radius-resolved));
     border-bottom-right-radius: 0;
   }

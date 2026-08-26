@@ -208,6 +208,24 @@ const formatDate = (iso) => {
      endpoint never lands on the canvas at all: the visible fade happens in
      the first ~40%, and the sub-1% tail crawls to zero off-card. */
   background:
+    /* Corner hold: the big wash is already a few percent transparent at the
+       fillet's depth, and next to the solid tab that difference reads as a
+       faint line. This small circle stays fully solid past the fillet's
+       bottom (tab 5rem + fillet 1.7rem = 6.7rem — half its 13.4rem radius),
+       then melts into the wash below. */
+    radial-gradient(
+      circle 13.4rem at 100% 0,
+      var(--notch-bg) 50%,
+      color-mix(in srgb, var(--notch-bg) 97%, transparent) 55%,
+      color-mix(in srgb, var(--notch-bg) 88%, transparent) 61%,
+      color-mix(in srgb, var(--notch-bg) 75%, transparent) 68%,
+      color-mix(in srgb, var(--notch-bg) 58%, transparent) 75%,
+      color-mix(in srgb, var(--notch-bg) 40%, transparent) 82%,
+      color-mix(in srgb, var(--notch-bg) 22%, transparent) 88%,
+      color-mix(in srgb, var(--notch-bg) 9%, transparent) 94%,
+      color-mix(in srgb, var(--notch-bg) 2%, transparent) 98%,
+      transparent 100%
+    ),
     radial-gradient(
       ellipse 145% 145% at 100% 0,
       var(--notch-bg) 3%,
