@@ -33,6 +33,7 @@ const components = {
         src: urlFor(value, { w: 1000 }),
         alt: value.alt || '',
         class: 'prose-image',
+        loading: 'lazy',
         // Intrinsic dimensions so the browser reserves the right width
         // before the file loads (no text reflow).
         ...sanityImageDimensions(value),
