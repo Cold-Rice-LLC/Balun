@@ -1,8 +1,8 @@
 <template>
   <Transition
     name="feed-detail"
-    :appear="animateIn"
     :duration="400"
+    @after-enter="focusClose"
     @after-leave="afterLeave"
   >
     <div
@@ -24,13 +24,15 @@
         :class="`cat-${post.category}`"
       >
         <article class="content uppercase">
-          <p>{{ formatFeedDate(post.publishedAt) }}</p>
-          <h1
-            :id="titleId"
-            class="text-lg md:text-xl leading-none"
-          >
-            {{ post.title }}
-          </h1>
+          <div>
+            <p>{{ formatFeedDate(post.publishedAt) }}</p>
+            <h1
+              :id="titleId"
+              class="text-lg md:text-xl leading-none"
+            >
+              {{ post.title }}
+            </h1>
+          </div>
 
           <img
             v-if="post.coverImage"
@@ -48,7 +50,7 @@
 
           <a
             v-if="post.category === 'events' && post.link"
-            class="rsvp text-lg bg-black text-grey-1 rounded-lg leading-none px-4 py-2"
+            class="rsvp self-start text-lg bg-black text-grey-1 rounded-lg leading-none px-4 py-2"
             :href="post.link"
             target="_blank"
             rel="noopener"
@@ -140,8 +142,25 @@ const close = () => {
 useScrollLock(ref(true))
 onKeyStroke('Escape', close)
 
-const animateIn = !useNuxtApp().isHydrating
-const open = ref(true)
+// Opening animates on client navigations only: the modal starts closed and
+// opens on mount, so the Transition plays a normal enter. Server render and
+// hydration start open — no animation, and nothing for the client to catch
+// up on. (Not `appear`: Vue's SSR compiler wraps a Transition carrying that
+// prop — even bound false — in a <template>, hiding a directly loaded modal
+// until hydration.)
+const open = ref(import.meta.server || useNuxtApp().isHydrating)
+
+// Focus lands on the close button so keyboard users start inside the
+// dialog — once it exists: right away when hydrating open, after the enter
+// on a client navigation.
+const closeButton = ref(null)
+const focusClose = () => closeButton.value?.focus()
+onMounted(() => {
+  if (open.value) focusClose()
+  else open.value = true
+})
+
+// Closing holds the route change until the leave animation ends.
 let resolveLeft
 const afterLeave = () => resolveLeft?.()
 onBeforeRouteLeave(async () => {
@@ -152,10 +171,6 @@ onBeforeRouteLeave(async () => {
   open.value = false
   await left
 })
-
-// Focus lands on the close button so keyboard users start inside the dialog.
-const closeButton = ref(null)
-onMounted(() => closeButton.value?.focus())
 </script>
 
 <style scoped>
@@ -195,7 +210,7 @@ onMounted(() => closeButton.value?.focus())
 
   position: relative;
   width: 100%;
-  max-width: 100rem;
+  max-width: 90rem;
   margin: auto;
 }
 
@@ -246,13 +261,24 @@ onMounted(() => closeButton.value?.focus())
   width: 2.4rem;
 }
 
+/* Children stretch to the panel's width — modules fill it; the RSVP pill
+   opts out with self-start. */
 .content {
   min-height: 30rem;
   padding: var(--spacing-base);
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: var(--spacing-base);
+}
+
+/* The shared video module sizes itself for the home/info grid (inset, 55%
+   wide); in the panel it fills the column like the other modules. */
+.content :deep(.video-module) {
+  padding: 0;
+}
+
+.content :deep(.video-module .media-wrap) {
+  width: 100%;
 }
 
 .cover {
@@ -264,8 +290,4 @@ onMounted(() => closeButton.value?.focus())
   line-height: 1.1;
 }
 
-/* Modules span the panel; the text module caps its own measure. */
-.content > :deep(.feed-module) {
-  width: 100%;
-}
 </style>

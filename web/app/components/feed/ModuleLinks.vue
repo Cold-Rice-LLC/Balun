@@ -1,7 +1,7 @@
 <template>
   <ul
     v-if="links.length"
-    class="feed-module links flex flex-wrap gap-sm"
+    class="links flex flex-wrap gap-sm"
   >
     <li
       v-for="item in links"

@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="module.body?.length"
-    class="feed-module text-module rich-text font-secondary normal-case"
+    class="text-module rich-text font-secondary normal-case"
   >
     <RichText :value="module.body" />
   </div>

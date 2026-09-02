@@ -1,8 +1,5 @@
 <template>
-  <figure
-    v-if="module.image"
-    class="feed-module"
-  >
+  <figure v-if="module.image">
     <img
       :src="urlFor(module.image, { w: 1600 })"
       :alt="module.image.alt || ''"
