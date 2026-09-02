@@ -77,7 +77,8 @@
     "live": "live",
     "rsvp": "RSVP",
     "watch": "watch",
-    "filterPosts": "Filter posts"
+    "filterPosts": "Filter posts",
+    "loadMore": "load more"
   },
   "productOptions": {
     "Size": "Size",

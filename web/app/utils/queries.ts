@@ -141,22 +141,41 @@ export const legalPageQuery = groq`*[
   ${i18nField('body')}
 }`
 
+// 5 while pagination is under test — bump once the feed has real volume.
+export const FEED_PAGE_SIZE = 5
+
+const feedPostProjection = `
+  _id,
+  ${i18nField('title')},
+  "slug": slug.current,
+  category,
+  publishedAt,
+  coverImage,
+  "bgColor": cardBackground.hex,
+  ${i18nField('excerpt')},
+  ${i18nField('body')},
+  link
+`
+
+// Feed posts page by cursor, newest first with _id as the tiebreaker so two
+// posts sharing a timestamp can't repeat or vanish across a page boundary.
+// $category narrows to one category (null = all). Both queries over-fetch by
+// one row: the extra is the has-more probe, trimmed before render.
+const feedPostFilter = `_type == "feedPost" && ($category == null || category == $category)`
+const feedPostOrder = `order(publishedAt desc, _id asc) [0...${FEED_PAGE_SIZE + 1}]`
+
 export const feedQuery = groq`{
   "page": *[_type == "feedPage"][0]{ title },
   "isLive": count(*[_type == "livePage" && isLive == true]) > 0,
-  "posts": *[_type == "feedPost"] | order(publishedAt desc){
-    _id,
-    ${i18nField('title')},
-    "slug": slug.current,
-    category,
-    publishedAt,
-    coverImage,
-    "bgColor": cardBackground.hex,
-    ${i18nField('excerpt')},
-    ${i18nField('body')},
-    link
-  }
+  "posts": *[${feedPostFilter}] | ${feedPostOrder} { ${feedPostProjection} }
 }`
+
+// Pages after the first: everything strictly past the last rendered post
+// ($cursorDate/$cursorId = its publishedAt/_id).
+export const feedPostsQuery = groq`*[
+  ${feedPostFilter}
+  && (publishedAt < $cursorDate || (publishedAt == $cursorDate && _id > $cursorId))
+] | ${feedPostOrder} { ${feedPostProjection} }`
 
 // Market-scoped at the document level like home: the market's page if it
 // exists, else the default (no market).

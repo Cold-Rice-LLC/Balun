@@ -77,7 +77,8 @@
     "live": "en vivo",
     "rsvp": "RSVP",
     "watch": "ver",
-    "filterPosts": "Filtrar publicaciones"
+    "filterPosts": "Filtrar publicaciones",
+    "loadMore": "cargar más"
   },
   "productOptions": {
     "Size": "Talla",

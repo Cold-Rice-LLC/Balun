@@ -10,7 +10,9 @@
       <IconsShoeOutlines2 preserveAspectRatio="xMidYMid slice" />
     </div>
 
-    <template v-if="posts.length">
+    <!-- Filters stay up whenever a filter is active, even over zero results —
+         otherwise there'd be no way to clear it. -->
+    <template v-if="posts.length || activeFilter">
       <!-- Single-select category filter, mirrored into ?filter= so filtered
            views are shareable URLs. Clicking the active pill clears it. -->
       <nav
@@ -32,11 +34,11 @@
       </nav>
 
       <ul
-        v-if="filteredPosts.length"
+        v-if="posts.length"
         class="posts space-y-base"
       >
         <li
-          v-for="post in filteredPosts"
+          v-for="post in posts"
           :key="post._id"
         >
           <FeedCard
@@ -52,6 +54,15 @@
       >
         {{ $t('feed.empty') }}
       </p>
+
+      <button
+        v-if="hasMore"
+        class="load-more filter-pill font-tertiary text-xs"
+        :disabled="loadingMore"
+        @click="loadMore"
+      >
+        {{ $t('feed.loadMore') }}
+      </button>
     </template>
 
     <div
@@ -64,27 +75,16 @@
 </template>
 
 <script setup>
-import { feedQuery } from '~/utils/queries'
+import { feedQuery, feedPostsQuery, FEED_PAGE_SIZE } from '~/utils/queries'
 
 // Matches the feedPost schema's category list; values double as the
 // language-agnostic ?filter= URL values (labels translate, slugs don't).
 const CATEGORIES = ['stream', 'products', 'events', 'blog']
 
-// Feed content is translated: keyed by language so each caches separately and
-// switching language refetches in place. Category/date/image are language-
-// agnostic; title/body resolve $lang in the query.
-const market = useMarket()
-const sanity = useSanity()
-const { data: feed } = await useAsyncData(
-  () => `feed-${market.value.lang}`,
-  () => sanity.fetch(feedQuery, { lang: market.value.lang }),
-  { watch: [() => market.value.lang] },
-)
-
-const posts = computed(() => feed.value?.posts ?? [])
-
 // The URL is the filter state — SSR renders a shared ?filter= link already
 // filtered. Unknown values are ignored rather than showing an empty page.
+// The filter lives in the query (not client-side) so every page is a full
+// page of the picked category.
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
@@ -97,9 +97,47 @@ const toggleFilter = (cat) => {
   })
 }
 
-const filteredPosts = computed(() =>
-  activeFilter.value ? posts.value.filter((p) => p.category === activeFilter.value) : posts.value,
+// Feed content is translated: keyed by language (and filter) so each combo
+// caches separately and switching either refetches in place. Category/date/
+// image are language-agnostic; title/body resolve $lang in the query.
+const market = useMarket()
+const sanity = useSanity()
+const { data: feed } = await useAsyncData(
+  () => `feed-${market.value.lang}-${activeFilter.value ?? 'all'}`,
+  () => sanity.fetch(feedQuery, { lang: market.value.lang, category: activeFilter.value }),
+  { watch: [() => market.value.lang, activeFilter] },
 )
+
+// Cursor pagination, load-more style: `posts` accumulates trimmed pages and
+// resets whenever the base fetch swaps (language or filter change). Each
+// batch arrives one over page size — the extra row only signals another
+// page exists.
+const posts = ref([])
+const hasMore = ref(false)
+const takePage = (batch, { reset = false } = {}) => {
+  hasMore.value = batch.length > FEED_PAGE_SIZE
+  const page = batch.slice(0, FEED_PAGE_SIZE)
+  posts.value = reset ? page : [...posts.value, ...page]
+}
+watch(feed, (f) => takePage(f?.posts ?? [], { reset: true }), { immediate: true })
+
+const loadingMore = ref(false)
+const loadMore = async () => {
+  const last = posts.value[posts.value.length - 1]
+  loadingMore.value = true
+  try {
+    takePage(
+      await sanity.fetch(feedPostsQuery, {
+        lang: market.value.lang,
+        category: activeFilter.value,
+        cursorDate: last.publishedAt,
+        cursorId: last._id,
+      }),
+    )
+  } finally {
+    loadingMore.value = false
+  }
+}
 
 useHead({
   title: () => `${t('meta.feed')} — Balun`,
@@ -209,6 +247,24 @@ useHead({
   grid-column: 1 / -1;
   color: var(--color-grey-5);
   padding-block: var(--spacing-base);
+
+  @media (min-width: 768px) {
+    grid-column: 4 / span 6;
+  }
+}
+
+/* Same column as the list, centered under it; pill look shared with the
+   filters. Above the shoe overlay (z 20) so it stays clickable. */
+.load-more {
+  grid-column: 1 / -1;
+  justify-self: center;
+  position: relative;
+  z-index: 30;
+  color: var(--color-grey-1);
+
+  &:disabled {
+    opacity: 0.5;
+  }
 
   @media (min-width: 768px) {
     grid-column: 4 / span 6;
