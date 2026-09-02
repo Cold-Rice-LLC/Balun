@@ -18,6 +18,7 @@ export default {
       name: 'mediaType',
       type: 'string',
       title: 'Media Type',
+      description: 'Image or a silent looping video.',
       options: {
         list: [
           {title: 'Image', value: 'image'},
@@ -32,8 +33,18 @@ export default {
       name: 'image',
       type: 'image',
       title: 'Image',
+      description:
+        'Shown at about half the window width, centered, with the headline overlapping it. Set the hotspot to choose what stays visible when it is cropped.',
       options: {hotspot: true},
-      fields: [{name: 'alt', type: 'string', title: 'Alt Text'}],
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alt Text',
+          description:
+            'Screen-reader description of the image. Leave empty if it is purely decorative.',
+        },
+      ],
       hidden: ({parent}) => parent?.mediaType !== 'image',
       validation: (Rule) =>
         Rule.custom((value, context) =>
@@ -58,7 +69,15 @@ export default {
       title: 'Mobile Image',
       description: 'Optional portrait image for phones. Falls back to the main image when empty.',
       options: {hotspot: true},
-      fields: [{name: 'alt', type: 'string', title: 'Alt Text'}],
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alt Text',
+          description:
+            'Screen-reader description of the image. Leave empty if it is purely decorative.',
+        },
+      ],
       hidden: ({parent}) => parent?.mediaType !== 'image',
     },
     {
@@ -72,14 +91,16 @@ export default {
       name: 'linkLabel',
       type: 'internationalizedArrayString',
       title: 'Link Label',
-      description: 'Optional caption-style link under the media (e.g. "The world\'s fastest shoe").',
+      description:
+        'Optional caption-style link under the media (e.g. "The world\'s fastest shoe").',
       validation: englishIfAny,
     },
     {
       name: 'link',
       type: 'linkTarget',
       title: 'Link',
-      description: 'Where the caption links. The caption only renders with both a label and a target.',
+      description:
+        'Where the caption links. The caption only renders with both a label and a target.',
     },
   ],
   preview: {

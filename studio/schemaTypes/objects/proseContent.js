@@ -21,7 +21,14 @@ export default {
             name: 'link',
             type: 'object',
             title: 'Link',
-            fields: [{name: 'href', type: 'url', title: 'URL'}],
+            fields: [
+              {
+                name: 'href',
+                type: 'url',
+                title: 'URL',
+                description: 'Full web address, including https://.',
+              },
+            ],
           },
         ],
       },
@@ -30,7 +37,14 @@ export default {
         {
           type: 'image',
           options: {hotspot: true},
-          fields: [{name: 'alt', type: 'string', title: 'Alt Text'}],
+          fields: [
+            {
+              name: 'alt',
+              type: 'string',
+              title: 'Alt Text',
+              description: 'Screen-reader description of the inline image.',
+            },
+          ],
         },
       ],
     },

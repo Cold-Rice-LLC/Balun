@@ -33,6 +33,8 @@ export default {
       name: 'product',
       type: 'reference',
       title: 'Product',
+      description:
+        'The product to feature. The slides shown here are its Feature Carousel (edit them on the product), and the button opens its buy panel.',
       to: [{type: 'product'}],
       validation: (Rule) => Rule.required(),
     },

@@ -15,6 +15,8 @@ export default {
       name: 'products',
       type: 'array',
       title: 'Products',
+      description:
+        'Pick and order the products. Ones that are draft, archived or deleted in Shopify are skipped automatically.',
       of: [{type: 'reference', to: [{type: 'product'}]}],
       validation: (Rule) => Rule.min(1).error('Add at least one product.'),
     },

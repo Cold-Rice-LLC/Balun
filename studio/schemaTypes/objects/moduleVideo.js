@@ -2,7 +2,8 @@ import {PlayIcon} from '@sanity/icons'
 import {englishIfAny} from '../lib/i18nValidation'
 
 // Matches watch?v=, youtu.be/, shorts/ and embed/ URLs; group 1 is the ID.
-const YOUTUBE_ID_PATTERN = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/
+const YOUTUBE_ID_PATTERN =
+  /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/
 
 /**
  * Home page module: a click-to-play video in the headline-over-image media
@@ -19,6 +20,7 @@ export default {
       name: 'videoType',
       type: 'string',
       title: 'Video Type',
+      description: 'Upload an MP4 or embed a YouTube video.',
       options: {
         list: [
           {title: 'MP4 Upload', value: 'mp4'},
@@ -67,7 +69,15 @@ export default {
       title: 'Poster',
       description: 'Shown with the "watch" pill until the video is played.',
       options: {hotspot: true},
-      fields: [{name: 'alt', type: 'string', title: 'Alt Text'}],
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alt Text',
+          description:
+            'Screen-reader description of the image. Leave empty if it is purely decorative.',
+        },
+      ],
       validation: (Rule) => Rule.required(),
     },
   ],

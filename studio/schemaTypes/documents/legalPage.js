@@ -25,6 +25,7 @@ export default {
       name: 'title',
       type: 'internationalizedArrayString',
       title: 'Title',
+      description: 'Heading at the top of the page.',
       validation: requireEnglish,
     },
     {
@@ -66,6 +67,7 @@ export default {
       name: 'body',
       type: 'internationalizedArrayBlockContent',
       title: 'Body',
+      description: 'The policy text. Headings, lists, links and images are supported.',
       validation: requireEnglish,
     },
   ],

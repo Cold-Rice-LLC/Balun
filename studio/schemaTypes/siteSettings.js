@@ -7,7 +7,8 @@ export default {
       name: 'siteTitle',
       type: 'string',
       title: 'Site Title',
-      description: 'The title of the site as it appears in the browser tab and search results.',
+      description:
+        'Intended for the browser tab and search results. Not wired up on the site yet — page titles are set in code for now.',
     },
     {
       name: 'metaDescription',
@@ -15,26 +16,28 @@ export default {
       title: 'Meta Description',
       rows: 3,
       description:
-        'A fallback description for the site, used in search results. Can be overridden by per-page meta descriptions.',
+        'Intended as the site-wide fallback for search-result snippets. Not wired up on the site yet.',
     },
     {
       name: 'ogImage',
       type: 'image',
       title: 'OG Image',
-      description: 'An image used for Open Graph metadata. Can be overridden by per-page images.',
+      description:
+        'Intended as the preview image when a link to the site is shared. Not wired up on the site yet.',
     },
     {
       name: 'footerPrimaryLinks',
       type: 'array',
       title: 'Footer — Primary Links',
-      description: 'The primary list of links shown in the footer.',
+      description: 'The main link list in the footer (e.g. Info, Feed, Live). Drag to reorder.',
       of: [{type: 'navLink'}],
     },
     {
       name: 'footerSecondaryLinks',
       type: 'array',
       title: 'Footer — Secondary Links',
-      description: 'The secondary list of links shown in the footer.',
+      description:
+        'The smaller link list in the footer, for policies and social links. Drag to reorder.',
       of: [{type: 'navLink'}],
     },
   ],

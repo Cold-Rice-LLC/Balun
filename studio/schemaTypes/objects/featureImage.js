@@ -20,6 +20,7 @@ export default {
       name: 'alt',
       type: 'string',
       title: 'Alt Text',
+      description: 'Screen-reader description of the slide. Leave empty to use the product title.',
     },
     {
       name: 'highlights',

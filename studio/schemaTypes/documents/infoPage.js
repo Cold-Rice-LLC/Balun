@@ -29,6 +29,8 @@ export default {
       name: 'modules',
       type: 'array',
       title: 'Modules',
+      description:
+        'Page builder — add and reorder Text, Image, Text + Images and Video modules; they stack top to bottom on the black page.',
       of: [
         {type: 'moduleInfoText'},
         {type: 'moduleInfoImage'},

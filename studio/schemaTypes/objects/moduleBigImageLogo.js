@@ -16,6 +16,7 @@ export default {
       name: 'mediaType',
       type: 'string',
       title: 'Media Type',
+      description: 'Image or a silent looping video.',
       options: {
         list: [
           {title: 'Image', value: 'image'},
@@ -30,8 +31,18 @@ export default {
       name: 'image',
       type: 'image',
       title: 'Image',
+      description:
+        'Cover-cropped to fill the module, so landscape works best. Set the hotspot to choose what stays visible when it is cropped. The balun wordmark is overlaid near the bottom.',
       options: {hotspot: true},
-      fields: [{name: 'alt', type: 'string', title: 'Alt Text'}],
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alt Text',
+          description:
+            'Screen-reader description of the image. Leave empty if it is purely decorative.',
+        },
+      ],
       hidden: ({parent}) => parent?.mediaType !== 'image',
       validation: (Rule) =>
         Rule.custom((value, context) =>
@@ -54,6 +65,8 @@ export default {
       name: 'style',
       type: 'string',
       title: 'Style',
+      description:
+        'Full Width bleeds edge to edge with a white wordmark; Contained insets the media into a rounded-top panel with a yellow wordmark.',
       options: {
         list: [
           {title: 'Full Width', value: 'fullWidth'},

@@ -30,6 +30,8 @@ export default {
       name: 'title',
       type: 'internationalizedArrayString',
       title: 'Title',
+      description:
+        'Heading on the feed card and the detail page. Stream cards show "Live stream" instead, so for those it only appears on the detail page.',
       validation: requireEnglish,
     },
     {
@@ -47,6 +49,8 @@ export default {
       name: 'category',
       type: 'string',
       title: 'Category',
+      description:
+        'Sets the card colour and what it shows: Events get the excerpt and an RSVP link, Blog gets the excerpt, Products shows the cover, Stream gets a "watch" button and links to /live while the Live page is set to Live Now. Also the value the feed filter uses.',
       options: {
         list: CATEGORIES,
         layout: 'radio',
@@ -57,6 +61,8 @@ export default {
       name: 'publishedAt',
       type: 'datetime',
       title: 'Published At',
+      description:
+        "Date printed on the card and the feed's sort order (newest first). Future dates still show — use publish/unpublish to hold a post.",
       initialValue: () => new Date().toISOString(),
       validation: (Rule) => Rule.required(),
     },
@@ -64,7 +70,8 @@ export default {
       name: 'coverImage',
       type: 'image',
       title: 'Cover Image',
-      description: 'Card background for stream/products posts; the right-side image on detail pages.',
+      description:
+        'Card background for stream/products posts; the right-side image on detail pages.',
       options: {hotspot: true},
     },
     {
@@ -90,7 +97,8 @@ export default {
       name: 'body',
       type: 'internationalizedArrayBlockContent',
       title: 'Body',
-      description: 'Detail-page content.',
+      description:
+        "Long-form content for the post's detail view. Headings, lists, links and images are supported.",
       validation: englishIfAny,
     },
     {
@@ -104,7 +112,8 @@ export default {
       name: 'recapVideo',
       type: 'moduleVideo',
       title: 'Recap Video',
-      description: 'Detail-page recap of the stream, for once it is over.',
+      description:
+        'Recap of the stream, shown in the detail view once it is over.',
       hidden: ({parent}) => parent?.category !== 'stream',
     },
   ],

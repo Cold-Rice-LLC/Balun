@@ -15,6 +15,8 @@ export default {
       name: 'text',
       type: 'internationalizedArrayText',
       title: 'Text',
+      description:
+        'Small centered block of mono caps. Line breaks are kept, so break lines where you want them.',
       validation: requireEnglish,
     },
   ],

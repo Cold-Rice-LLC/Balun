@@ -15,6 +15,8 @@ export default {
       name: 'linkType',
       type: 'string',
       title: 'Link Type',
+      description:
+        'Internal for a page on this site (opens in place); External for another website (opens in a new tab).',
       options: {
         list: [
           {title: 'Internal', value: 'internal'},

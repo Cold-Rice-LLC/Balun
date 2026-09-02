@@ -26,6 +26,8 @@ export default {
       name: 'tagline',
       type: 'internationalizedArrayString',
       title: 'Tagline',
+      description:
+        'One short line on the PDP between the feature carousel and the buy button (e.g. "The world\'s fastest shoe").',
       validation: englishIfAny,
     },
     {
@@ -48,6 +50,7 @@ export default {
           name: 'alt',
           type: 'string',
           title: 'Alt Text',
+          description: 'Screen-reader description. Leave empty to use the product title.',
         },
       ],
     },

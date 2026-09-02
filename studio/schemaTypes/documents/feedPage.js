@@ -11,6 +11,7 @@ export default {
       name: 'title',
       type: 'string',
       title: 'Title',
+      description: 'Reserved for a page heading — nothing on the site renders it yet.',
     },
   ],
 }
