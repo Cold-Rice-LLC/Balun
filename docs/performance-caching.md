@@ -132,6 +132,11 @@ regenerating in the background (no cache-miss stampede).
 
 - `/info`, marketing shells → `prerender` (pure CDN, zero functions).
 - `/` (home), `/feed` → `isr` with a modest expiration, or `isr: true` + webhook revalidation (editor-driven).
+  - `/feed` filters by `?filter=`. Vercel ISR keys its cache on the **path alone**, so the feed's
+    rule must allow-list that param — `isr: { expiration: N, allowQuery: ['filter'] }` — or every
+    filtered view would be served the cached unfiltered page. Load-more pages are client fetches
+    straight to Sanity and never touch the page cache. The feed detail (`/feed/[slug]`) renders the
+    feed underneath its modal and carries the same param, so it needs the same allow-list.
 - Product detail pages → `isr` (cached shell carries images/copy/Sanity content/price).
 - Buy box / live inventory → NOT in cached HTML; client fetch or a tiny **Vercel Edge Function**
   (`/api/inventory/[id]`) with a short micro-cache.

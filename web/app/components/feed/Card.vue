@@ -13,7 +13,7 @@
     />
 
     <div class="head uppercase leading-none">
-      <p>{{ formatDate(post.publishedAt) }}</p>
+      <p>{{ formatFeedDate(post.publishedAt) }}</p>
       <h2>{{ cardTitle }}</h2>
 
       <div class="mt-12 flex items-end gap-base">
@@ -97,12 +97,17 @@ const props = defineProps({
 
 const urlFor = useSanityImage()
 const localePath = useLocalePath()
+const route = useRoute()
 
 const { t } = useI18n()
 const cardTitle = computed(() => (props.post.category === 'stream' ? t('feed.liveStream') : props.post.title))
 
+// The detail link carries the list's ?page=/?filter= so the feed underneath
+// the modal (and the feed the close button returns to) is the one they left.
 const destination = computed(() =>
-  props.post.category === 'stream' && props.isLive ? localePath('/live') : localePath(`/feed/${props.post.slug}`),
+  props.post.category === 'stream' && props.isLive
+    ? localePath('/live')
+    : localePath({ path: `/feed/${props.post.slug}`, query: route.query }),
 )
 
 const showExcerpt = computed(() => ['events', 'blog'].includes(props.post.category) && props.post.excerpt)
@@ -123,12 +128,6 @@ const accentStyle = computed(() => {
   }
 })
 
-// Numeric mm.dd.yyyy per the card mockups — the same in every language.
-const formatDate = (iso) => {
-  const d = new Date(iso)
-  const pad = (n) => String(n).padStart(2, '0')
-  return `${pad(d.getMonth() + 1)}.${pad(d.getDate())}.${d.getFullYear()}`
-}
 </script>
 
 <style scoped>
@@ -140,32 +139,6 @@ const formatDate = (iso) => {
 .feed-card :deep(.panel-tab) {
   width: var(--notch-tab-size);
   height: var(--notch-tab-size);
-}
-
-/* Body + tab share the category color via NotchPanel's --notch-bg; the text
-   color rides along and also styles the chip/RSVP outlines. */
-.cat-events {
-  --notch-bg: var(--color-yellow);
-
-  color: var(--color-black);
-}
-
-.cat-blog {
-  --notch-bg: var(--color-grey-7);
-
-  color: var(--color-grey-1);
-}
-
-.cat-products {
-  --notch-bg: var(--color-grey-1);
-
-  color: var(--color-grey-7);
-}
-
-.cat-stream {
-  --notch-bg: var(--color-purple);
-
-  color: var(--color-white);
 }
 
 .feed-card :deep(.panel-body) {

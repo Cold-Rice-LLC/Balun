@@ -218,6 +218,36 @@ Animations
 }
 
 /*
+Feed categories — shared by the feed card and the feed detail panel. Sets
+NotchPanel's --notch-bg (body + tab) and the text color that rides along
+(also the chip/RSVP outlines).
+*/
+
+.cat-events {
+  --notch-bg: var(--color-yellow);
+
+  color: var(--color-black);
+}
+
+.cat-blog {
+  --notch-bg: var(--color-grey-7);
+
+  color: var(--color-grey-1);
+}
+
+.cat-products {
+  --notch-bg: var(--color-grey-1);
+
+  color: var(--color-grey-7);
+}
+
+.cat-stream {
+  --notch-bg: var(--color-purple);
+
+  color: var(--color-white);
+}
+
+/*
 Rich Text
 */
 

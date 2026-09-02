@@ -23,15 +23,24 @@ export const useScrollLock = (isOpen: Ref<boolean>) => {
   const apply = () => {
     if (import.meta.server) return
     const overflow = count.value > 0 ? 'hidden' : ''
-    // Both elements: html is the scrolling element here, but Safari has
-    // historically keyed page scroll off body — cover both.
+    // html only — it's the scrolling element, and its overflow propagates to
+    // the viewport in every current browser. Setting body too (the old
+    // belt-and-braces for Safari) breaks the lock's one job: with html no
+    // longer visible-overflow, body stops propagating and becomes its own
+    // hidden scroll container, the viewport's scrollable area collapses, and
+    // the scroll position clamps to 0 — every overlay opened mid-page
+    // jumped to the top.
     document.documentElement.style.overflow = overflow
-    document.body.style.overflow = overflow
   }
 
   // Whether this instance is currently represented in the counter.
   let counted = false
   const sync = (open: boolean) => {
+    // Client-only: the count is useState, so a server-side increment (an
+    // overlay that's open on first render — the feed detail route) would
+    // hydrate into the client, which then counts itself again and can
+    // never clear the lock.
+    if (import.meta.server) return
     if (open === counted) return
     counted = open
     count.value = Math.max(0, count.value + (open ? 1 : -1))

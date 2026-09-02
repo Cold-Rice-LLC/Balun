@@ -154,7 +154,8 @@ const feedPostProjection = `
   "bgColor": cardBackground.hex,
   ${i18nField('excerpt')},
   ${i18nField('body')},
-  link
+  link,
+  "recapVideo": recapVideo{${moduleVideoProjection}}
 `
 
 // Feed posts page by cursor, newest first with _id as the tiebreaker so two
@@ -165,7 +166,6 @@ const feedPostFilter = `_type == "feedPost" && ($category == null || category ==
 const feedPostOrder = `order(publishedAt desc, _id asc) [0...${FEED_PAGE_SIZE + 1}]`
 
 export const feedQuery = groq`{
-  "page": *[_type == "feedPage"][0]{ title },
   "isLive": count(*[_type == "livePage" && isLive == true]) > 0,
   "posts": *[${feedPostFilter}] | ${feedPostOrder} { ${feedPostProjection} }
 }`
@@ -176,6 +176,11 @@ export const feedPostsQuery = groq`*[
   ${feedPostFilter}
   && (publishedAt < $cursorDate || (publishedAt == $cursorDate && _id > $cursorId))
 ] | ${feedPostOrder} { ${feedPostProjection} }`
+
+// One post for the feed detail, by slug.
+export const feedPostQuery = groq`*[_type == "feedPost" && slug.current == $slug][0]{
+  ${feedPostProjection}
+}`
 
 // Market-scoped at the document level like home: the market's page if it
 // exists, else the default (no market).
