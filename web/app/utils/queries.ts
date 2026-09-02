@@ -7,6 +7,38 @@ import { groq } from '#imports'
 const i18nField = (name: string) =>
   `"${name}": coalesce(${name}[language == $lang][0].value, ${name}[language == "en"][0].value)`
 
+// A link destination (linkTarget fields, on their own or inside navLink /
+// labeledLink): the internal half dereferences to the type-and-slug shape
+// internalLinkPath resolves to a route — no stored paths anywhere. Products
+// keep their slug under the synced store object.
+const linkTargetProjection = `
+  linkType,
+  "internal": internalLink->{_type, "slug": coalesce(slug.current, store.slug.current)},
+  externalUrl
+`
+
+// A translated rich text field with its link marks resolved: `...` keeps
+// each block as-is; the conditional adds the referenced document behind an
+// internal link, in the same shape linkTargetProjection produces so
+// internalLinkPath routes both (RichText renders them).
+const i18nRichText = (name: string) => {
+  const marks = `[]{
+    ...,
+    markDefs[]{
+      ...,
+      _type == "link" => {"internal": internalLink->{_type, "slug": coalesce(slug.current, store.slug.current)}}
+    }
+  }`
+  return `"${name}": coalesce(${name}[language == $lang][0].value${marks}, ${name}[language == "en"][0].value${marks})`
+}
+
+// An OPTIONAL link only counts once it points somewhere: an editor who
+// picked None (or never chose) has no link, so it nulls out here and the
+// components' no-link branches take over.
+const optionalLinkProjection = `"link": select(
+  link.linkType in ["internal", "external"] => link{${linkTargetProjection}}
+)`
+
 // The click-to-play video module, shared by the home and info page builders.
 // File assets have no ref-encoded URL, so the video dereferences here.
 const moduleVideoProjection = `
@@ -68,7 +100,7 @@ export const homeQuery = groq`*[
     },
     _type == "moduleMarquee" => {
       ${i18nField('text')},
-      link{linkType, internalPath, externalUrl}
+      ${optionalLinkProjection}
     },
     // Media heroes: images keep the raw ref (useSanityImage builds the CDN
     // URL); file assets have no ref-encoded URL, so videos dereference here.
@@ -86,7 +118,7 @@ export const homeQuery = groq`*[
       links[]{
         _key,
         ${i18nField('label')},
-        link{linkType, internalPath, externalUrl}
+        ${optionalLinkProjection}
       },
       style
     },
@@ -97,7 +129,7 @@ export const homeQuery = groq`*[
       "videoUrl": video.asset->url,
       ${i18nField('headline')},
       ${i18nField('linkLabel')},
-      link{linkType, internalPath, externalUrl}
+      ${optionalLinkProjection}
     },
     _type == "moduleVideo" => {${moduleVideoProjection}}
   }
@@ -111,7 +143,7 @@ export const infoQuery = groq`*[
   _type == "infoPage" && (market == $market || !defined(market))
 ] | order(defined(market) desc)[0]{
   ${i18nField('title')},
-  ${i18nField('body')},
+  ${i18nRichText('body')},
   "modules": modules[]{
     _type,
     _key,
@@ -122,7 +154,7 @@ export const infoQuery = groq`*[
       image
     },
     _type == "moduleInfoProse" => {
-      ${i18nField('body')}
+      ${i18nRichText('body')}
     },
     _type == "moduleVideo" => {${moduleVideoProjection}}
   }
@@ -138,7 +170,7 @@ export const legalPageQuery = groq`*[
   _type == "legalPage" && slug.current == $slug && (market == $market || !defined(market))
 ] | order(defined(market) desc)[0]{
   ${i18nField('title')},
-  ${i18nField('body')}
+  ${i18nRichText('body')}
 }`
 
 // 5 while pagination is under test — bump once the feed has real volume.
@@ -153,9 +185,22 @@ const feedPostProjection = `
   coverImage,
   "bgColor": cardBackground.hex,
   ${i18nField('excerpt')},
-  ${i18nField('body')},
   link,
-  "recapVideo": recapVideo{${moduleVideoProjection}}
+  "recapVideo": recapVideo{${moduleVideoProjection}},
+  "modules": modules[]{
+    _type,
+    _key,
+    _type == "moduleFeedText" => {${i18nRichText('body')}},
+    _type == "moduleFeedImage" => {image},
+    _type == "moduleVideo" => {${moduleVideoProjection}},
+    _type == "moduleFeedLinks" => {
+      links[]{
+        _key,
+        ${i18nField('label')},
+        ${linkTargetProjection}
+      }
+    }
+  }
 `
 
 // Feed posts page by cursor, newest first with _id as the tiebreaker so two
@@ -206,7 +251,7 @@ export const productPageQuery = groq`*[
   "status": store.status,
   "tags": store.tags,
   ${i18nField('tagline')},
-  ${i18nField('body')},
+  ${i18nRichText('body')},
   gallery,
   featureCarousel[]{
     ...,
@@ -244,9 +289,7 @@ export const colorwaysQuery = groq`*[
 // Shared nav-link projection — used by both footer link lists.
 const navLinkProjection = `
   label,
-  linkType,
-  internalPath,
-  externalUrl
+  ${linkTargetProjection}
 `
 
 export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]{

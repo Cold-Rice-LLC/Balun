@@ -9,23 +9,29 @@
   </a>
 
   <NuxtLink
-    v-else
-    :to="prefixedPath"
+    v-else-if="to"
+    :to="to"
   >
     <slot>{{ link.label }}</slot>
   </NuxtLink>
+
+  <span v-else>
+    <slot>{{ link.label }}</slot>
+  </span>
 </template>
 
 <script setup>
 /**
- * Renders a Sanity `navLink`: an external URL opens in a new tab as an <a>,
- * otherwise an internal path renders as a <NuxtLink> carrying the active
- * locale prefix (editors enter unprefixed paths like /info).
+ * Renders a Sanity link (navLink, labeledLink, or a bare linkTarget): an
+ * external URL opens in a new tab as an <a>; an internal link renders as a
+ * <NuxtLink> to the referenced document's route (see internalLinkPath),
+ * carrying the active locale prefix. An internal link that resolves to
+ * nothing — an unpublished target — falls back to plain text, so a dead
+ * anchor never ships.
  *
- * Prefix is applied manually rather than via localePath(): editors can enter
- * paths for pages that don't exist yet (e.g. /returns pre-launch), and
- * localePath() logs a router warning on every render for unknown routes.
- * Under the 'prefix' strategy both produce identical URLs.
+ * The prefix is applied by hand rather than via localePath(): under the
+ * 'prefix' strategy both produce identical URLs, and localePath() logs a
+ * router warning for paths with no route yet (e.g. a legal page pre-launch).
  */
 const props = defineProps({
   link: {
@@ -36,10 +42,8 @@ const props = defineProps({
 
 const { locale } = useI18n()
 
-const prefixedPath = computed(() => {
-  const path = props.link.internalPath?.startsWith('/')
-    ? props.link.internalPath
-    : `/${props.link.internalPath ?? ''}`
-  return `/${locale.value}${path}`
+const to = computed(() => {
+  const path = internalLinkPath(props.link.internal)
+  return path ? `/${locale.value}${path}` : null
 })
 </script>

@@ -1,3 +1,5 @@
+import {linkTargetFields} from './linkTarget'
+
 /**
  * Portable Text for the info page's intermingled text+image module: plain
  * paragraphs whose blocks allow INLINE images — editors drop an image
@@ -21,14 +23,11 @@ export default {
             name: 'link',
             type: 'object',
             title: 'Link',
-            fields: [
-              {
-                name: 'href',
-                type: 'url',
-                title: 'URL',
-                description: 'Full web address, including https://.',
-              },
-            ],
+            // The same destination shape as navLink / linkTarget: pick a
+            // document on this site, or type an external URL. Internal
+            // links hold a reference rather than a typed path, so they
+            // survive a slug change and can't be spelled wrong.
+            fields: linkTargetFields({required: true, schemes: ['http', 'https', 'mailto', 'tel']}),
           },
         ],
       },

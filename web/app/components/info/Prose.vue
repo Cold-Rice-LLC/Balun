@@ -3,7 +3,7 @@
     v-if="module.body"
     class="prose-module"
   >
-    <SanityContent
+    <RichText
       :value="module.body"
       :components="components"
     />

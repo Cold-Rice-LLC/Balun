@@ -1,5 +1,6 @@
 import {BlockElementIcon} from '@sanity/icons'
 import {englishIfAny, requireEnglish} from '../lib/i18nValidation'
+import {linkTargetSelect, linkTargetSubtitle} from './linkTarget'
 
 /**
  * Home page module: a media hero with a large yellow headline over the media
@@ -97,18 +98,11 @@ export default {
             },
           ],
           preview: {
-            select: {
-              label: 'label.0.value',
-              internalPath: 'link.internalPath',
-              externalUrl: 'link.externalUrl',
-              linkType: 'link.linkType',
-            },
-            prepare({label, internalPath, externalUrl, linkType}) {
-              return {
-                title: label || 'Link',
-                subtitle: linkType === 'external' ? `↗ ${externalUrl || ''}` : internalPath || '',
-              }
-            },
+            select: {label: 'label.0.value', ...linkTargetSelect('link.')},
+            prepare: ({label, ...link}) => ({
+              title: label || 'Link',
+              subtitle: linkTargetSubtitle(link),
+            }),
           },
         },
       ],

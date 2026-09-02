@@ -157,7 +157,7 @@
                 v-if="doc.body?.length"
                 class="description text-sm rich-text"
               >
-                <SanityContent :value="doc.body" />
+                <RichText :value="doc.body" />
               </div>
             </div>
           </div>

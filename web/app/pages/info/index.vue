@@ -33,7 +33,7 @@
       v-if="page.body"
       class="info-body space-y-base"
     >
-      <SanityContent :value="page.body" />
+      <RichText :value="page.body" />
     </div>
   </article>
 
