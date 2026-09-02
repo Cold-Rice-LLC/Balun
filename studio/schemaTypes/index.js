@@ -14,6 +14,10 @@ import moduleVideo from './objects/moduleVideo'
 import moduleInfoText from './objects/moduleInfoText'
 import moduleInfoImage from './objects/moduleInfoImage'
 import moduleInfoProse from './objects/moduleInfoProse'
+import moduleFeedText from './objects/moduleFeedText'
+import moduleFeedImage from './objects/moduleFeedImage'
+import moduleFeedLinks from './objects/moduleFeedLinks'
+import labeledLink from './objects/labeledLink'
 import linkTarget from './objects/linkTarget'
 import featureImage from './objects/featureImage'
 import proseContent from './objects/proseContent'
@@ -48,6 +52,11 @@ export const schemaTypes = [
   moduleInfoText,
   moduleInfoImage,
   moduleInfoProse,
+  // Feed post modules (detail content)
+  moduleFeedText,
+  moduleFeedImage,
+  moduleFeedLinks,
+  labeledLink,
   linkTarget,
   // Singletons
   siteSettings,

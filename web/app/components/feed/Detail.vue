@@ -56,12 +56,12 @@
             {{ $t('feed.rsvp') }}
           </a>
 
-          <div
-            v-if="post.body?.length"
-            class="body rich-text font-secondary normal-case"
-          >
-            <SanityContent :value="post.body" />
-          </div>
+          <component
+            :is="moduleComponents[m._type]"
+            v-for="m in modules"
+            :key="m._key"
+            :module="m"
+          />
 
           <HomeVideo
             v-if="post.category === 'stream' && post.recapVideo?.poster"
@@ -113,6 +113,17 @@ const props = defineProps({
 const urlFor = useSanityImage()
 const titleId = useId()
 
+// The post's modular content (Text, Image, Video, Links). String names don't
+// resolve components in dynamic :is at runtime; filtered to known types so a
+// module added in the Studio before its component ships can't crash it.
+const moduleComponents = {
+  moduleFeedText: resolveComponent('FeedModuleText'),
+  moduleFeedImage: resolveComponent('FeedModuleImage'),
+  moduleVideo: resolveComponent('HomeVideo'),
+  moduleFeedLinks: resolveComponent('FeedModuleLinks'),
+}
+const modules = computed(() => (props.post.modules ?? []).filter((m) => m._type in moduleComponents))
+
 const route = useRoute()
 const router = useRouter()
 const localePath = useLocalePath()
@@ -162,10 +173,10 @@ onMounted(() => closeButton.value?.focus())
   flex-direction: column;
   /* Headroom for the mobile tab-top nipple (5rem) above the panel, plus
      clearance for the fixed navs. */
-  padding: calc(var(--spacing-page-top) + 5rem) var(--spacing-base) var(--spacing-page-top);
+  padding: calc(var(--spacing-page-top) + 5rem) var(--spacing-base) 15rem;
 
   @media (min-width: 768px) {
-    padding-top: var(--spacing-page-top);
+    padding-top: calc(var(--spacing-page-top) + 2rem);
     /* Room for the side tab, which hangs outside the panel's box. */
     padding-right: calc(var(--spacing-base) + 5rem);
   }
@@ -184,7 +195,7 @@ onMounted(() => closeButton.value?.focus())
 
   position: relative;
   width: 100%;
-  max-width: 80rem;
+  max-width: 100rem;
   margin: auto;
 }
 
@@ -236,6 +247,7 @@ onMounted(() => closeButton.value?.focus())
 }
 
 .content {
+  min-height: 30rem;
   padding: var(--spacing-base);
   display: flex;
   flex-direction: column;
@@ -252,7 +264,8 @@ onMounted(() => closeButton.value?.focus())
   line-height: 1.1;
 }
 
-.body {
-  max-width: 64rem;
+/* Modules span the panel; the text module caps its own measure. */
+.content > :deep(.feed-module) {
+  width: 100%;
 }
 </style>

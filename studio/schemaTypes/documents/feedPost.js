@@ -15,9 +15,12 @@ const CATEGORIES = [
  * grey, products = light, stream = purple) and its extras: events get an RSVP
  * link, streams get a detail-page recap video.
  *
- * Title/excerpt/body are translated (internationalized arrays resolved by
- * $lang); category, slug, date, image, and link are language-agnostic (the
- * language axis — same content, different words; see
+ * The detail view's content is modular: Text, Image, Video and Links
+ * modules, stacked in order.
+ *
+ * Title/excerpt and the modules' text are translated (internationalized
+ * arrays resolved by $lang); category, slug, date, image, and link are
+ * language-agnostic (the language axis — same content, different words; see
  * docs/shopify-and-localization-strategy.md §3).
  */
 export default {
@@ -94,12 +97,17 @@ export default {
       validation: englishIfAny,
     },
     {
-      name: 'body',
-      type: 'internationalizedArrayBlockContent',
-      title: 'Body',
+      name: 'modules',
+      type: 'array',
+      title: 'Content',
       description:
-        "Long-form content for the post's detail view. Headings, lists, links and images are supported.",
-      validation: englishIfAny,
+        "The post's detail content, top to bottom — add and reorder Text, Image, Video and Links modules.",
+      of: [
+        {type: 'moduleFeedText'},
+        {type: 'moduleFeedImage'},
+        {type: 'moduleVideo'},
+        {type: 'moduleFeedLinks'},
+      ],
     },
     {
       name: 'link',
@@ -112,8 +120,7 @@ export default {
       name: 'recapVideo',
       type: 'moduleVideo',
       title: 'Recap Video',
-      description:
-        'Recap of the stream, shown in the detail view once it is over.',
+      description: 'Recap of the stream, shown in the detail view once it is over.',
       hidden: ({parent}) => parent?.category !== 'stream',
     },
   ],
