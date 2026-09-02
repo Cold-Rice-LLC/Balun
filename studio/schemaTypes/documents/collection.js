@@ -11,6 +11,9 @@ export default {
   type: 'document',
   title: 'Collection',
   icon: FolderIcon,
+  // Not listed in the desk structure yet (see myStructure.js), so keep it out
+  // of the Studio's global search too. Remove this when collections get a desk entry.
+  __experimental_omnisearch_visibility: false,
   fields: [
     {
       name: 'store',
