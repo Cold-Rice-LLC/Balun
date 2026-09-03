@@ -1,9 +1,6 @@
 import {PlayIcon} from '@sanity/icons'
 import {englishIfAny} from '../lib/i18nValidation'
-
-// Matches watch?v=, youtu.be/, shorts/ and embed/ URLs; group 1 is the ID.
-const YOUTUBE_ID_PATTERN =
-  /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/
+import {youtubeUrlRule} from '../lib/youtube'
 
 /**
  * Home page module: a click-to-play video in the headline-over-image media
@@ -49,12 +46,7 @@ export default {
       title: 'YouTube URL',
       description: 'Any YouTube link — watch, share (youtu.be) or embed.',
       hidden: ({parent}) => parent?.videoType !== 'youtube',
-      validation: (Rule) =>
-        Rule.custom((value, context) => {
-          if (context.parent?.videoType !== 'youtube') return true
-          if (!value) return 'YouTube URL is required.'
-          return YOUTUBE_ID_PATTERN.test(value) ? true : 'Not a recognizable YouTube video URL.'
-        }),
+      validation: youtubeUrlRule((context) => context.parent?.videoType === 'youtube'),
     },
     {
       name: 'buttonText',

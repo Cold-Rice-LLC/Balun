@@ -236,7 +236,10 @@ export const liveQuery = groq`*[
   ${i18nField('description')},
   "featuredProduct": featuredProduct->{${productProjection}},
   // The stream is global (one streamer, every market): from Site Settings.
+  // Older settings predate the source picker, so they mean Mux.
+  "liveSource": coalesce(*[_type == "siteSettings"][0].liveSource, "mux"),
   "muxPlaybackId": *[_type == "siteSettings"][0].muxPlaybackId,
+  "youtubeUrl": *[_type == "siteSettings"][0].youtubeUrl,
   "isLive": *[_type == "siteSettings"][0].isLive == true
 }`
 

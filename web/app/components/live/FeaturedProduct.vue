@@ -79,7 +79,7 @@ const props = defineProps({
   product: { type: Object, required: true },
 })
 
-const open = ref(false)
+const open = defineModel('open', { type: Boolean, default: false })
 const quantity = ref(1)
 const selectedId = ref(null)
 

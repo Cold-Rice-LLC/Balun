@@ -19,7 +19,7 @@
       <iframe
         v-else-if="playing"
         class="player"
-        :src="`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&playsinline=1&rel=0`"
+        :src="`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&playsinline=1&rel=0`"
         title=""
         allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
         allowfullscreen
@@ -62,17 +62,10 @@ const urlFor = useSanityImage()
 const videoEl = ref(null)
 const playing = ref(false)
 
-// Matches watch?v=, youtu.be/, shorts/ and embed/ URLs (same pattern the
-// studio validates against); group 1 is the ID.
-const youtubeId = computed(
-  () =>
-    props.module.youtubeUrl?.match(
-      /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/,
-    )?.[1] ?? null,
-)
+const videoId = computed(() => youtubeId(props.module.youtubeUrl))
 
 const playable = computed(() =>
-  props.module.videoType === 'youtube' ? Boolean(youtubeId.value) : Boolean(props.module.videoUrl),
+  props.module.videoType === 'youtube' ? Boolean(videoId.value) : Boolean(props.module.videoUrl),
 )
 
 // The click satisfies autoplay policy, so the MP4 starts with sound; the

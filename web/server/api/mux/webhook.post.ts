@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
     useCdn: false,
   })
   const ids: string[] = await sanity.fetch(
-    `*[_type == "siteSettings" && muxLiveStreamId == $streamId]._id`,
+    `*[_type == "siteSettings" && muxLiveStreamId == $streamId && liveSource != "youtube"]._id`,
     { streamId },
     { perspective: 'raw' },
   )

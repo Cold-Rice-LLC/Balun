@@ -1,13 +1,31 @@
 <template>
   <!-- One window-high stage in the page flow (the footer follows it): the
-       stream fills it (the Mux player while live; black until then — see
+       stream plays in it (the Mux player edge to edge, or a YouTube embed
+       centered at the video module's size; black until live — see
        docs/live-streaming.md for how `isLive` flips), and the editorial
        corner sticks to its bottom edge. -->
   <div class="stage">
     <LivePlayer
-      v-if="page?.isLive && page?.muxPlaybackId"
-      :playback-id="page.muxPlaybackId"
+      v-if="stream?.type === 'mux'"
+      :playback-id="stream.playbackId"
     />
+
+    <LiveYouTube
+      v-else-if="stream?.type === 'youtube'"
+      :video-id="stream.videoId"
+    />
+
+    <!-- Blurs the stream while the featured product is open, and closes it
+         on click — the quick-add drawer's backdrop. It lives here rather
+         than in the component because it has to sit above the stream and
+         below the whole corner. -->
+    <button
+      v-if="featuredOpen"
+      class="backdrop enter-in-fade"
+      @click="featuredOpen = false"
+    >
+      <span class="sr-only">{{ $t('live.closeFeatured') }}</span>
+    </button>
 
     <!-- Bottom-left. Live: the location label + description, with the
          featured product below — its panels open in place, pushing the
@@ -24,6 +42,7 @@
 
         <LiveFeaturedProduct
           v-if="page.featuredProduct?.slug"
+          v-model:open="featuredOpen"
           :product="page.featuredProduct"
         />
       </template>
@@ -48,11 +67,12 @@ import { liveQuery } from '~/utils/queries'
 /**
  * The Live page: the stream as a full-page stage, and the corner bottom-left
  * — while live, the location label, description, and the featured product
- * (image + variant picker, opened in place); offline, the note and a shop
- * link. Live state comes from Site
- * Settings (flipped by Mux's webhook), re-checked every 30s while open so
- * someone waiting sees the stream start without reloading. Market-scoped
- * like home: this market's page if it exists, else the default.
+ * (image + variant picker, opened in place over a backdrop that blurs the
+ * stream); offline, the note and a shop link. Live state and the source
+ * (Mux or YouTube) come from Site Settings — with Mux, flipped by its
+ * webhook — re-checked every 30s while open so someone waiting sees the
+ * stream start without reloading. Market-scoped like home: this market's
+ * page if it exists, else the default.
  */
 const { t } = useI18n()
 const localePath = useLocalePath()
@@ -64,6 +84,20 @@ const { data: page, refresh } = await useAsyncData(
   { watch: [() => market.value.market, () => market.value.lang] },
 )
 useIntervalFn(refresh, 30_000)
+
+const featuredOpen = ref(false)
+
+// What the stage plays: nothing unless Live Now is on, then whichever source
+// Site Settings names — and only once that source is actually filled in, so
+// a half-set-up stream leaves the offline state up rather than a dead frame.
+const stream = computed(() => {
+  if (!page.value?.isLive) return null
+  if (page.value.liveSource === 'youtube') {
+    const videoId = youtubeId(page.value.youtubeUrl)
+    return videoId ? { type: 'youtube', videoId } : null
+  }
+  return page.value.muxPlaybackId ? { type: 'mux', playbackId: page.value.muxPlaybackId } : null
+})
 
 useHead({
   title: () => `${t('meta.live')} — Balun`,
@@ -91,6 +125,36 @@ useHead({
   border-radius: 0;
 }
 
+/* The YouTube embed keeps its own geometry instead — the video module's size,
+   centered in the stage. That module sits in a base-padded container and takes
+   55% of it from 768px, so the widths here are measured inside that padding
+   too, and the two come out identical. */
+.stage :deep(.live-youtube) {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - var(--spacing-base) * 2);
+
+  @media (min-width: 768px) {
+    width: calc((100% - var(--spacing-base) * 2) * 0.55);
+  }
+}
+
+/* Over the stream, under the corner. Absolute rather than fixed so it covers
+   exactly the stage and scrolls away with it; the navs are fixed at z 5000
+   and stay crisp, as they do behind the quick-add drawer. enter-in-fade
+   fades it up on mount — the panels vanish outright on close, so it goes
+   with them rather than lingering through a leave transition. */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
 /* Sticks above the secondary nav while the stage is on screen, and — being
    sticky, not fixed — stops at the stage's bottom edge, so scrolling the
    footer in carries it up with the stage. Quick-add-drawer width: full on
@@ -100,6 +164,7 @@ useHead({
    its box). */
 .corner {
   position: sticky;
+  z-index: 2;
   bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
   margin: 0 var(--spacing-base) calc(var(--spacing-button-md-height) + var(--spacing-base));
   max-height: calc(100svh - var(--spacing-button-md-height) - var(--spacing-page-top));

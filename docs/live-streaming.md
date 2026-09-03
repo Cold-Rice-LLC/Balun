@@ -12,7 +12,17 @@ how to test the whole thing before the client's streamer is involved.
   _simulcast targets_ on the live stream, so the platform audiences keep
   their feed. What we don't get is platform chat on our page.
 - **Playback.** `/live` plays the stream by playback ID with Mux's player
-  (`@mux/mux-player`, `stream-type="live"`) — `LivePlayer`.
+  (`@mux/mux-player`, `stream-type="live"`) — `LivePlayer`, filling the stage
+  edge to edge.
+- **YouTube instead.** Site Settings' **Live Source** switches the page to a
+  YouTube embed (`LiveYouTube`) fed by a pasted broadcast URL — for streams
+  that run on YouTube rather than through Mux. It sits centered at the home
+  video module's size rather than full-bleed, and autoplays muted (no
+  click-to-play poster, so YouTube is contacted on load). YouTube gives each
+  broadcast its own URL, so it's re-pasted per session; there's no webhook
+  either, so **Live Now** is the on/off switch. Mux deliveries are ignored
+  while the source is YouTube, so a late `idle` from the old Mux stream can't
+  cut a YouTube broadcast off.
 - **Live state.** Mux webhooks (`video.live_stream.active` / `.idle`) hit
   `POST /api/mux/webhook`, which verifies the signature and sets `isLive` on
   Site Settings when its `muxLiveStreamId` matches. The stream is global —
@@ -31,11 +41,13 @@ how to test the whole thing before the client's streamer is involved.
 
 Studio, on Site Settings → Live Stream:
 
-| Field                 | Value                                                   |
-| --------------------- | ------------------------------------------------------- |
-| Mux Playback ID       | the live stream's playback ID (`playback_ids[0].id`)    |
-| Mux Live Stream ID    | the live stream's `id`                                  |
-| Live Now              | machine-set by the webhook; hand-set only to override   |
+| Field                 | Value                                                     |
+| --------------------- | --------------------------------------------------------- |
+| Live Source           | Mux or YouTube — which of the fields below the page uses  |
+| Mux Playback ID       | the live stream's playback ID (`playback_ids[0].id`)      |
+| Mux Live Stream ID    | the live stream's `id`                                    |
+| YouTube URL           | the broadcast's link, when the source is YouTube          |
+| Live Now              | machine-set by the webhook on Mux; hand-set on YouTube    |
 
 Site (`web/.env`, server-only — see `.env.example`):
 
