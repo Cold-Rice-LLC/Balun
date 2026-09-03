@@ -7,6 +7,7 @@
   <div class="stage">
     <LivePlayer
       v-if="stream?.type === 'mux'"
+      v-model:muted="muted"
       :playback-id="stream.playbackId"
     />
 
@@ -58,6 +59,18 @@
         </NuxtLink>
       </template>
     </div>
+
+    <!-- Bottom-right, level with the corner: the Mux player has no controls
+         of its own, so this is the one way to hear it. YouTube's embed
+         keeps its own. -->
+    <button
+      v-if="stream?.type === 'mux'"
+      class="mute font-secondary text-base uppercase leading-[1.2]"
+      :aria-pressed="!muted"
+      @click="muted = !muted"
+    >
+      {{ $t(muted ? 'live.unmute' : 'live.mute') }}
+    </button>
   </div>
 </template>
 
@@ -86,6 +99,7 @@ const { data: page, refresh } = await useAsyncData(
 useIntervalFn(refresh, 30_000)
 
 const featuredOpen = ref(false)
+const muted = ref(true)
 
 // What the stage plays: nothing unless Live Now is on, then whichever source
 // Site Settings names — and only once that source is actually filled in, so
@@ -178,6 +192,21 @@ useHead({
     bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
     margin-bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
     max-height: calc(100svh - var(--spacing-button-lg-height) - var(--spacing-page-top));
+  }
+}
+
+/* Pinned to the stage's bottom-right, clearing the secondary nav by the
+   corner's offsets; above the backdrop so it stays usable while the
+   featured product is open. */
+.mute {
+  position: absolute;
+  z-index: 2;
+  right: var(--spacing-base);
+  bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
+  color: var(--color-grey-1);
+
+  @media (min-width: 768px) {
+    bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
   }
 }
 

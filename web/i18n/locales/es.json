@@ -88,6 +88,8 @@
   "live": {
     "offline": "No estamos en vivo ahora",
     "connecting": "Conectando…",
+    "unmute": "activar sonido",
+    "mute": "silenciar",
     "featuredProduct": "producto destacado",
     "closeFeatured": "Cerrar producto destacado"
   },
