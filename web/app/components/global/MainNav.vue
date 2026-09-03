@@ -109,5 +109,23 @@ nav {
 
 .live-link :deep(.icon-ring) {
   width: 1.1rem;
+  animation: live-blink 1.6s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* Recording-light pulse: never fully out, so the tab still reads as live
+   between blinks. */
+@keyframes live-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.15;
+  }
 }
 </style>
