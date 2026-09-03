@@ -61,6 +61,7 @@ Tailwind Config
   --color-yellow: #d9fd51;
   --color-purple: #a756a5;
   --color-red: #fd6161;
+  --color-blue: #25272f;
 
   /* Font Sizes */
   --text-2xs: 1rem;
@@ -124,7 +125,8 @@ body {
   }
 
   &.template-info,
-  &.template-feed {
+  &.template-feed,
+  &.template-live {
     background-color: var(--color-black);
   }
 }
@@ -215,6 +217,29 @@ Animations
 .enter-in-fade-up {
   opacity: 0;
   animation: fade-in-up 0.6s both var(--curve);
+}
+
+/*
+Pill button — the wide grey pill: the quick-add drawer's learn-more, the
+live page's featured-product and shop buttons.
+*/
+
+.pill-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--spacing-button-lg-height);
+  border-radius: var(--radius-def);
+  background-color: var(--color-grey-2);
+  color: var(--color-grey-6);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+
+  &:hover {
+    color: var(--color-grey-7);
+  }
 }
 
 /*

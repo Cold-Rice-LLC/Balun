@@ -86,8 +86,9 @@
     "Color": "Color"
   },
   "live": {
-    "viewing": "{count} Viendo",
-    "locationLabel": "En vivo desde {city}"
+    "offline": "No estamos en vivo ahora",
+    "featuredProduct": "producto destacado",
+    "closeFeatured": "Cerrar producto destacado"
   },
   "error": {
     "notFound": "Página no encontrada",
@@ -97,6 +98,7 @@
   "meta": {
     "feed": "Novedades",
     "info": "Información",
-    "product": "Producto"
+    "product": "Producto",
+    "live": "En vivo"
   }
 }

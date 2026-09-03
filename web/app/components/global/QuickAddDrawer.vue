@@ -78,7 +78,7 @@
       <NuxtLink
         v-if="pdpPath"
         :to="pdpPath"
-        class="learn-more-pill text-base-plus"
+        class="pill-button text-base-plus"
         @click="close"
       >
         {{ $t('quickAdd.learnMore') }}
@@ -363,25 +363,6 @@ watch(cartOpen, (open) => {
   text-decoration: underline;
   text-underline-offset: 0.3em;
   transition: color 0.3s;
-
-  &:hover {
-    color: var(--color-grey-7);
-  }
-}
-
-/* Desktop: the pill beside the panel. */
-.learn-more-pill {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: var(--spacing-button-lg-height);
-  border-radius: var(--radius-def);
-  background-color: var(--color-grey-2);
-  color: var(--color-grey-6);
-  transition:
-    background-color 0.3s,
-    color 0.3s;
 
   &:hover {
     color: var(--color-grey-7);

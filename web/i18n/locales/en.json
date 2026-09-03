@@ -86,8 +86,9 @@
     "Color": "Color"
   },
   "live": {
-    "viewing": "{count} Viewing",
-    "locationLabel": "Live in {city}"
+    "offline": "Not live right now",
+    "featuredProduct": "featured product",
+    "closeFeatured": "Close featured product"
   },
   "error": {
     "notFound": "Page not found",
@@ -97,6 +98,7 @@
   "meta": {
     "feed": "Feed",
     "info": "Info",
-    "product": "Product"
+    "product": "Product",
+    "live": "Live"
   }
 }

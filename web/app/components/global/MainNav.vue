@@ -31,20 +31,36 @@
       </ul>
     </nav>
 
+    <!-- The live tab, only while the stream is on: hangs off the right edge
+         below the nav pills, reading sideways. -->
     <NuxtLink
+      v-if="live?.isLive"
       :to="localePath('/live')"
       class="live-link"
     >
       <IconsRing />
-      <span>{{ $t('live.viewing', { count: '12M' }) }}</span>
-      <span>{{ $t('live.locationLabel', { city: 'Beijing' }) }}</span>
+      <span>{{ live.location || $t('feed.live') }}</span>
     </NuxtLink>
   </header>
 </template>
 
 <script setup>
+import { liveStatusQuery } from '~/utils/queries'
+
 // Internal links carry the /{lang}-{country} prefix of the active locale.
 const localePath = useLocalePath()
+
+// Live state for the tab: from Site Settings (Mux's webhook flips it), with
+// this market's location label. The shell is cached, so it re-checks every
+// 60s — a stream starting shows up site-wide without a reload.
+const market = useMarket()
+const sanity = useSanity()
+const { data: live, refresh } = await useAsyncData(
+  () => `live-status-${market.value.market}-${market.value.lang}`,
+  () => sanity.fetch(liveStatusQuery, { market: market.value.market, lang: market.value.lang }),
+  { watch: [() => market.value.market, () => market.value.lang] },
+)
+useIntervalFn(refresh, 60_000)
 </script>
 
 <style scoped>
@@ -75,8 +91,7 @@ nav {
   top: 7.7rem;
   background-color: var(--color-grey-1);
   padding: var(--spacing-base) var(--spacing-sm);
-  /* display: flex; */
-  display: none;
+  display: flex;
   align-items: center;
   gap: var(--spacing-base);
   writing-mode: sideways-lr;
