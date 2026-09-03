@@ -12,8 +12,15 @@ how to test the whole thing before the client's streamer is involved.
   _simulcast targets_ on the live stream, so the platform audiences keep
   their feed. What we don't get is platform chat on our page.
 - **Playback.** `/live` plays the stream by playback ID with Mux's player
-  (`@mux/mux-player`, `stream-type="live"`) — `LivePlayer`, filling the stage
-  edge to edge.
+  (`@mux/mux-player`, `stream-type="live"`) — `LivePlayer`, covering the
+  stage edge to edge with no controls of any kind (so muted autoplay is how
+  it stays: nothing on the player unmutes it). It holds a "connecting" note until the player can play, then
+  cross-fades. Between Live Now flipping and Mux serving the first segments
+  the playback ID answers 412; the player's own retries stop after six, so
+  `LivePlayer` remounts it a minute after a miss and polls on about once a
+  minute for as long as Live Now is on, with the "Retrying…" dialog hidden —
+  a stage switched on by hand before the encoder is up keeps waiting rather
+  than giving up.
 - **YouTube instead.** Site Settings' **Live Source** switches the page to a
   YouTube embed (`LiveYouTube`) fed by a pasted broadcast URL — for streams
   that run on YouTube rather than through Mux. It sits centered at the home
@@ -62,9 +69,13 @@ Everything on our side is the same whichever way the client goes; only whose
 OBS holds the stream key changes. So the full pipeline can be exercised with a
 personal Mux account and a stream from a laptop.
 
-1. **Mux account.** New accounts carry trial credit; each _environment_ has
-   its own API tokens. Settings → API Access Tokens → new token with Mux
-   Video read + write. Note the token ID and secret.
+1. **Mux account.** Live streams need a paid plan — on the free tier the API
+   refuses to create one ("Live streams are unavailable on the free plan"),
+   so add a payment method (Settings → Billing) first. Each _environment_ has
+   its own API tokens: Settings → API Access Tokens → new token with Mux
+   Video read + write. Note the token ID and secret (`MUX_TOKEN_ID` /
+   `MUX_TOKEN_SECRET` in `web/.env` are these — used only from the shell,
+   never by the site).
 2. **Create the live stream** (once — the key is reusable across sessions):
 
    ```bash
@@ -84,14 +95,16 @@ personal Mux account and a stream from a laptop.
    npx cloudflared tunnel --url http://localhost:3000
    ```
 
+   (Mux has no API for webhook endpoints — this part is dashboard-only.)
+
    Mux → Settings → Webhooks → new endpoint at
    `https://<tunnel>/api/mux/webhook`. Copy its Signing Secret into
    `NUXT_MUX_WEBHOOK_SECRET`, add a Sanity write token, restart `nuxt dev`.
    The dashboard lists every delivery with its response and can resend one,
    which is the quickest way to iterate on the handler.
 4. **Go live.** OBS: Stream → Custom, server `rtmps://global-live.mux.com:443/app`,
-   the stream key. Or loop a file with ffmpeg (Mux needs a real encode with
-   regular keyframes):
+   the stream key. Or loop a file with ffmpeg (`brew install ffmpeg`; Mux
+   needs a real encode with regular keyframes):
 
    ```bash
    ffmpeg -re -stream_loop -1 -i test.mp4 \
