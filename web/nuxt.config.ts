@@ -31,11 +31,24 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/global.css'],
 
+  // <mux-player> is a web component (the live page's player), not a Vue
+  // component to resolve.
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag.startsWith('mux-'),
+    },
+  },
+
   vite: {
     plugins: [tailwindcss()],
   },
 
   runtimeConfig: {
+    // Server-only (NUXT_MUX_WEBHOOK_SECRET / NUXT_SANITY_WRITE_TOKEN): the
+    // Mux webhook route verifies signatures with the one and flips the live
+    // page's `isLive` with the other. See docs/live-streaming.md.
+    muxWebhookSecret: '',
+    sanityWriteToken: '',
     public: {
       // Overridden by NUXT_PUBLIC_SHOPIFY_STORE_DOMAIN / NUXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN.
       // Storefront tokens are public-safe (read-only storefront + cart scope).

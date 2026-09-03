@@ -3,11 +3,11 @@ import {englishIfAny} from '../lib/i18nValidation'
 import {marketField, marketPreviewTitle} from '../lib/marketField'
 
 /**
- * The Live page. For now only the featured overlay is editorial: a location
- * label + description in the bottom-left corner, and the product its
- * "featured product" button opens (image + variant picker, added in place).
- * `streamUrl` is a placeholder for the eventual live-stream integration —
- * nothing renders it yet.
+ * The Live page's editorial half: a location label + description in the
+ * bottom-left corner, and the product its "featured product" button opens
+ * (image + variant picker, added in place). The stream itself is global —
+ * one streamer, live for every market at once — so the Mux IDs and the
+ * Live Now state live on Site Settings (see docs/live-streaming.md).
  * Not a singleton: one default (no market) + optional per-market overrides,
  * resolved like the home page (document-level Pattern B).
  */
@@ -38,19 +38,6 @@ export default {
       title: 'Featured Product',
       to: [{type: 'product'}],
       description: 'Opens in the quick-add popup from the "featured product" button.',
-    },
-    {
-      name: 'streamUrl',
-      type: 'url',
-      title: 'Stream URL',
-      description: 'Placeholder for the live-stream integration — not rendered yet.',
-    },
-    {
-      name: 'isLive',
-      type: 'boolean',
-      title: 'Live Now',
-      description: 'Flip on when the stream starts — feed stream cards link to /live while this is on.',
-      initialValue: false,
     },
   ],
   preview: {

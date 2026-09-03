@@ -211,7 +211,7 @@ const feedPostFilter = `_type == "feedPost" && ($category == null || category ==
 const feedPostOrder = `order(publishedAt desc, _id asc) [0...${FEED_PAGE_SIZE + 1}]`
 
 export const feedQuery = groq`{
-  "isLive": count(*[_type == "livePage" && isLive == true]) > 0,
+  "isLive": *[_type == "siteSettings"][0].isLive == true,
   "posts": *[${feedPostFilter}] | ${feedPostOrder} { ${feedPostProjection} }
 }`
 
@@ -234,8 +234,20 @@ export const liveQuery = groq`*[
 ] | order(defined(market) desc)[0]{
   ${i18nField('location')},
   ${i18nField('description')},
-  streamUrl,
-  "featuredProduct": featuredProduct->{${productProjection}}
+  "featuredProduct": featuredProduct->{${productProjection}},
+  // The stream is global (one streamer, every market): from Site Settings.
+  "muxPlaybackId": *[_type == "siteSettings"][0].muxPlaybackId,
+  "isLive": *[_type == "siteSettings"][0].isLive == true
+}`
+
+// Site-wide live status for the nav's live tab: whether the stream is on
+// (Site Settings, flipped by Mux's webhook) and this market's live page
+// location label ("Live from Tokyo"), resolved like liveQuery.
+export const liveStatusQuery = groq`{
+  "isLive": *[_type == "siteSettings"][0].isLive == true,
+  "location": *[
+    _type == "livePage" && (market == $market || !defined(market))
+  ] | order(defined(market) desc)[0]{${i18nField('location')}}.location
 }`
 
 // PDP editorial shell: one product by its Shopify handle (synced slug).
