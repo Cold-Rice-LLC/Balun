@@ -87,6 +87,7 @@
   },
   "live": {
     "offline": "Not live right now",
+    "connecting": "Connecting…",
     "featuredProduct": "featured product",
     "closeFeatured": "Close featured product"
   },
