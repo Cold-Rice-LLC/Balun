@@ -59,7 +59,10 @@
     "heading": "Suscríbete",
     "placeholder": "Correo electrónico",
     "submit": "Suscríbete",
-    "subscribe": "Suscríbete"
+    "subscribe": "Suscríbete",
+    "invalid": "Introduce un correo electrónico válido.",
+    "success": "Gracias. Revisa tu correo para confirmar.",
+    "error": "Algo salió mal. Inténtalo de nuevo."
   },
   "video": {
     "watch": "ver"

@@ -49,6 +49,12 @@ export default defineNuxtConfig({
     // page's `isLive` with the other. See docs/live-streaming.md.
     muxWebhookSecret: '',
     sanityWriteToken: '',
+    // Server-only (NUXT_KLAVIYO_PRIVATE_API_KEY / NUXT_KLAVIYO_LIST_ID): the
+    // newsletter route subscribes footer signups to this Klaviyo list. Both
+    // empty = the route answers 503 and the form shows its error message.
+    // See docs/newsletter.md.
+    klaviyoPrivateApiKey: '',
+    klaviyoListId: '',
     public: {
       // Overridden by NUXT_PUBLIC_SHOPIFY_STORE_DOMAIN / NUXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN.
       // Storefront tokens are public-safe (read-only storefront + cart scope).

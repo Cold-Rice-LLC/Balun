@@ -59,7 +59,10 @@
     "heading": "Sign up for emails",
     "placeholder": "Email Address",
     "submit": "Sign up",
-    "subscribe": "Subscribe"
+    "subscribe": "Subscribe",
+    "invalid": "Enter a valid email address.",
+    "success": "Thanks. Check your inbox to confirm.",
+    "error": "Something went wrong. Please try again."
   },
   "video": {
     "watch": "watch"
