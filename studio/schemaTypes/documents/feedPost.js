@@ -1,5 +1,6 @@
 import {DocumentTextIcon} from '@sanity/icons'
 import {requireEnglish, englishIfAny} from '../lib/i18nValidation'
+import {FeedModulesInput} from '../../components/FeedModulesInput'
 
 const CATEGORIES = [
   {title: 'Stream', value: 'stream'},
@@ -101,7 +102,8 @@ export default {
       type: 'array',
       title: 'Content',
       description:
-        "The post's detail content, top to bottom — add and reorder Text, Image, Video and Links modules.",
+        'The post\'s detail content, top to bottom — add and reorder Text, Image, Video and Links modules. While empty, an "Add defaults" button seeds the usual set for the chosen category.',
+      components: {input: FeedModulesInput},
       of: [
         {type: 'moduleFeedText'},
         {type: 'moduleFeedImage'},
