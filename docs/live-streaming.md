@@ -13,8 +13,10 @@ how to test the whole thing before the client's streamer is involved.
   their feed. What we don't get is platform chat on our page.
 - **Playback.** `/live` plays the stream by playback ID with Mux's player
   (`@mux/mux-player`, `stream-type="live"`) — `LivePlayer`, covering the
-  stage edge to edge with no controls of any kind (so muted autoplay is how
-  it stays: nothing on the player unmutes it). It holds a "connecting" note until the player can play, then
+  stage edge to edge with no controls of any kind; the page adds a text
+  mute toggle bottom-right, and if a browser refuses the muted autoplay
+  (iOS Low Power Mode, say) the player shows the video module's play pill
+  in place of its note. It holds a "connecting" note until the player can play, then
   cross-fades. Between Live Now flipping and Mux serving the first segments
   the playback ID answers 412; the player's own retries stop after six, so
   `LivePlayer` remounts it a minute after a miss and polls on about once a

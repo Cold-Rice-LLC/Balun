@@ -13,17 +13,38 @@
       nohotkeys
       nomutedpref
       @canplay="ready = true"
+      @play="paused = false"
+      @pause="paused = true"
       @error="onError"
     ></mux-player>
 
-    <p
-      class="loading font-secondary text-base uppercase leading-[1.2]"
-      :class="{ 'is-done': ready }"
-      :aria-hidden="ready"
-      role="status"
-    >
-      {{ $t('live.connecting') }}
-    </p>
+    <!-- Centered over the player: the connecting note until the stream can
+         play, then — only if the browser refused the muted autoplay — the
+         video module's play pill. Gone once the stream is playing. -->
+    <div class="status">
+      <Transition
+        name="status-fade"
+        mode="out-in"
+      >
+        <p
+          v-if="!ready"
+          class="font-secondary text-base uppercase leading-[1.2]"
+          role="status"
+        >
+          {{ $t('live.connecting') }}
+        </p>
+
+        <button
+          v-else-if="paused"
+          class="play uppercase"
+          @click="player.play()"
+        >
+          <IconsPlay />
+
+          {{ $t('live.play') }}
+        </button>
+      </Transition>
+    </div>
   </div>
 </template>
 
@@ -45,8 +66,11 @@
  *
  * Like the YouTube embed, the frame holds a "connecting" note until the
  * player can actually play, then the two cross-fade — `canplay` rather than
- * `playing`, so a blocked autoplay still reveals the player and its play
- * button. Between the webhook flipping Live Now and Mux serving the first
+ * `playing`, so a blocked autoplay still reveals the player. With the
+ * player's own play button gone, a refused autoplay (iOS Low Power Mode,
+ * browsers set to block it) would otherwise leave a frozen first frame and
+ * no way in, so the note's place is taken by a play pill whenever the
+ * stream is ready but not playing. Between the webhook flipping Live Now and Mux serving the first
  * HLS segments the playback ID answers 412. The player retries that by
  * itself, but only six times (5s, then every 60s) before giving up — and
  * with Live Now set by hand the gap can be as long as it takes the streamer
@@ -65,6 +89,7 @@ defineProps({
 const muted = defineModel('muted', { type: Boolean, default: true })
 const player = useTemplateRef('player')
 const ready = ref(false)
+const paused = ref(true)
 const attempt = ref(0)
 let retryTimer
 
@@ -116,9 +141,9 @@ onBeforeUnmount(() => clearTimeout(retryTimer))
   opacity: 1;
 }
 
-/* Centered in the frame, over the player — so it must never swallow clicks
-   meant for the controls. */
-.loading {
+/* Centered in the frame, over the player. The layer itself is inert; only
+   the play pill takes the pointer. */
+.status {
   position: absolute;
   inset: 0;
   display: flex;
@@ -126,10 +151,32 @@ onBeforeUnmount(() => clearTimeout(retryTimer))
   justify-content: center;
   color: var(--color-grey-3);
   pointer-events: none;
+}
+
+.status-fade-enter-active,
+.status-fade-leave-active {
   transition: opacity 0.5s;
 }
 
-.loading.is-done {
+.status-fade-enter-from,
+.status-fade-leave-to {
   opacity: 0;
+}
+
+/* The home video module's "watch" pill. */
+.play {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border-radius: 0.4rem;
+  padding: 0.4rem 1rem;
+  background-color: var(--color-black);
+  color: var(--color-white);
+  pointer-events: auto;
+}
+
+.play :deep(.icon-play) {
+  width: 1em;
+  flex: none;
 }
 </style>
