@@ -64,9 +64,10 @@ const FINISH_BUFFER_MS = 300
 
 // Display widths designed against a 1440px viewport; scaled down below it
 const svgDefs = [
-  { src: '/svgs/Vector_RedShoe.svg', w: 500, ratio: 706 / 587 },
-  { src: '/svgs/Vector_GrayShoe.svg', w: 450, ratio: 721 / 593 },
-  { src: '/svgs/Vector_PurpleShoe.svg', w: 483, ratio: 375 / 815 },
+  { src: '/svgs/Vector_RedShoe.svg', w: 500, ratio: 968 / 2459 },
+  { src: '/svgs/Vector_LavenderShoe.svg', w: 500, ratio: 968 / 2459 },
+  { src: '/svgs/Vector_LimeShoe.svg', w: 500, ratio: 968 / 2459 },
+  { src: '/svgs/Vector_NavyShoe.svg', w: 500, ratio: 968 / 2459 },
   { src: '/svgs/vector_Character.svg', w: 300, ratio: 516 / 531 },
   { src: '/svgs/Vector_B.svg', w: 225, ratio: 315 / 258 },
   { src: '/svgs/Vector_A.svg', w: 248, ratio: 256 / 261 },
