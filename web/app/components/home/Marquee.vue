@@ -1,11 +1,11 @@
 <template>
   <section
-    v-if="module.text"
+    v-if="texts.length"
     class="marquee-module"
   >
-    <!-- The animated track repeats the text visually; screen readers get the
-         single real copy and skip the duplicates. -->
-    <span class="sr-only">{{ module.text }}</span>
+    <!-- The animated track repeats the texts visually; screen readers get
+         the single real run and skip the duplicates. -->
+    <span class="sr-only">{{ texts.join(', ') }}</span>
 
     <component
       :is="module.link?.linkType ? AppLink : 'div'"
@@ -17,18 +17,25 @@
         aria-hidden="true"
       >
         <!-- Two identical groups; the loop slides one group's width so the
-             seam is invisible. -->
+             seam is invisible. Each text is followed by a dot — including
+             the last, so the dot also separates one run from the next. -->
         <span
           v-for="group in 2"
           :key="group"
-          class="group"
+          class="flex flex-none items-center"
         >
-          <span
+          <template
             v-for="copy in COPIES"
             :key="copy"
-            class="copy"
-            >{{ module.text }}</span
           >
+            <template
+              v-for="(text, i) in texts"
+              :key="i"
+            >
+              <span class="leading-none">{{ text }}</span>
+              <span class="size-[0.25em] mx-[1em] flex-none rounded-full bg-current"></span>
+            </template>
+          </template>
         </span>
       </div>
     </component>
@@ -37,17 +44,21 @@
 
 <script setup>
 /**
- * Home module: animated marquee band of repeating text. Optional link makes
- * the whole band clickable (AppLink handles internal vs external); the text
- * itself is the label — the Sanity linkTarget carries none.
+ * Home module: animated marquee band of repeating text — one or more texts
+ * in order, a dot after each. Optional link makes the whole band clickable
+ * (AppLink handles internal vs external); the texts themselves are the
+ * label — the Sanity linkTarget carries none.
  */
 const AppLink = resolveComponent('AppLink')
 
-defineProps({
+const props = defineProps({
   module: { type: Object, required: true },
 })
 
-// Enough copies per group to cover any viewport width even for short text.
+// Entries with no text in any language would render as a stray dot.
+const texts = computed(() => (props.module.texts ?? []).filter(Boolean))
+
+// Enough copies per group to cover any viewport width even for one short text.
 const COPIES = 6
 </script>
 
@@ -71,16 +82,6 @@ const COPIES = 6
   width: max-content;
   white-space: nowrap;
   animation: marquee-scroll 70s linear infinite;
-}
-
-.group {
-  display: flex;
-  flex: none;
-}
-
-.copy {
-  padding-right: 1em;
-  line-height: 1;
 }
 
 @keyframes marquee-scroll {

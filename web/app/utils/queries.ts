@@ -99,7 +99,7 @@ export const homeQuery = groq`*[
       }
     },
     _type == "moduleMarquee" => {
-      ${i18nField('text')},
+      "texts": texts[]{${i18nField('text')}}.text,
       ${optionalLinkProjection}
     },
     // Media heroes: images keep the raw ref (useSanityImage builds the CDN
