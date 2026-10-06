@@ -171,10 +171,13 @@ Utils
 }
 
 /*
-Lazy Loading
+Image fade-in — any img that declares a loading strategy, lazy or eager
+(the page's lead image), starts hidden and fades in once the lazyImages
+plugin marks it loaded. Images with no loading attribute (the intro's
+physics bodies) are untouched.
 */
 
-img[loading='lazy'] {
+img[loading] {
   opacity: 0;
   transition: opacity 0.4s;
 

@@ -33,6 +33,8 @@
         >
           <img
             :src="urlFor(module.poster, { w: 2400 })"
+            :loading="isLead ? 'eager' : 'lazy'"
+            :fetchpriority="isLead ? 'high' : undefined"
             :alt="module.poster.alt || ''"
           />
           <span class="watch uppercase">
@@ -59,6 +61,7 @@ const props = defineProps({
 })
 
 const urlFor = useSanityImage()
+const isLead = useIsLeadModule(props.module)
 const videoEl = ref(null)
 const playing = ref(false)
 

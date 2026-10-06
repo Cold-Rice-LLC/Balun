@@ -21,7 +21,7 @@
       @slide-change="(s) => (activeIndex = s.realIndex)"
     >
       <SwiperSlide
-        v-for="slide in slides"
+        v-for="(slide, i) in slides"
         :key="slide._key"
         class="slide"
       >
@@ -39,6 +39,8 @@
         >
           <img
             :src="urlFor(slide, { w: 1600 })"
+            :loading="eager && i === 0 ? 'eager' : 'lazy'"
+            :fetchpriority="eager && i === 0 ? 'high' : undefined"
             :alt="slide.alt || alt"
           />
 
@@ -123,6 +125,9 @@ defineProps({
   // Makes every slide a link here (the home module → its product). Unset on
   // the PDP, where the slides are plain figures.
   to: { type: String, default: undefined },
+  // Load the first slide immediately (the home page's lead module); the
+  // rest stay lazy. Both still fade in.
+  eager: { type: Boolean, default: false },
 })
 
 const NuxtLink = resolveComponent('NuxtLink')

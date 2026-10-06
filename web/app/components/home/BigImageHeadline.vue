@@ -10,6 +10,7 @@
       <HomeModuleMedia
         class="media"
         :media="module"
+        :eager="isLead"
       />
 
       <h2
@@ -48,6 +49,8 @@
 const props = defineProps({
   module: { type: Object, required: true },
 })
+
+const isLead = useIsLeadModule(props.module)
 
 const contained = computed(() => props.module.style === 'contained')
 

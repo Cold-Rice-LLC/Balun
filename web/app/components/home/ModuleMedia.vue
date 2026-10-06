@@ -29,6 +29,8 @@
     <img
       class="module-media"
       :src="urlFor(mobileImage || media.image, { w: mobileImage ? 1200 : 2400 })"
+      :loading="eager ? 'eager' : 'lazy'"
+      :fetchpriority="eager ? 'high' : undefined"
       :alt="(mobileImage || media.image).alt || ''"
     />
   </picture>
@@ -49,6 +51,8 @@
 defineProps({
   media: { type: Object, required: true },
   mobileImage: { type: Object, default: null },
+  // The page's lead image: load immediately at high priority (still fades).
+  eager: { type: Boolean, default: false },
 })
 
 const urlFor = useSanityImage()

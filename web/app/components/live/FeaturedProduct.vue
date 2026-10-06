@@ -17,6 +17,7 @@
           <img
             v-if="image"
             :src="image.src"
+            loading="lazy"
             :alt="image.alt"
             class="image"
           />

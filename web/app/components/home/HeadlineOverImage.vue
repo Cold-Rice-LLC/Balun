@@ -4,6 +4,7 @@
       <HomeModuleMedia
         class="media"
         :media="module"
+        :eager="isLead"
         :mobile-image="module.mobileImage"
       />
 
@@ -38,6 +39,8 @@
 const props = defineProps({
   module: { type: Object, required: true },
 })
+
+const isLead = useIsLeadModule(props.module)
 
 // AppLink needs a target to render; editors can save a label before wiring it.
 const showLink = computed(() => props.module.linkLabel && props.module.link?.linkType)

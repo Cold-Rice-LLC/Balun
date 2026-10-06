@@ -48,6 +48,9 @@ const moduleComponents = {
 
 const modules = computed(() => home.value?.modules ?? [])
 
+// The opening module's media loads eagerly (see useLeadModule).
+provideLeadModule(computed(() => modules.value[0]?._key))
+
 // SSR-rendered unconditionally (the shell is edge-cached, so it can't vary);
 // the component removes itself on mount when it shouldn't play.
 const showIntro = ref(true)

@@ -1,6 +1,6 @@
 /**
- * Completes the lazy-image fade-in contract from global.css: every
- * img[loading="lazy"] starts at opacity 0 and fades in once it carries the
+ * Completes the image fade-in contract from global.css: every img[loading]
+ * (lazy, or eager for a page's lead image) starts at opacity 0 and fades in once it carries the
  * `loaded` class — this plugin is what adds that class. Without it, lazy
  * images (product grid, feed covers, colorway thumbs) stay invisible.
  *
@@ -27,13 +27,13 @@ export default defineNuxtPlugin((nuxtApp) => {
     'load',
     (event) => {
       const target = event.target
-      if (hydrated && target instanceof HTMLImageElement && target.loading === 'lazy') mark(target)
+      if (hydrated && target instanceof HTMLImageElement && target.hasAttribute('loading')) mark(target)
     },
     true,
   )
 
   const sweep = () => {
-    for (const img of document.querySelectorAll<HTMLImageElement>('img[loading="lazy"]')) {
+    for (const img of document.querySelectorAll<HTMLImageElement>('img[loading]')) {
       if (img.complete && img.naturalWidth > 0) mark(img)
     }
   }

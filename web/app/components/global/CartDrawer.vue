@@ -36,6 +36,7 @@
             <img
               v-if="lineImage(line)"
               :src="lineImage(line).url"
+              loading="lazy"
               :alt="lineImage(line).altText || line.merchandise.product.title"
               class="w-full h-full object-cover"
             />

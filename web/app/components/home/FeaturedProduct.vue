@@ -32,6 +32,7 @@
       <ProductFeatureCarousel
         :slides="slides"
         :alt="product?.title || ''"
+        :eager="isLead"
         :to="product ? localePath(`/products/${product.slug}`) : undefined"
         mobile-nav-below
       />
@@ -86,6 +87,7 @@ const props = defineProps({
 const product = computed(() => props.module.product)
 const live = computed(() => props.liveByGid[product.value?.gid] ?? null)
 const slides = computed(() => props.module.images ?? [])
+const isLead = useIsLeadModule(props.module)
 
 // The CTAs are position:fixed and fade with the module's visibility. 0.75:
 // fade out as soon as a quarter of the module has scrolled away — and since

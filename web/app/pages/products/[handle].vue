@@ -29,6 +29,8 @@
                   v-for="(image, i) in doc.gallery"
                   :key="i"
                   :src="urlFor(image, { w: 1400 })"
+                  :loading="i === 0 ? 'eager' : 'lazy'"
+                  :fetchpriority="i === 0 ? 'high' : undefined"
                   :alt="liveForDoc?.title || doc.title"
                   class="w-full"
                 />
@@ -49,6 +51,8 @@
                 >
                   <img
                     :src="urlFor(image, { w: 1400 })"
+                    :loading="i === 0 ? 'eager' : 'lazy'"
+                    :fetchpriority="i === 0 ? 'high' : undefined"
                     :alt="liveForDoc?.title || doc.title"
                     class="media-cover"
                   />

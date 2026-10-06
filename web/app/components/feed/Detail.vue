@@ -37,6 +37,7 @@
           <img
             v-if="post.coverImage"
             :src="urlFor(post.coverImage, { w: 2000 })"
+            loading="lazy"
             alt=""
             class="cover rounded-def"
           />
