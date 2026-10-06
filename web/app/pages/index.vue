@@ -16,7 +16,7 @@
       v-for="m in modules"
       :key="m._key"
       :module="m"
-      :live-by-gid="liveByGid"
+      v-bind="productModules.includes(m._type) ? { liveByGid } : {}"
     />
   </div>
 </template>
@@ -47,6 +47,10 @@ const moduleComponents = {
 }
 
 const modules = computed(() => home.value?.modules ?? [])
+
+// Only these declare a liveByGid prop; passing it to the rest would fall
+// through onto their root as a junk live-by-gid attribute.
+const productModules = ['moduleProductGrid', 'moduleFeaturedProduct']
 
 // The opening module's media loads eagerly (see useLeadModule).
 provideLeadModule(computed(() => modules.value[0]?._key))
