@@ -156,13 +156,13 @@
               </div>
             </div>
 
-            <div class="flex flex-col gap-sm">
-              <div
-                v-if="doc.body?.length"
-                class="description text-sm rich-text"
-              >
-                <RichText :value="doc.body" />
-              </div>
+            <!-- Bottom-aligned with the buy button when it's shorter than the
+                 row; a longer one just grows the row from the top. -->
+            <div
+              v-if="doc.body?.length"
+              class="description text-sm rich-text md:self-end"
+            >
+              <RichText :value="doc.body" />
             </div>
           </div>
         </div>
@@ -557,8 +557,16 @@ useHead({
   }
 }
 
+/* Desktop: pinned to the same line as the sticky buy button, so a short
+   description sits level with it rather than at the row's real bottom
+   (below the fold). A long one fills the row and has no room to shift. */
 .description {
   color: var(--color-grey-6);
+
+  @media (min-width: 768px) {
+    position: sticky;
+    bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  }
 }
 
 /* The colorway swap: outgoing content slips away, then the incoming gallery
