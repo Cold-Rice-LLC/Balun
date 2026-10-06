@@ -28,8 +28,12 @@
         <!-- aspect-ratio from the asset's intrinsic dimensions keeps the
              frame hugging the visible image exactly (so highlight %
              coordinates stay true) while max-height caps it to the space
-             the parent leaves. -->
-        <figure
+             the parent leaves. With `to`, the frame itself is the link
+             (no extra wrapper); Swiper's preventClicks swallows the click
+             that ends a drag, so swiping never navigates. -->
+        <component
+          :is="to ? NuxtLink : 'figure'"
+          :to="to"
           class="slide-frame"
           :style="{ aspectRatio: frameRatio(slide) }"
         >
@@ -58,7 +62,7 @@
             <span class="hl-line"></span>
             <IconsStarCircle />
           </p>
-        </figure>
+        </component>
       </SwiperSlide>
     </Swiper>
 
@@ -116,7 +120,12 @@ defineProps({
   // Mobile variant (the home featured module): full-width slides with the
   // arrows and dot pagination in a row beneath. Desktop is unchanged.
   mobileNavBelow: { type: Boolean, default: false },
+  // Makes every slide a link here (the home module → its product). Unset on
+  // the PDP, where the slides are plain figures.
+  to: { type: String, default: undefined },
 })
+
+const NuxtLink = resolveComponent('NuxtLink')
 
 // Swiper instance (from @swiper) drives the arrow buttons; loop mode makes
 // prev/next wrap around.

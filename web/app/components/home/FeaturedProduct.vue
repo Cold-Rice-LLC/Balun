@@ -32,6 +32,7 @@
       <ProductFeatureCarousel
         :slides="slides"
         :alt="product?.title || ''"
+        :to="product ? localePath(`/products/${product.slug}`) : undefined"
         mobile-nav-below
       />
     </div>
