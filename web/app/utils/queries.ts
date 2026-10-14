@@ -259,11 +259,8 @@ export const liveStatusQuery = groq`{
 export const productPageQuery = groq`*[
   _type == "product" && store.slug.current == $handle && store.isDeleted != true
 ][0]{
-  _id,
   "title": store.title,
   "gid": store.gid,
-  "slug": store.slug.current,
-  "status": store.status,
   "tags": store.tags,
   ${i18nField('tagline')},
   ${i18nRichText('body')},

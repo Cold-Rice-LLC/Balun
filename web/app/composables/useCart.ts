@@ -85,7 +85,6 @@ export const useCart = () => {
     lines,
     lineCount,
     subtotal,
-    checkoutUrl,
     open,
     close,
     init,

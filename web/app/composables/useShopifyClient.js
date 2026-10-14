@@ -1,5 +1,5 @@
 import { createStorefrontApiClient } from '@shopify/storefront-api-client';
-import { CreateCartQuery, FetchProductById, FetchCartQuery, AddLineItemsMutation, UpdateLineItemsMutation, RemoveLineItemsMutation, UpdateBuyerIdentityMutation } from '@/services/StorefrontQueries';
+import { CreateCartQuery, FetchCartQuery, AddLineItemsMutation, UpdateLineItemsMutation, RemoveLineItemsMutation, UpdateBuyerIdentityMutation } from '@/services/StorefrontQueries';
 
 /**
  * Client-side Shopify layer for CART operations (create/fetch/add/update/remove).
@@ -8,8 +8,7 @@ import { CreateCartQuery, FetchProductById, FetchCartQuery, AddLineItemsMutation
  * which are per-user and uncacheable, so a server hop would add latency for
  * nothing. PRODUCT READS should NOT go through here: they belong on the
  * cached server route (/api/products via useShopifyProducts) so drop-day
- * traffic is absorbed server-side. GetShopifyProduct below is legacy-ish and
- * only for one-off cases the cached route doesn't cover.
+ * traffic is absorbed server-side.
  *
  * State: `Cart` is shared app-wide via useState('cart'); the cart id persists
  * across sessions in localStorage ('balunCartId'). AddToCart handles the
@@ -27,14 +26,12 @@ export const useShopifyClient = () => {
     const config = useRuntimeConfig();
     const Cart = useState('cart', () => null);
 
-    // const headers = useRequestHeaders(['cookie'])
-
     const endpoint = config.public.shopifyStoreDomain
     const storefrontAccessToken = config.public.shopifyStorefrontAccessToken
 
     const client = createStorefrontApiClient({
     storeDomain: endpoint,
-    apiVersion: '2026-04',
+    apiVersion: config.public.shopifyApiVersion,
     publicAccessToken: storefrontAccessToken,
     });
 
@@ -217,34 +214,6 @@ export const useShopifyClient = () => {
         }
     }
 
-    async function GetShopifyProduct(id) {
-        try{
-            
-            const { data } = await client.request(FetchProductById, {
-                variables: {
-                    id: id
-                }
-            })
-
-            return data
-        }catch(e){
-            console.error('GetShopifyProduct failed', e)
-            return null
-        }
-    }
-
-    function TotalCartItems() {
-        if(!Cart.value) return 0;
-        return Cart.value.lines?.nodes?.reduce((total, line) => total + line.quantity, 0);
-    }
-
-
-    const CurrencyFormatter = (value, currency = 'USD') => {
-        if(!value) return null;
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(value);
-    }
-
-
-    return { Cart, CreateCart, FetchCart, AddLineItems, UpdateLineItems, RemoveLineItems, UpdateBuyerIdentity, GetShopifyProduct, CurrencyFormatter, AddToCart, TotalCartItems }
+    return { Cart, CreateCart, FetchCart, AddLineItems, UpdateLineItems, RemoveLineItems, UpdateBuyerIdentity, AddToCart }
 
 }

@@ -193,7 +193,6 @@ const { isOpen: quickAddOpen } = useQuickAdd()
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s;
-  /* transition-delay: 0s; */
 
   @media (min-width: 768px) {
     bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
@@ -202,7 +201,6 @@ const { isOpen: quickAddOpen } = useQuickAdd()
   &.is-visible {
     opacity: 1;
     pointer-events: auto;
-    /* transition-delay: 0.3s; */
   }
 
   /* Both CTAs share the pill look; extra specificity so the quick-add

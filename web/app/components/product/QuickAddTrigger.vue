@@ -24,7 +24,7 @@
  * caller's scoped CSS can restyle it (that's also how positioning is done —
  * always the caller's job), and the slot replaces the "+" content entirely.
  */
-const props = defineProps({
+defineProps({
   // Sanity editorial doc — unread by the drawer today, but part of the
   // payload contract so future drawer needs don't touch every trigger site.
   doc: { type: Object, default: null },

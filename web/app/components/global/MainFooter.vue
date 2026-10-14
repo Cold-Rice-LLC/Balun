@@ -45,7 +45,6 @@
 </template>
 
 <script setup>
-const localePath = useLocalePath()
 const { data: settings } = await useSiteSettings()
 
 const primaryLinks = computed(() => settings.value?.footerPrimaryLinks ?? [])
