@@ -222,7 +222,7 @@ onUnmounted(() => {
    panning — the fixed overlay receives every touch while it's up. */
 .home-intro {
   display: none;
-  z-index: 9000;
+  z-index: var(--z-intro);
   touch-action: none;
 }
 

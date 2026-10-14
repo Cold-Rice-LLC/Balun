@@ -63,17 +63,17 @@ footer {
 }
 
 body.template-home footer {
-  margin-top: 10rem;
+  margin-top: var(--spacing-lg);
 
   @media (min-width: 768px) {
-    margin-top: 20rem;
+    margin-top: var(--spacing-2xl);
   }
 }
 
 body.template-pdp footer,
 body.template-info footer,
 body.template-live footer {
-  margin-top: 10rem;
+  margin-top: var(--spacing-lg);
 }
 
 /* Mobile: gutters + clearance above the bottom-of-stack wordmark. Desktop's

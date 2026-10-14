@@ -12,7 +12,7 @@
     ></iframe>
 
     <p
-      class="loading font-secondary text-base uppercase leading-[1.2]"
+      class="loading font-secondary text-base uppercase leading-snug"
       :class="{ 'is-done': loaded }"
       :aria-hidden="loaded"
       role="status"

@@ -1,6 +1,6 @@
 <template>
   <button
-    class="overlay-backdrop z-4800"
+    class="overlay-backdrop z-(--z-backdrop)"
     :class="{ active: isOpen && revealed }"
     @click="close"
   >
@@ -20,11 +20,11 @@
              row — learn more lives in the pill beside the panel instead. -->
         <header class="flex items-start justify-between gap-base font-secondary">
           <div class="md:flex md:flex-1 md:items-start md:justify-between md:gap-base">
-            <p class="title text-base uppercase leading-[1.2]">{{ title }}</p>
+            <p class="title text-base uppercase leading-snug">{{ title }}</p>
 
             <p
               v-if="price"
-              class="text-base leading-[1.2]"
+              class="text-base leading-snug"
             >
               {{ price }}
             </p>
@@ -33,7 +33,7 @@
           <NuxtLink
             v-if="pdpPath"
             :to="pdpPath"
-            class="learn-more text-base uppercase leading-[1.2] md:hidden"
+            class="learn-more text-base uppercase leading-snug md:hidden"
             @click="close"
           >
             {{ $t('quickAdd.learnMore') }}
@@ -203,7 +203,7 @@ watch(cartOpen, (open) => {
 <style scoped>
 .quick-add-drawer {
   position: fixed;
-  z-index: 4900;
+  z-index: var(--z-drawer);
   bottom: var(--spacing-button-md-height);
   /* Full width on mobile regardless of anchor — half a phone screen fits
      nothing (the cart drawer goes full width the same way). Column-sized
@@ -226,7 +226,7 @@ watch(cartOpen, (open) => {
   /* Headroom for the mobile tab-top close button — it hangs above the body,
      and the drawer's overflow: hidden would clip it flush with the panel.
      The desktop tab is back on the side and needs none. */
-  padding-top: 5.2rem;
+  padding-top: 5rem;
 
   @media (min-width: 768px) {
     bottom: var(--spacing-button-lg-height);
@@ -307,7 +307,7 @@ watch(cartOpen, (open) => {
 .learn-more {
   color: var(--color-grey-6);
   text-decoration: underline;
-  text-underline-offset: 0.3em;
+  text-underline-offset: 0.2em;
   transition: color 0.3s;
 
   &:hover {

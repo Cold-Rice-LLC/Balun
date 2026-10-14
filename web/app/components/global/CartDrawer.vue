@@ -1,6 +1,6 @@
 <template>
   <button
-    class="overlay-backdrop z-4800"
+    class="overlay-backdrop z-(--z-backdrop)"
     :class="{ active: isOpen }"
     @click="close"
   >
@@ -184,14 +184,14 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
     transform: translateY(0);
   }
 
-  /* Mobile covers the secondary nav (its button row sits at 4901 in the
-     shared stacking context) — the in-drawer checkout replaces it. From
+  /* Mobile covers the secondary nav (its button row sits one above the
+     drawer layer in the shared stacking context) — the in-drawer checkout replaces it. From
      768px the drawer ducks back under the nav, whose cart button is the
      checkout action, and clears it with the bottom padding. */
-  z-index: 4902;
+  z-index: calc(var(--z-drawer) + 2);
 
   @media (min-width: 768px) {
-    z-index: 4900;
+    z-index: var(--z-drawer);
     left: calc(50% + var(--spacing-base) / 2);
     padding-bottom: var(--spacing-button-lg-height);
     transform: translateY(calc(100% - var(--spacing-button-lg-height)));

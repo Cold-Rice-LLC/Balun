@@ -101,7 +101,7 @@ const cardImage = computed(() => productImage(props.doc, props.live, { w: 900 })
 
 .card-meta {
   padding: var(--spacing-sm) 0;
-  line-height: 1.2;
+  line-height: var(--leading-snug);
 
   .stock-note {
     color: var(--color-grey-4);

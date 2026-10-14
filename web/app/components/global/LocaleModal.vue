@@ -31,9 +31,9 @@
        siblings in MainFooter, so their resolve order already matches tree
        order. Making either switcher async would break that. -->
   <Teleport to="#teleports">
-    <!-- Above the MainNav header (z 5000): a modal covers everything. -->
+    <!-- Above the navs: a modal covers everything. -->
     <button
-      class="overlay-backdrop z-5100"
+      class="overlay-backdrop z-(--z-modal-backdrop)"
       :class="{ active: open }"
       tabindex="-1"
       @click="open = false"
@@ -155,7 +155,7 @@ onBeforeUnmount(() => {
 
 .locale-modal {
   position: fixed;
-  z-index: 5200;
+  z-index: var(--z-modal);
   top: 50%;
   left: 50%;
   min-width: 24rem;
@@ -199,7 +199,7 @@ ul {
     &.is-active {
       color: var(--color-grey-7);
       text-decoration: underline;
-      text-underline-offset: 0.3em;
+      text-underline-offset: 0.2em;
     }
   }
 }

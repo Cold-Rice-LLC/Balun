@@ -35,7 +35,7 @@
       <template v-if="page?.isLive">
         <div
           v-if="page.location || page.description"
-          class="intro font-secondary text-base leading-[1.2]"
+          class="intro font-secondary text-base leading-snug"
         >
           <p class="uppercase">{{ page.location }}</p>
           <p>{{ page.description }}</p>
@@ -49,7 +49,7 @@
       </template>
 
       <template v-else>
-        <p class="font-secondary text-base uppercase leading-[1.2]">{{ $t('live.offline') }}</p>
+        <p class="font-secondary text-base uppercase leading-snug">{{ $t('live.offline') }}</p>
 
         <NuxtLink
           :to="localePath('/')"
@@ -65,7 +65,7 @@
          keeps its own. -->
     <button
       v-if="stream?.type === 'mux'"
-      class="mute font-secondary text-base uppercase leading-[1.2]"
+      class="mute font-secondary text-base uppercase leading-snug"
       :aria-pressed="!muted"
       @click="muted = !muted"
     >
@@ -150,7 +150,7 @@ useHead({
 }
 
 /* Over the stream, under the corner. Absolute rather than fixed so it covers
-   exactly the stage and scrolls away with it; the navs are fixed at z 5000
+   exactly the stage and scrolls away with it; the navs are fixed on the nav layer
    and stay crisp, as they do behind the quick-add drawer. enter-in-fade
    fades it up on mount — the panels vanish outright on close, so it goes
    with them rather than lingering through a leave transition (hence always

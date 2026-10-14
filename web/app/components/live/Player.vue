@@ -28,7 +28,7 @@
       >
         <p
           v-if="!ready"
-          class="font-secondary text-base uppercase leading-[1.2]"
+          class="font-secondary text-base uppercase leading-snug"
           role="status"
         >
           {{ $t('live.connecting') }}

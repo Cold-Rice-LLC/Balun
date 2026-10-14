@@ -6,9 +6,6 @@ import {requireEnglish} from '../lib/i18nValidation'
  * linking somewhere. One or more texts run in order, a dot after each. The
  * texts ARE the label — the link carries no label of its own (linkTarget,
  * not navLink).
- *
- * Texts replaced the single `text` field; scripts/migrateMarqueeTexts.mjs
- * moves existing content across.
  */
 export default {
   name: 'moduleMarquee',

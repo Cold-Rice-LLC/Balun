@@ -107,10 +107,10 @@ useHead({
   }
 
   & > section + section {
-    margin-top: 12rem;
+    margin-top: var(--spacing-lg);
 
     @media (min-width: 768px) {
-      margin-top: 20rem;
+      margin-top: var(--spacing-2xl);
     }
   }
 
@@ -119,7 +119,7 @@ useHead({
   }
 
   & > section.headline-over-image + section {
-    margin-top: 15rem;
+    margin-top: var(--spacing-xl);
 
     @media (min-width: 768px) {
       margin-top: 3rem;
@@ -133,7 +133,7 @@ useHead({
   & > section.big-image-headline.is-contained + section,
   & > section + section.big-image-logo.is-contained,
   & > section + section.big-image-headline.is-contained {
-    margin-top: 10rem;
+    margin-top: var(--spacing-lg);
   }
 }
 </style>

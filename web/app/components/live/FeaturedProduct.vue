@@ -40,7 +40,7 @@
         role="dialog"
         :aria-label="title"
       >
-        <header class="flex items-start justify-between gap-base p-base font-secondary text-base leading-[1.2]">
+        <header class="flex items-start justify-between gap-base p-base font-secondary text-base leading-snug">
           <p class="uppercase">{{ title }}</p>
           <p v-if="price">{{ price }}</p>
         </header>
@@ -128,7 +128,7 @@ const image = computed(() => productImage(props.product, detail.value, { w: 900 
   flex-direction: column;
   gap: var(--spacing-base);
   min-height: 0;
-  padding-top: 5.2rem;
+  padding-top: 5rem;
 
   @media (min-width: 768px) {
     padding-top: 0;

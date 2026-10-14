@@ -1,7 +1,7 @@
 <template>
   <section
     v-if="module.text"
-    class="text-module font-quaternary uppercase text-center leading-[1.2]"
+    class="text-module font-quaternary uppercase text-center leading-snug"
   >
     {{ module.text }}
   </section>

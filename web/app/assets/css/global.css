@@ -82,9 +82,18 @@ Tailwind Config
   --spacing-sm: 1.2rem;
   --spacing-base: 2rem;
   --spacing-md: 4rem;
+  --spacing-lg: 10rem;
+  --spacing-xl: 15rem;
+  --spacing-2xl: 20rem;
   --spacing-button-md-height: 5rem;
   --spacing-button-lg-height: 6.8rem;
   --spacing-page-top: 8.5rem;
+
+  /* Line Height */
+  --leading-snug: 1.2;
+
+  /* Widths */
+  --container-measure: 48rem;
 
   /*
   Border Radius
@@ -98,6 +107,16 @@ Root Variables (non tailwind)
 
 :root {
   --curve: cubic-bezier(0, 0.84, 0.24, 1);
+
+  /* Site-wide stacking layers, lowest to highest. Local stacking inside a
+     component (z 1/2/10…) stays raw. */
+  --z-floating: 4000;
+  --z-backdrop: 4800;
+  --z-drawer: 4900;
+  --z-nav: 5000;
+  --z-modal-backdrop: 5100;
+  --z-modal: 5200;
+  --z-intro: 9000;
 }
 
 /* 
@@ -265,7 +284,7 @@ quick-add drawer and PDP buy panel grow to from 768px up.
 
 .notch-close {
   width: 5rem;
-  height: 5.2rem;
+  height: 5rem;
   display: flex;
   justify-content: center;
   align-items: center;

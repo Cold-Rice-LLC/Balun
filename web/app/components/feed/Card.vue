@@ -255,7 +255,7 @@ const accentStyle = computed(() => {
 }
 
 .excerpt {
-  max-width: 44rem;
+  max-width: var(--container-measure);
   line-height: 1.1;
 }
 

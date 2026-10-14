@@ -65,7 +65,7 @@ useIntervalFn(refresh, 60_000)
 
 <style scoped>
 header {
-  z-index: 5000;
+  z-index: var(--z-nav);
 }
 
 .home-link {

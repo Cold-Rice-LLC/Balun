@@ -183,13 +183,13 @@ onBeforeRouteLeave(async () => {
 .feed-detail {
   position: fixed;
   inset: 0;
-  z-index: 4800;
+  z-index: var(--z-backdrop);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   /* Headroom for the mobile tab-top nipple (5rem) above the panel, plus
      clearance for the fixed navs. */
-  padding: calc(var(--spacing-page-top) + 5rem) var(--spacing-base) 15rem;
+  padding: calc(var(--spacing-page-top) + 5rem) var(--spacing-base) var(--spacing-xl);
 
   @media (min-width: 768px) {
     padding-top: calc(var(--spacing-page-top) + var(--spacing-base));
@@ -287,7 +287,7 @@ onBeforeRouteLeave(async () => {
 }
 
 .excerpt {
-  max-width: 44rem;
+  max-width: var(--container-measure);
   line-height: 1.1;
 }
 

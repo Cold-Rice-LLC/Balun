@@ -178,11 +178,11 @@ const { isOpen: quickAddOpen } = useQuickAdd()
 
 /* Fixed in the quick-add drawer's slot above the "shop" button, fading with
    the module's visibility (useInView drives .is-visible). Kept below the
-   overlay backdrops (z 4800) so an open drawer blurs them like the rest of
+   overlay backdrops so an open drawer blurs them like the rest of
    the page. */
 .ctas {
   position: fixed;
-  z-index: 4000;
+  z-index: var(--z-floating);
   bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
   /* Full width on mobile; from 768px up, the quick-add drawer's left column. */
   inset-inline: var(--spacing-base);

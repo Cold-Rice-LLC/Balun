@@ -147,12 +147,10 @@ export const homeQuery = groq`${marketDoc('homePage')}{
   }
 }`
 
-// Modular since the info rebuild; `body` is the legacy single-field shape,
-// kept selected so the current page renders until the module UI ships.
-// Market-scoped at the document level like home.
+// Modular; the title only feeds the tab title. Market-scoped at the document
+// level like home.
 export const infoQuery = groq`${marketDoc('infoPage')}{
   ${i18nField('title')},
-  ${i18nRichText('body')},
   "modules": modules[]{
     _type,
     _key,
@@ -179,8 +177,7 @@ export const legalPageQuery = groq`${marketDoc('legalPage', ' && slug.current ==
   ${i18nRichText('body')}
 }`
 
-// 5 while pagination is under test — bump once the feed has real volume.
-export const FEED_PAGE_SIZE = 5
+export const FEED_PAGE_SIZE = 12
 
 const feedPostProjection = `
   _id,

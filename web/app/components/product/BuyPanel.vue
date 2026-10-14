@@ -211,8 +211,8 @@ watch(
 .panel :deep(.options) {
   padding-top: var(--spacing-base);
   overflow-y: auto;
-  /* Mobile also clears the tab-top close button (5.2rem) hanging above. */
-  max-height: calc(100svh - var(--spacing-button-lg-height) * 2 - var(--spacing-base) * 2 - 5.2rem);
+  /* Mobile also clears the tab-top close button (5rem) hanging above. */
+  max-height: calc(100svh - var(--spacing-button-lg-height) * 2 - var(--spacing-base) * 2 - 5rem);
 
   @media (min-width: 768px) {
     max-height: calc(100svh - var(--spacing-button-lg-height) * 2 - var(--spacing-base) * 2);

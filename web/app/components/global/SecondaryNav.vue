@@ -77,14 +77,14 @@ const onCartButton = () => {
 
 <style scoped>
 nav {
-  z-index: 5000;
+  z-index: var(--z-nav);
 
   /* The drawer now renders inside this nav, so its z-index competes with the
      button list in the same stacking context. Keep the checkout button (and
      its list) above the drawer and backdrop so it stays visible and clickable. */
   ul {
     position: relative;
-    z-index: 4901;
+    z-index: calc(var(--z-drawer) + 1);
   }
 
   li {

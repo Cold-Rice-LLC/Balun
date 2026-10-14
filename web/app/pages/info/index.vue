@@ -1,6 +1,5 @@
 <template>
-  <!-- Modular render; falls back to the legacy single-body layout until the
-       modules are populated, then to the stub if neither exists. -->
+  <!-- Modular render; a stub until the modules are populated. -->
   <article
     v-if="modules.length"
     class="info-page px-base enter-in-fade-up"
@@ -21,20 +20,6 @@
       :key="m._key"
       :module="m"
     />
-  </article>
-
-  <article
-    v-else-if="page?.title || page?.body"
-    class="info-legacy px-base enter-in-fade-up"
-  >
-    <h1 class="uppercase text-lg">{{ page.title }}</h1>
-
-    <div
-      v-if="page.body"
-      class="body-copy mt-base space-y-base text-grey-4 [&_h2]:text-grey-1"
-    >
-      <RichText :value="page.body" />
-    </div>
   </article>
 
   <div
@@ -97,7 +82,7 @@ useHead({
    content just grows the container past min-height and flows normally. */
 .info-page {
   position: relative;
-  padding: 14rem var(--spacing-base);
+  padding: var(--spacing-xl) var(--spacing-base);
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   column-gap: var(--spacing-base);
@@ -110,16 +95,10 @@ useHead({
 /* Display type leading the page brings its own headroom — tuck the top
    padding in. Other first modules keep the standard page top above. */
 .info-page.leads-prose {
-  padding-top: 10rem;
+  padding-top: var(--spacing-lg);
 
   @media (min-width: 768px) {
     padding-top: var(--spacing-base);
   }
-}
-
-.info-legacy {
-  padding-top: var(--spacing-page-top);
-  padding-bottom: var(--spacing-base);
-  max-width: 48rem;
 }
 </style>

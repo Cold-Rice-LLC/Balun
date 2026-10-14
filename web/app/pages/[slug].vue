@@ -43,6 +43,6 @@ useNotFound(page, 'Page not found')
 .legal-page {
   padding-top: var(--spacing-page-top);
   padding-bottom: var(--spacing-base);
-  max-width: 48rem;
+  max-width: var(--container-measure);
 }
 </style>

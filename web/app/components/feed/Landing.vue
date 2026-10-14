@@ -145,7 +145,7 @@ const toggleFilter = (cat) => {
   position: relative;
   /* Clips the fixed-scale shoe overlay on views shorter than the drawing. */
   overflow: clip;
-  padding: 14rem var(--spacing-base);
+  padding: var(--spacing-xl) var(--spacing-base);
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   column-gap: var(--spacing-base);
