@@ -7,6 +7,7 @@ const SINGLETON_PATHS: Record<string, string> = {
   homePage: '/',
   infoPage: '/info',
   livePage: '/live',
+  shopPage: '/products',
   feedPage: '/feed',
 }
 

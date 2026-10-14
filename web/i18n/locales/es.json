@@ -106,6 +106,10 @@
     "feed": "Novedades",
     "info": "Información",
     "product": "Producto",
-    "live": "En vivo"
+    "live": "En vivo",
+    "shop": "Tienda"
+  },
+  "shop": {
+    "empty": "Por ahora no hay productos en la tienda."
   }
 }

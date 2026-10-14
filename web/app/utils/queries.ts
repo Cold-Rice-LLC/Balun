@@ -66,6 +66,12 @@ const productProjection = `
   gallery
 `
 
+// A curated product list (home grid, shop page), dereferenced to the shared
+// projection and filtered to still-sellable items — buy-box null-handling
+// covers any a market's catalog omits.
+const sellableProducts = (field: string) =>
+  `"${field}": ${field}[@->store.status == "active" && @->store.isDeleted != true]->{${productProjection}}`
+
 // A product's feature carousel slides (shared by the home featured-product
 // module and the PDP), with each highlight's text resolved.
 const featureCarouselProjection = `[]{
@@ -110,14 +116,13 @@ const siteSettings = `*[_type == "siteSettings"][0]`
 // The home page is modular (page builder) and market-scoped at the document
 // level (marketDoc); each market URL caches its own shell.
 //
-// Modules project per-type. Product references are filtered to still-sellable
-// items (buy-box null-handling covers any a market's catalog omits).
+// Modules project per-type.
 export const homeQuery = groq`${marketDoc('homePage')}{
   "modules": modules[]{
     _type,
     _key,
     _type == "moduleProductGrid" => {
-      "products": products[@->store.status == "active" && @->store.isDeleted != true]->{${productProjection}}
+      ${sellableProducts('products')}
     },
     _type == "moduleFeaturedProduct" => {
       ${i18nField('heading')},
@@ -154,6 +159,13 @@ export const homeQuery = groq`${marketDoc('homePage')}{
     },
     _type == "moduleVideo" => {${moduleVideoProjection}}
   },
+  ${seoProjection}
+}`
+
+// The Shop page (/products): the curated grid of every product on sale.
+// Market-scoped at the document level like home.
+export const shopQuery = groq`${marketDoc('shopPage')}{
+  ${sellableProducts('products')},
   ${seoProjection}
 }`
 

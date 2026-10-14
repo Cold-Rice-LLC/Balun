@@ -5,11 +5,12 @@ import {
   PlayIcon,
   DocumentsIcon,
   TagIcon,
+  BasketIcon,
   DocumentTextIcon,
 } from '@sanity/icons'
 
 // Singleton document types: edited as a single fixed document, not a list.
-// homePage/infoPage/livePage/legalPage are intentionally NOT singletons — each
+// homePage/infoPage/livePage/shopPage/legalPage are intentionally NOT singletons — each
 // is a default page plus optional per-market override pages (see the marketField
 // helper / adding-a-market.md).
 export const singletonTypes = ['siteSettings', 'feedPage']
@@ -57,6 +58,14 @@ export const myStructure = (S) =>
                 .child(
                   S.documentTypeList('livePage')
                     .title('Live Pages')
+                    .defaultOrdering([{field: 'market', direction: 'asc'}]),
+                ),
+              S.listItem()
+                .title('Shop Pages')
+                .icon(BasketIcon)
+                .child(
+                  S.documentTypeList('shopPage')
+                    .title('Shop Pages')
                     .defaultOrdering([{field: 'market', direction: 'asc'}]),
                 ),
               // Reusable policy pages: Terms, Returns, Privacy, … (slug-driven,

@@ -3,7 +3,7 @@
     <ul class="grid grid-cols-2 gap-base text-base-plus lg:text-lg">
       <li>
         <NuxtLink
-          :to="localePath('/')"
+          :to="localePath('/products')"
           @click="onShopLink"
           >{{ $t('nav.shop') }}</NuxtLink
         >
@@ -40,15 +40,15 @@ const { t } = useI18n()
 const { isOpen, lineCount, open, close, checkout, init } = useCart()
 const { close: closeQuickAdd } = useQuickAdd()
 
-// Navigating home from the shop button should clear both overlays. Already
-// on home, the NuxtLink is a no-op — scroll to the top instead. nextTick:
+// The shop button should clear both overlays on the way to the Shop page.
+// Already there, the NuxtLink is a no-op — scroll to the top instead. nextTick:
 // closing the overlays releases the scroll lock on the watcher flush, and
 // scrollTo is itself a no-op while html overflow is still hidden.
 const onShopLink = () => {
   close()
   closeQuickAdd()
   const strip = (p) => p.replace(/\/+$/, '')
-  if (strip(route.path) === strip(localePath('/'))) {
+  if (strip(route.path) === strip(localePath('/products'))) {
     nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
   }
 }

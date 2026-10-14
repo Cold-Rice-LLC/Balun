@@ -71,6 +71,7 @@ body.template-home footer {
 }
 
 body.template-pdp footer,
+body.template-shop footer,
 body.template-info footer,
 body.template-live footer {
   margin-top: var(--spacing-lg);

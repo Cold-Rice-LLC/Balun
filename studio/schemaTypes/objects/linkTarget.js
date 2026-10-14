@@ -39,6 +39,7 @@ export const linkTargetFields = ({required = false, schemes} = {}) => [
       {type: 'homePage'},
       {type: 'infoPage'},
       {type: 'livePage'},
+      {type: 'shopPage'},
       {type: 'feedPage'},
       {type: 'legalPage'},
       {type: 'feedPost'},
@@ -73,6 +74,7 @@ const TYPE_TITLES = {
   homePage: 'Home',
   infoPage: 'Info',
   livePage: 'Live',
+  shopPage: 'Shop',
   feedPage: 'Feed',
 }
 

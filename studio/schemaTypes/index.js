@@ -31,6 +31,7 @@ import legalPage from './documents/legalPage'
 import infoPage from './documents/infoPage'
 import feedPage from './documents/feedPage'
 import livePage from './documents/livePage'
+import shopPage from './documents/shopPage'
 
 export const schemaTypes = [
   // Objects
@@ -67,6 +68,7 @@ export const schemaTypes = [
   infoPage,
   feedPage,
   livePage,
+  shopPage,
   // Collections
   product,
   productVariant,

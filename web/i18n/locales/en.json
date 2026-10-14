@@ -106,6 +106,10 @@
     "feed": "Feed",
     "info": "Info",
     "product": "Product",
-    "live": "Live"
+    "live": "Live",
+    "shop": "Shop"
+  },
+  "shop": {
+    "empty": "Nothing in the shop right now."
   }
 }

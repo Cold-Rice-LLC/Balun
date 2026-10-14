@@ -72,24 +72,8 @@ const gids = computed(() => {
   return out.filter(Boolean)
 })
 
-// Triggers the fetch (and the on-remount revalidation); rendering reads the
-// shared catalog below, so back-navs paint the last known data instantly
-// while the refetch lands in the background.
-useShopifyProducts(gids)
-
 // gid → live product, so each module resolves its cards' price/availability.
-// Sourced from useLiveCatalog rather than the fetch result: fresher surfaces
-// (PDP, quick add) feed the same catalog, so a product this visitor just saw
-// sell out can't reappear available here.
-const { byGid: catalog } = useLiveCatalog()
-const liveByGid = computed(() => {
-  const map = {}
-  for (const gid of gids.value) {
-    const live = catalog.value[gid]
-    if (live) map[gid] = live
-  }
-  return map
-})
+const liveByGid = useLiveProducts(gids)
 
 // No title of its own: the home page is the site title alone.
 useSeo(() => ({ seo: home.value?.seo }))

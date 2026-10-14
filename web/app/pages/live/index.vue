@@ -52,7 +52,7 @@
         <p class="font-secondary text-base uppercase leading-snug">{{ $t('live.offline') }}</p>
 
         <NuxtLink
-          :to="localePath('/')"
+          :to="localePath('/products')"
           class="pill-button text-base-plus"
         >
           {{ $t('nav.shop') }}
