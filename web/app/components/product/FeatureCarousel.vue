@@ -38,7 +38,9 @@
           :style="{ aspectRatio: frameRatio(slide) }"
         >
           <img
-            :src="urlFor(slide, { w: 1600 })"
+            :src="urlFor(slide, { w: 1600, q: QUALITY })"
+            :srcset="srcsetFor(slide, { q: QUALITY })"
+            :sizes="mobileNavBelow ? `(min-width: 768px) ${sizes}, 100vw` : sizes"
             :loading="eager && i === 0 ? 'eager' : 'lazy'"
             :fetchpriority="eager && i === 0 ? 'high' : undefined"
             :alt="slide.alt || alt"
@@ -114,6 +116,11 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 
 const urlFor = useSanityImage()
+const srcsetFor = useSanitySrcset()
+
+// Above the CDN default: these are big product shots, where its heavier
+// compression reads as grain.
+const QUALITY = 85
 
 defineProps({
   slides: { type: Array, default: () => [] },
@@ -125,6 +132,10 @@ defineProps({
   // Makes every slide a link here (the home module → its product). Unset on
   // the PDP, where the slides are plain figures.
   to: { type: String, default: undefined },
+  // The slide's drawn width from 768px up, for srcset selection (the mobile
+  // nav-below variant is full width below that). Default: the home module,
+  // where the frame spans the viewport minus the arrow rails (~85vw).
+  sizes: { type: String, default: '86vw' },
   // Load the first slide immediately (the home page's lead module); the
   // rest stay lazy. Both still fade in.
   eager: { type: Boolean, default: false },

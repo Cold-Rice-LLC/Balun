@@ -28,7 +28,9 @@
                 <img
                   v-for="(image, i) in doc.gallery"
                   :key="i"
-                  :src="urlFor(image, { w: 1400 })"
+                  :src="urlFor(image, { w: 1400, q: 85 })"
+                  :srcset="srcsetFor(image, { q: 85 })"
+                  sizes="(min-width: 768px) 50vw, 100vw"
                   :loading="i === 0 ? 'eager' : 'lazy'"
                   :fetchpriority="i === 0 ? 'high' : undefined"
                   :alt="liveForDoc?.title || doc.title"
@@ -50,7 +52,9 @@
                   class="media-slide"
                 >
                   <img
-                    :src="urlFor(image, { w: 1400 })"
+                    :src="urlFor(image, { w: 1400, q: 85 })"
+                    :srcset="srcsetFor(image, { q: 85 })"
+                    sizes="(min-width: 768px) 50vw, 100vw"
                     :loading="i === 0 ? 'eager' : 'lazy'"
                     :fetchpriority="i === 0 ? 'high' : undefined"
                     :alt="liveForDoc?.title || doc.title"
@@ -128,6 +132,7 @@
             <ProductFeatureCarousel
               :slides="doc.featureCarousel ?? []"
               :alt="liveForDoc?.title || doc.title"
+              sizes="50vw"
               mobile-nav-below
             />
           </div>
@@ -189,6 +194,7 @@ const handle = computed(() => String(route.params.handle))
 const sanity = useSanity()
 const market = useMarket()
 const urlFor = useSanityImage()
+const srcsetFor = useSanitySrcset()
 
 // SSR shell (cached per locale URL): Sanity editorial + synced identity.
 // $lang resolves the translated tagline/body; watched so an in-place language
