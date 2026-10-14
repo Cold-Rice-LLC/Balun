@@ -89,13 +89,7 @@ import { liveQuery } from '~/utils/queries'
  */
 const { t } = useI18n()
 const localePath = useLocalePath()
-const market = useMarket()
-const sanity = useSanity()
-const { data: page, refresh } = await useAsyncData(
-  () => `live-${market.value.market}-${market.value.lang}`,
-  () => sanity.fetch(liveQuery, { market: market.value.market, lang: market.value.lang }),
-  { watch: [() => market.value.market, () => market.value.lang] },
-)
+const { data: page, refresh } = await useMarketPage('live', liveQuery)
 useIntervalFn(refresh, 30_000)
 
 const featuredOpen = ref(false)

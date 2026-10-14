@@ -15,6 +15,8 @@
  *   detail page will want its own richer query — don't fatten this one.
  */
 
+import type { StorefrontPriceRange } from '../utils/storefront'
+
 const PRODUCTS_QUERY = /* GraphQL */ `
   query ($ids: [ID!]!, $country: CountryCode!, $language: LanguageCode!)
   @inContext(country: $country, language: $language) {
@@ -28,25 +30,11 @@ const PRODUCTS_QUERY = /* GraphQL */ `
           url
           altText
         }
-        priceRange {
-          minVariantPrice {
-            amount
-            currencyCode
-          }
-          maxVariantPrice {
-            amount
-            currencyCode
-          }
-        }
+        ${PRICE_RANGE_FIELDS}
       }
     }
   }
 `
-
-interface StorefrontMoney {
-  amount: string
-  currencyCode: string
-}
 
 export interface StorefrontProduct {
   id: string
@@ -54,33 +42,21 @@ export interface StorefrontProduct {
   handle: string
   availableForSale: boolean
   featuredImage: { url: string; altText: string | null } | null
-  priceRange: {
-    minVariantPrice: StorefrontMoney
-    maxVariantPrice: StorefrontMoney
-  }
+  priceRange: StorefrontPriceRange
 }
 
 export default defineCachedEventHandler(
   async (event) => {
-    const { gids, country: rawCountry, language: rawLanguage } = getQuery(event)
+    const query = getQuery(event)
 
     // Only forward well-formed product GIDs — anything else (junk input,
     // variant GIDs, injection attempts) is silently dropped.
-    const ids = String(gids ?? '')
+    const ids = String(query.gids ?? '')
       .split(',')
       .map((id) => id.trim())
       .filter((id) => id.startsWith('gid://shopify/Product/'))
 
-    const country = /^[A-Za-z]{2}$/.test(String(rawCountry ?? ''))
-      ? String(rawCountry).toUpperCase()
-      : 'US'
-
-    // @inContext language: Shopify returns translated title etc. when the
-    // store has that translation (Translate & Adapt); falls back to the
-    // default language otherwise.
-    const language = /^[A-Za-z]{2}$/.test(String(rawLanguage ?? ''))
-      ? String(rawLanguage).toUpperCase()
-      : 'EN'
+    const { country, language } = parseMarketQuery(query)
 
     if (!ids.length) {
       return { country, language, products: [] }
@@ -111,8 +87,9 @@ export default defineCachedEventHandler(
     // different prices/currency per market and different strings per
     // language (@inContext).
     getKey: (event) => {
-      const { gids, country, language } = getQuery(event)
-      return `products:${country ?? 'US'}:${language ?? 'EN'}:${gids ?? ''}`
+      const query = getQuery(event)
+      const { country, language } = parseMarketQuery(query)
+      return `products:${country}:${language}:${query.gids ?? ''}`
     },
   },
 )

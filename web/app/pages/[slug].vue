@@ -36,15 +36,7 @@ const { data: page } = await useAsyncData(
   { watch: [slug, () => market.value.market, () => market.value.lang] },
 )
 
-// SSR miss.
-if (!page.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
-}
-// Client-side navigation to an unknown slug — setup won't re-run, so guard
-// reactively once the in-place refetch resolves to nothing.
-watch(page, (value) => {
-  if (!value) showError({ statusCode: 404, statusMessage: 'Page not found' })
-})
+useNotFound(page, 'Page not found')
 </script>
 
 <style scoped>

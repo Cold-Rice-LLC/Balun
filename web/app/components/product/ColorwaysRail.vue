@@ -56,7 +56,7 @@
           </span>
 
           <span class="sr-only">
-            {{ colorName(item.doc.title)
+            {{ colorName(item.doc.title, item.doc.title)
             }}{{ item.live && !item.live.availableForSale ? ` — ${$t('product.outOfStock')}` : '' }}
           </span>
         </component>
@@ -99,9 +99,6 @@ const entries = computed(() =>
     unavailable: !item.live || !item.live.availableForSale,
   })),
 )
-
-// "Speedy 01 · Grey" → "Grey"; titles without the separator show in full.
-const colorName = (title = '') => (title.includes('·') ? title.split('·').pop().trim() : title)
 </script>
 
 <style scoped>

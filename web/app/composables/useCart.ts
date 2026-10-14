@@ -13,7 +13,7 @@ export const useCart = () => {
 
   // Shopify LanguageCode for @inContext on every cart op, so line titles and
   // the hosted checkout follow the URL's language.
-  const language = () => market.value.lang.toUpperCase()
+  const language = () => market.value.language
 
   const cart = shopify.Cart
   const lines = computed(() => cart.value?.lines?.nodes ?? [])

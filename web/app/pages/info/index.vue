@@ -48,16 +48,7 @@
 <script setup>
 import { infoQuery } from '~/utils/queries'
 
-// $market selects the market's info page or the default; $lang resolves the
-// translated fields inside it. Keyed by both so each combo caches its own
-// shell and switching either refetches in place.
-const market = useMarket()
-const sanity = useSanity()
-const { data: page } = await useAsyncData(
-  () => `info-${market.value.market}-${market.value.lang}`,
-  () => sanity.fetch(infoQuery, { market: market.value.market, lang: market.value.lang }),
-  { watch: [() => market.value.market, () => market.value.lang] },
-)
+const { data: page } = await useMarketPage('info', infoQuery)
 
 // String names don't resolve components in dynamic :is at runtime.
 const moduleComponents = {

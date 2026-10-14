@@ -207,15 +207,7 @@ const { data: doc, status: docStatus } = await useAsyncData(
 // initial fetch before rendering.
 const switching = computed(() => docStatus.value === 'pending')
 
-// Initial / SSR miss.
-if (!doc.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Product not found', fatal: true })
-}
-// Client-side navigation to an unknown handle — setup won't re-run, so guard
-// reactively once the in-place refetch resolves to nothing.
-watch(doc, (value) => {
-  if (!value) showError({ statusCode: 404, statusMessage: 'Product not found' })
-})
+useNotFound(doc, 'Product not found')
 
 // The colorway group (current product INCLUDED — the rail marks it) via the
 // shared group:<slug> Shopify tag. Empty tag matches nothing (safe for
@@ -233,7 +225,11 @@ const { data: colorwayDocs } = await useAsyncData(
 // Live market-priced data, client-side only. useFetch keeps the previous
 // product's data during the refetch, so the buy row updates rather than
 // collapsing to a loading state.
-const { data: liveData, pending: livePending, refresh: refreshLive } = useShopifyProduct(handle)
+// Reported to the shared catalog (the Sanity doc names the gid when this
+// market masks the product), so listings stay consistent with this page.
+const { data: liveData, pending: livePending, refresh: refreshLive } = useShopifyProduct(handle, {
+  gid: () => doc.value?.gid,
+})
 const live = computed(() => liveData.value?.product ?? null)
 
 // `live` outlives `doc` during an in-place switch (useFetch keeps the
@@ -258,16 +254,7 @@ onMounted(() => {
   if (liveData.value) refreshLive()
 })
 
-// Report what this page learned to the shared catalog, so listing surfaces
-// stay consistent with what the visitor just saw here. A loaded-but-null
-// product is real info (masked from this market) — the response can't name
-// its gid, but the Sanity doc can.
-const { report, byGid: catalog } = useLiveCatalog()
-watch(liveData, (val) => {
-  if (!val) return
-  if (val.product?.id) report(val.product.id, val.product, val.country)
-  else if (doc.value?.gid) report(doc.value.gid, null, val.country)
-})
+const { byGid: catalog } = useLiveCatalog()
 
 // Live thumbs/availability for the rail: fetched via the lean batch route,
 // rendered from the catalog so revisits paint the last known data instantly.

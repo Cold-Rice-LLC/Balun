@@ -34,15 +34,7 @@ const { data: post } = await useAsyncData(
   },
 )
 
-// SSR miss.
-if (!post.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Post not found', fatal: true })
-}
-// Client-side navigation to an unknown slug — setup won't re-run, so guard
-// reactively once the in-place refetch resolves to nothing.
-watch(post, (value) => {
-  if (!value) showError({ statusCode: 404, statusMessage: 'Post not found' })
-})
+useNotFound(post, 'Post not found')
 
 useHead({
   title: () => `${post.value?.title ?? ''} — Balun`,

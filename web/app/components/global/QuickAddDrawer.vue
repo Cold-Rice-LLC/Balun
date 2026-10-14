@@ -96,7 +96,7 @@
  *
  * The variant UI (sizes/quantity/add with its state machine) is the shared
  * ProductOptionsPanel; this wrapper owns fetching, the title/price header,
- * the catalog report, and the drawer chrome (NotchPanel + learn more).
+ * and the drawer chrome (NotchPanel + learn more).
  */
 const { active, isOpen, pendingOpen, close } = useQuickAdd()
 const localePath = useLocalePath()
@@ -121,7 +121,9 @@ const handle = ref('')
 // fetch would 400), and we drive refreshes ourselves below — with
 // immediate:false Nuxt doesn't start the query watcher until a manual
 // execute, so relying on it silently never fetches.
+// The catalog report's null fallback is the gid the card handed us.
 const { data, pending, execute } = useShopifyProduct(handle, {
+  gid: () => activeGid.value,
   immediate: false,
   watch: false,
 })
@@ -174,24 +176,11 @@ watch(active, async (payload) => {
   }
 })
 
-// Report what the detail fetch learned to the shared catalog so the cards
-// behind this drawer stay consistent with it. Loaded-but-null = masked from
-// this market — real info, mapped via the gid the card handed us.
-const { report } = useLiveCatalog()
-watch(data, (val) => {
-  if (!val) return
-  if (val.product?.id) report(val.product.id, val.product, val.country)
-  else if (activeGid.value) report(activeGid.value, null, val.country)
-})
-
 const detail = computed(() => data.value?.product ?? null)
 const variants = computed(() => detail.value?.variants.nodes ?? [])
 
 // Titles follow "Base · Color" (colorway convention) — header shows the base.
-const title = computed(() => {
-  const full = active.value?.live?.title ?? detail.value?.title ?? ''
-  return full.includes('·') ? full.split('·')[0].trim() : full
-})
+const title = computed(() => baseName(active.value?.live?.title ?? detail.value?.title ?? ''))
 
 // The panel owns selection (and resets it per product); bound here so the
 // header price tracks the selected size through the same fallback chain.

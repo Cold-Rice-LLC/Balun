@@ -16,6 +16,8 @@
  * it is NOT a 404 (the editorial shell may still exist).
  */
 
+import type { StorefrontMoney, StorefrontPriceRange } from '../utils/storefront'
+
 const PRODUCT_QUERY = /* GraphQL */ `
   query ($handle: String!, $country: CountryCode!, $language: LanguageCode!)
   @inContext(country: $country, language: $language) {
@@ -38,16 +40,7 @@ const PRODUCT_QUERY = /* GraphQL */ `
           height
         }
       }
-      priceRange {
-        minVariantPrice {
-          amount
-          currencyCode
-        }
-        maxVariantPrice {
-          amount
-          currencyCode
-        }
-      }
+      ${PRICE_RANGE_FIELDS}
       variants(first: 100) {
         nodes {
           id
@@ -75,11 +68,6 @@ const PRODUCT_QUERY = /* GraphQL */ `
   }
 `
 
-interface StorefrontMoney {
-  amount: string
-  currencyCode: string
-}
-
 interface StorefrontImage {
   url: string
   altText: string | null
@@ -104,31 +92,20 @@ export interface StorefrontProductDetail {
   availableForSale: boolean
   options: { name: string; optionValues: { name: string }[] }[]
   images: { nodes: StorefrontImage[] }
-  priceRange: {
-    minVariantPrice: StorefrontMoney
-    maxVariantPrice: StorefrontMoney
-  }
+  priceRange: StorefrontPriceRange
   variants: { nodes: StorefrontVariant[] }
 }
 
 export default defineCachedEventHandler(
   async (event) => {
-    const { handle: rawHandle, country: rawCountry, language: rawLanguage } = getQuery(event)
+    const query = getQuery(event)
 
-    const handle = String(rawHandle ?? '').trim()
+    const handle = String(query.handle ?? '').trim()
     if (!handle) {
       throw createError({ statusCode: 400, statusMessage: 'handle query param is required' })
     }
 
-    const country = /^[A-Za-z]{2}$/.test(String(rawCountry ?? ''))
-      ? String(rawCountry).toUpperCase()
-      : 'US'
-
-    // @inContext language: translated strings when the store has them
-    // (Translate & Adapt), default language otherwise.
-    const language = /^[A-Za-z]{2}$/.test(String(rawLanguage ?? ''))
-      ? String(rawLanguage).toUpperCase()
-      : 'EN'
+    const { country, language } = parseMarketQuery(query)
 
     const data = await storefrontQuery<{ product: StorefrontProductDetail | null }>(
       PRODUCT_QUERY,
@@ -149,8 +126,9 @@ export default defineCachedEventHandler(
     maxAge: 15,
     swr: true,
     getKey: (event) => {
-      const { handle, country, language } = getQuery(event)
-      return `product:${country ?? 'US'}:${language ?? 'EN'}:${handle ?? ''}`
+      const query = getQuery(event)
+      const { country, language } = parseMarketQuery(query)
+      return `product:${country}:${language}:${String(query.handle ?? '').trim()}`
     },
   },
 )

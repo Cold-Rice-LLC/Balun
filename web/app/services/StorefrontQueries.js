@@ -10,7 +10,7 @@
  * (250 variants/images). Listing/buy-box reads use the lean cached
  * /api/products route instead — see server/api/products.get.ts.
  */
-export const CartObj = `
+const CartObj = `
 id
 checkoutUrl
 buyerIdentity{
@@ -105,6 +105,18 @@ cost {
 }`
 
 
+// What every cart mutation returns: the updated cart, plus Shopify's
+// "couldn't do that" reasons (sold out, dead cart), which arrive as
+// userErrors rather than a thrown request.
+const CartMutationPayload = `
+    cart {
+      ${CartObj}
+    }
+    userErrors {
+      field
+      message
+    }`
+
 // Every cart operation carries @inContext(language:) so the returned cart
 // (line titles etc.) AND the checkoutUrl are localized consistently — doing it
 // on only some ops would leave the drawer flipping language depending on which
@@ -112,13 +124,7 @@ cost {
 export const CreateCartQuery = `
 mutation createCart($cartInput: CartInput, $language: LanguageCode) @inContext(language: $language) {
   cartCreate(input: $cartInput) {
-    cart {
-    	${CartObj}
-    }
-    userErrors {
-      field
-      message
-    }
+    ${CartMutationPayload}
   }
 }`
 
@@ -133,37 +139,19 @@ export const FetchCartQuery = `
 
 export const AddLineItemsMutation = `mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!, $language: LanguageCode) @inContext(language: $language) {
   cartLinesAdd(cartId: $cartId, lines: $lines) {
-    cart {
-      ${CartObj}
-    }
-    userErrors {
-      field
-      message
-    }
+    ${CartMutationPayload}
   }
 }`
 
 export const UpdateLineItemsMutation = `mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!, $language: LanguageCode) @inContext(language: $language) {
   cartLinesUpdate(cartId: $cartId, lines: $lines) {
-    cart {
-      ${CartObj}
-    }
-    userErrors {
-      field
-      message
-    }
+    ${CartMutationPayload}
   }
 }`
 
 export const RemoveLineItemsMutation = `mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!, $language: LanguageCode) @inContext(language: $language) {
   cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
-    cart {
-      ${CartObj}
-    }
-    userErrors {
-      field
-      message
-    }
+    ${CartMutationPayload}
   }
 }`
 
@@ -172,12 +160,6 @@ export const RemoveLineItemsMutation = `mutation cartLinesRemove($cartId: ID!, $
 // keeps a persisted cart honest when the market switcher changes the URL.
 export const UpdateBuyerIdentityMutation = `mutation cartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!, $language: LanguageCode) @inContext(language: $language) {
   cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
-    cart {
-      ${CartObj}
-    }
-    userErrors {
-      field
-      message
-    }
+    ${CartMutationPayload}
   }
 }`

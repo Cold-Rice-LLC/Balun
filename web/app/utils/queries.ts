@@ -7,13 +7,16 @@ import { groq } from '#imports'
 const i18nField = (name: string) =>
   `"${name}": coalesce(${name}[language == $lang][0].value, ${name}[language == "en"][0].value)`
 
+// An internal link's referenced document, dereferenced to the type-and-slug
+// shape internalLinkPath resolves to a route — no stored paths anywhere.
+// Products keep their slug under the synced store object.
+const internalLinkProjection = `"internal": internalLink->{_type, "slug": coalesce(slug.current, store.slug.current)}`
+
 // A link destination (linkTarget fields, on their own or inside navLink /
-// labeledLink): the internal half dereferences to the type-and-slug shape
-// internalLinkPath resolves to a route — no stored paths anywhere. Products
-// keep their slug under the synced store object.
+// labeledLink).
 const linkTargetProjection = `
   linkType,
-  "internal": internalLink->{_type, "slug": coalesce(slug.current, store.slug.current)},
+  ${internalLinkProjection},
   externalUrl
 `
 
@@ -26,7 +29,7 @@ const i18nRichText = (name: string) => {
     ...,
     markDefs[]{
       ...,
-      _type == "link" => {"internal": internalLink->{_type, "slug": coalesce(slug.current, store.slug.current)}}
+      _type == "link" => {${internalLinkProjection}}
     }
   }`
   return `"${name}": coalesce(${name}[language == $lang][0].value${marks}, ${name}[language == "en"][0].value${marks})`
@@ -63,17 +66,44 @@ const productProjection = `
   gallery
 `
 
-// The home page is modular (page builder) and market-scoped at the DOCUMENT
-// level (docs/shopify-and-localization-strategy.md §3, document Pattern B):
-// pick this market's page if it exists, else the default (no market). Ordering
-// defined(market) first means the market-specific page wins; [0] takes it, and
-// falls through to the default otherwise. Each market URL caches its own shell.
+// A product's feature carousel slides (shared by the home featured-product
+// module and the PDP), with each highlight's text resolved.
+const featureCarouselProjection = `[]{
+  ...,
+  highlights[]{
+    ${i18nField('text')},
+    xPosition,
+    yPosition,
+    textPosition,
+    side,
+    width
+  }
+}`
+
+// Hero-module media: images keep the raw ref (useSanityImage builds the CDN
+// URL); file assets have no ref-encoded URL, so videos dereference here.
+const heroMediaProjection = `
+  mediaType,
+  image,
+  "videoUrl": video.asset->url
+`
+
+// A singleton that's market-scoped at the DOCUMENT level
+// (docs/shopify-and-localization-strategy.md §3, document Pattern B): this
+// market's document if it exists, else the default (no market). Ordering
+// defined(market) first means the market-specific one wins; [0] takes it, and
+// falls through to the default otherwise. `filter` narrows further (e.g. by slug).
+const marketDoc = (type: string, filter = '') =>
+  `*[_type == "${type}"${filter} && (market == $market || !defined(market))] | order(defined(market) desc)[0]`
+
+const siteSettings = `*[_type == "siteSettings"][0]`
+
+// The home page is modular (page builder) and market-scoped at the document
+// level (marketDoc); each market URL caches its own shell.
 //
 // Modules project per-type. Product references are filtered to still-sellable
 // items (buy-box null-handling covers any a market's catalog omits).
-export const homeQuery = groq`*[
-  _type == "homePage" && (market == $market || !defined(market))
-] | order(defined(market) desc)[0]{
+export const homeQuery = groq`${marketDoc('homePage')}{
   "modules": modules[]{
     _type,
     _key,
@@ -86,34 +116,18 @@ export const homeQuery = groq`*[
       "product": product->{${productProjection}},
       // Slides live on the product (featureCarousel, shared with the PDP);
       // none entered = no carousel (the component hides it).
-      "images": product->featureCarousel[]{
-        ...,
-        highlights[]{
-          ${i18nField('text')},
-          xPosition,
-          yPosition,
-          textPosition,
-          side,
-          width
-        }
-      }
+      "images": product->featureCarousel${featureCarouselProjection}
     },
     _type == "moduleMarquee" => {
       "texts": texts[]{${i18nField('text')}}.text,
       ${optionalLinkProjection}
     },
-    // Media heroes: images keep the raw ref (useSanityImage builds the CDN
-    // URL); file assets have no ref-encoded URL, so videos dereference here.
     _type == "moduleBigImageLogo" => {
-      mediaType,
-      image,
-      "videoUrl": video.asset->url,
+      ${heroMediaProjection},
       style
     },
     _type == "moduleBigImageHeadline" => {
-      mediaType,
-      image,
-      "videoUrl": video.asset->url,
+      ${heroMediaProjection},
       ${i18nField('headline')},
       links[]{
         _key,
@@ -123,10 +137,8 @@ export const homeQuery = groq`*[
       style
     },
     _type == "moduleHeadlineOverImage" => {
-      mediaType,
-      image,
+      ${heroMediaProjection},
       mobileImage,
-      "videoUrl": video.asset->url,
       ${i18nField('headline')},
       ${i18nField('linkLabel')},
       ${optionalLinkProjection}
@@ -137,11 +149,8 @@ export const homeQuery = groq`*[
 
 // Modular since the info rebuild; `body` is the legacy single-field shape,
 // kept selected so the current page renders until the module UI ships.
-// Market-scoped at the document level like home: the market's page if it
-// exists, else the default (no market).
-export const infoQuery = groq`*[
-  _type == "infoPage" && (market == $market || !defined(market))
-] | order(defined(market) desc)[0]{
+// Market-scoped at the document level like home.
+export const infoQuery = groq`${marketDoc('infoPage')}{
   ${i18nField('title')},
   ${i18nRichText('body')},
   "modules": modules[]{
@@ -164,11 +173,8 @@ export const infoQuery = groq`*[
 // (sanity-plugin-internationalized-array): resolve the current $lang, falling
 // back to English so an untranslated page still renders. Slug is language-
 // agnostic — the {lang} URL prefix carries language, not the path. Market-
-// scoped at the document level like home: per slug, the market's page if it
-// exists, else the default (no market).
-export const legalPageQuery = groq`*[
-  _type == "legalPage" && slug.current == $slug && (market == $market || !defined(market))
-] | order(defined(market) desc)[0]{
+// scoped at the document level like home, per slug.
+export const legalPageQuery = groq`${marketDoc('legalPage', ' && slug.current == $slug')}{
   ${i18nField('title')},
   ${i18nRichText('body')}
 }`
@@ -211,7 +217,7 @@ const feedPostFilter = `_type == "feedPost" && ($category == null || category ==
 const feedPostOrder = `order(publishedAt desc, _id asc) [0...${FEED_PAGE_SIZE + 1}]`
 
 export const feedQuery = groq`{
-  "isLive": *[_type == "siteSettings"][0].isLive == true,
+  "isLive": ${siteSettings}.isLive == true,
   "posts": *[${feedPostFilter}] | ${feedPostOrder} { ${feedPostProjection} }
 }`
 
@@ -227,30 +233,25 @@ export const feedPostQuery = groq`*[_type == "feedPost" && slug.current == $slug
   ${feedPostProjection}
 }`
 
-// Market-scoped at the document level like home: the market's page if it
-// exists, else the default (no market).
-export const liveQuery = groq`*[
-  _type == "livePage" && (market == $market || !defined(market))
-] | order(defined(market) desc)[0]{
+// Market-scoped at the document level like home.
+export const liveQuery = groq`${marketDoc('livePage')}{
   ${i18nField('location')},
   ${i18nField('description')},
   "featuredProduct": featuredProduct->{${productProjection}},
   // The stream is global (one streamer, every market): from Site Settings.
   // Older settings predate the source picker, so they mean Mux.
-  "liveSource": coalesce(*[_type == "siteSettings"][0].liveSource, "mux"),
-  "muxPlaybackId": *[_type == "siteSettings"][0].muxPlaybackId,
-  "youtubeUrl": *[_type == "siteSettings"][0].youtubeUrl,
-  "isLive": *[_type == "siteSettings"][0].isLive == true
+  "liveSource": coalesce(${siteSettings}.liveSource, "mux"),
+  "muxPlaybackId": ${siteSettings}.muxPlaybackId,
+  "youtubeUrl": ${siteSettings}.youtubeUrl,
+  "isLive": ${siteSettings}.isLive == true
 }`
 
 // Site-wide live status for the nav's live tab: whether the stream is on
 // (Site Settings, flipped by Mux's webhook) and this market's live page
 // location label ("Live from Tokyo"), resolved like liveQuery.
 export const liveStatusQuery = groq`{
-  "isLive": *[_type == "siteSettings"][0].isLive == true,
-  "location": *[
-    _type == "livePage" && (market == $market || !defined(market))
-  ] | order(defined(market) desc)[0]{${i18nField('location')}}.location
+  "isLive": ${siteSettings}.isLive == true,
+  "location": ${marketDoc('livePage')}{${i18nField('location')}}.location
 }`
 
 // PDP editorial shell: one product by its Shopify handle (synced slug).
@@ -265,17 +266,7 @@ export const productPageQuery = groq`*[
   ${i18nField('tagline')},
   ${i18nRichText('body')},
   gallery,
-  featureCarousel[]{
-    ...,
-    highlights[]{
-      ${i18nField('text')},
-      xPosition,
-      yPosition,
-      textPosition,
-      side,
-      width
-    }
-  }
+  featureCarousel${featureCarouselProjection}
 }`
 
 // Colorway group members: products sharing the group:<slug> Shopify tag (see
@@ -304,7 +295,7 @@ const navLinkProjection = `
   ${linkTargetProjection}
 `
 
-export const siteSettingsQuery = groq`*[_type == "siteSettings"][0]{
+export const siteSettingsQuery = groq`${siteSettings}{
   footerPrimaryLinks[]{${navLinkProjection}},
   footerSecondaryLinks[]{${navLinkProjection}}
 }`

@@ -17,6 +17,46 @@
  * server route. Throws a 502 H3 error if Shopify returns GraphQL errors.
  */
 
+export interface StorefrontMoney {
+  amount: string
+  currencyCode: string
+}
+
+// Both product routes' price range: the listing and buy box show the min,
+// "from" pricing can use the max.
+export const PRICE_RANGE_FIELDS = /* GraphQL */ `
+  priceRange {
+    minVariantPrice {
+      amount
+      currencyCode
+    }
+    maxVariantPrice {
+      amount
+      currencyCode
+    }
+  }
+`
+
+export interface StorefrontPriceRange {
+  minVariantPrice: StorefrontMoney
+  maxVariantPrice: StorefrontMoney
+}
+
+// A two-letter code (country, language) uppercased; anything else → fallback.
+const twoLetterCode = (value: unknown, fallback: string) =>
+  /^[A-Za-z]{2}$/.test(String(value ?? '')) ? String(value).toUpperCase() : fallback
+
+/**
+ * The market half of a product route's query, validated: `country` for
+ * @inContext Markets pricing (default US) and `language` for translated
+ * strings when the store has them via Translate & Adapt (default EN). Used
+ * by the handlers AND their cache keys, so "us" and "US" share one entry.
+ */
+export const parseMarketQuery = (query: Record<string, unknown>) => ({
+  country: twoLetterCode(query.country, 'US'),
+  language: twoLetterCode(query.language, 'EN'),
+})
+
 interface StorefrontErrorItem {
   message: string
 }

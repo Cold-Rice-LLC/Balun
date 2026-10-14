@@ -69,10 +69,7 @@ const props = defineProps({
 
 // Titles follow "Base · Color" (colorway convention) — the grid shows the
 // base model name; the colorway reads from the image.
-const title = computed(() => {
-  const full = props.live?.title || props.doc.title || ''
-  return full.includes('·') ? full.split('·')[0].trim() : full
-})
+const title = computed(() => baseName(props.live?.title || props.doc.title || ''))
 
 // Editorial featuredImage first, Shopify's product image as the fallback —
 // so cards still fill without any Sanity work.

@@ -84,7 +84,11 @@ const open = defineModel('open', { type: Boolean, default: false })
 const quantity = ref(1)
 const selectedId = ref(null)
 
-const { data, pending, execute } = useShopifyProduct(() => props.product.slug, { immediate: false, watch: false })
+const { data, pending, execute } = useShopifyProduct(() => props.product.slug, {
+  gid: () => props.product.gid,
+  immediate: false,
+  watch: false,
+})
 
 const show = async () => {
   if (pending.value) return
@@ -103,10 +107,7 @@ const detail = computed(() => data.value?.product ?? null)
 const variants = computed(() => detail.value?.variants.nodes ?? [])
 
 // Titles follow "Base · Color" (colorway convention) — header shows the base.
-const title = computed(() => {
-  const full = detail.value?.title ?? props.product.title ?? ''
-  return full.includes('·') ? full.split('·')[0].trim() : full
-})
+const title = computed(() => baseName(detail.value?.title ?? props.product.title ?? ''))
 
 const selectedVariant = computed(() => pickVariant(variants.value, selectedId.value))
 const price = computed(() => formatMoney(selectedVariant.value?.price ?? detail.value?.priceRange?.minVariantPrice))

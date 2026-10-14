@@ -154,11 +154,6 @@ const onRemove = async (id) => {
   }
 }
 
-// Product titles follow "Base · Color" (see colorway convention); split for
-// the two-line item label. Falls back to the full title when there's no "·".
-const baseName = (title = '') => (title.includes('·') ? title.split('·')[0].trim() : title)
-const colorName = (title = '') => (title.includes('·') ? title.split('·').pop().trim() : '')
-
 // Prefer the variant image; fall back to the product's featured image.
 const lineImage = (line) => line.merchandise.image ?? line.merchandise.product.featuredImage ?? null
 

@@ -6,6 +6,8 @@
  *   - `lang`    → selects Sanity language fields (once i18n content lands)
  *   - `country` → the @inContext country for Shopify Markets pricing, and
  *                 the $market param for market-audience content filters
+ *   - `language` → `lang` as a Shopify LanguageCode (EN/ES), for
+ *                 @inContext(language:) translated strings
  *
  * Reactive: switching locale (market switcher / navigation) updates everything
  * derived from it, including product refetches.
@@ -18,6 +20,7 @@ export const useMarket = () => {
     return {
       locale: locale.value,
       lang,
+      language: lang.toUpperCase(),
       country: country.toUpperCase(),
       market: country.toLowerCase(),
     }

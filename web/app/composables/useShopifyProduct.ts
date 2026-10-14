@@ -12,23 +12,37 @@ import type { MaybeRefOrGetter } from 'vue'
  * - `data.value.product === null` after load means "not sold in this market
  *   or unknown handle" — render the unavailable state, not an error.
  *
- * `options` forwards to useFetch — e.g. quick-add passes { immediate: false }
- * because its handle is empty until a product is picked (an immediate fetch
- * would 400); reactive query changes still trigger fetches afterwards.
+ * Every response is reported to the shared catalog (useLiveCatalog), so
+ * listing surfaces stay consistent with what the visitor just saw. A
+ * loaded-but-null product is real info (masked from this market), but the
+ * response can't name its gid — pass `gid` (the caller's known gid for the
+ * handle) so that case maps to the right catalog entry.
+ *
+ * Remaining `options` forward to useFetch — e.g. quick-add passes
+ * { immediate: false } because its handle is empty until a product is picked
+ * (an immediate fetch would 400); reactive query changes still trigger
+ * fetches afterwards.
  */
 export const useShopifyProduct = (
   handle: MaybeRefOrGetter<string>,
-  options: Record<string, unknown> = {},
+  { gid, ...options }: { gid?: MaybeRefOrGetter<string | null | undefined> } & Record<string, unknown> = {},
 ) => {
   const market = useMarket()
   const country = computed(() => market.value.country)
-  // Shopify LanguageCode (EN/ES) from the URL's language half — returns
-  // translated strings when the store has them (Translate & Adapt).
-  const language = computed(() => market.value.lang.toUpperCase())
+  const language = computed(() => market.value.language)
 
-  return useFetch('/api/product', {
+  const result = useFetch('/api/product', {
     query: { handle: computed(() => toValue(handle)), country, language },
     server: false,
     ...options,
   })
+
+  const { report } = useLiveCatalog()
+  watch(result.data, (val) => {
+    if (!val) return
+    if (val.product?.id) report(val.product.id, val.product, val.country)
+    else if (toValue(gid)) report(toValue(gid)!, null, val.country)
+  })
+
+  return result
 }
