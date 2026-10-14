@@ -129,8 +129,10 @@ body.template-live footer {
 /* The switchers' trigger is text-lg inside LocaleModal (right for desktop
    everywhere it's used); the mobile footer runs a size down like its navs. */
 .footer-links :deep(.trigger) {
-  @media (max-width: 767px) {
-    font-size: var(--text-base);
+  font-size: var(--text-base);
+
+  @media (min-width: 768px) {
+    font-size: var(--text-lg);
   }
 }
 

@@ -4,7 +4,7 @@
 
     <div
       v-if="page.body"
-      class="legal-body space-y-base"
+      class="body-copy mt-base space-y-base text-grey-4 [&_h2]:text-grey-1"
     >
       <RichText :value="page.body" />
     </div>
@@ -52,21 +52,5 @@ watch(page, (value) => {
   padding-top: var(--spacing-page-top);
   padding-bottom: var(--spacing-base);
   max-width: 48rem;
-}
-
-.legal-body {
-  margin-top: var(--spacing-base);
-  color: var(--color-grey-4);
-
-  :deep(h2) {
-    color: var(--color-grey-1);
-    text-transform: uppercase;
-    margin-top: var(--spacing-base);
-  }
-
-  :deep(a) {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
 }
 </style>

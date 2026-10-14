@@ -257,14 +257,14 @@ const highlightTextStyle = (highlight) => {
 /* Dot pagination between the arrows — mobile-variant only; the element only
    renders when the variant is on, and only shows under 768px. */
 .dots {
-  display: none;
+  grid-area: 2 / 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
 
-  @media (max-width: 767px) {
-    grid-area: 2 / 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
+  @media (min-width: 768px) {
+    display: none;
   }
 }
 

@@ -25,7 +25,7 @@
 
         <template #tab>
           <button
-            class="close"
+            class="notch-close text-grey-1"
             :aria-label="$t('live.closeFeatured')"
             @click="open = false"
           >
@@ -162,21 +162,6 @@ const image = computed(() => productImage(props.product, detail.value, { w: 900 
   max-width: 60%;
   max-height: 100%;
   object-fit: contain;
-}
-
-/* Tab shape/background/fillet come from NotchPanel — just the button's
-   own size and content layout. */
-.close {
-  width: 5rem;
-  height: 5.2rem;
-  color: var(--color-grey-1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.close :deep(.icon-x) {
-  width: 3rem;
 }
 
 .options-wrap {

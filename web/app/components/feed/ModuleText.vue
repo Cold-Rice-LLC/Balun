@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="module.body?.length"
-    class="text-module rich-text font-secondary normal-case"
+    class="text-module rich-text body-copy font-secondary normal-case"
   >
     <RichText :value="module.body" />
   </div>
@@ -19,16 +19,11 @@ defineProps({
 <style scoped>
 .text-module {
   max-width: 64rem;
+}
 
-  :deep(h2),
-  :deep(h3) {
-    text-transform: uppercase;
-    margin-top: var(--spacing-base);
-  }
-
-  :deep(a) {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
+/* Subheadings too here (.body-copy styles h2 only). */
+.text-module :deep(h3) {
+  text-transform: uppercase;
+  margin-top: var(--spacing-base);
 }
 </style>

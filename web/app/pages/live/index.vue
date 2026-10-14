@@ -22,7 +22,7 @@
          below the whole corner. -->
     <button
       v-if="featuredOpen"
-      class="backdrop enter-in-fade"
+      class="overlay-backdrop backdrop active enter-in-fade"
       @click="featuredOpen = false"
     >
       <span class="sr-only">{{ $t('live.closeFeatured') }}</span>
@@ -159,14 +159,11 @@ useHead({
    exactly the stage and scrolls away with it; the navs are fixed at z 5000
    and stay crisp, as they do behind the quick-add drawer. enter-in-fade
    fades it up on mount — the panels vanish outright on close, so it goes
-   with them rather than lingering through a leave transition. */
+   with them rather than lingering through a leave transition (hence always
+   .active). The look comes from the global .overlay-backdrop. */
 .backdrop {
   position: absolute;
-  inset: 0;
   z-index: 1;
-  background-color: rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(6px);
-  cursor: pointer;
 }
 
 /* Sticks above the secondary nav while the stage is on screen, and — being

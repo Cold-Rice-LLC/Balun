@@ -199,17 +199,19 @@ const toggleFilter = (cat) => {
      background, not something to draw over the cards. */
   position: relative;
   z-index: 30;
+  padding-top: 3rem;
 
-  @media (max-width: 767px) {
-    padding-top: 3rem;
+  > li + li {
+    margin-top: calc(var(--spacing-base) + 5rem);
 
-    > li + li {
-      margin-top: calc(var(--spacing-base) + 5rem);
+    @media (min-width: 768px) {
+      margin-top: 0;
     }
   }
 
   @media (min-width: 768px) {
     grid-column: 4 / span 6;
+    padding-top: 0;
   }
 }
 

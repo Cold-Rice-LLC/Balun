@@ -28,7 +28,7 @@
 
           <template #tab>
             <button
-              class="close"
+              class="notch-close notch-close-tall text-grey-6"
               :aria-label="$t('quickAdd.close')"
               @click="expanded = false"
             >
@@ -216,29 +216,6 @@ watch(
 
   @media (min-width: 768px) {
     max-height: calc(100svh - var(--spacing-button-lg-height) * 2 - var(--spacing-base) * 2);
-  }
-}
-
-/* Tab shape/background/fillet come from NotchPanel — this is just the
-   button's own size and content layout (mirrors the quick-add drawer's). */
-.close {
-  width: 5rem;
-  height: 5.2rem;
-  color: var(--color-grey-6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  @media (min-width: 768px) {
-    height: 6.2rem;
-  }
-}
-
-.close :deep(.icon-x) {
-  width: 3rem;
-
-  @media (min-width: 768px) {
-    transform: translateX(-0.5rem);
   }
 }
 

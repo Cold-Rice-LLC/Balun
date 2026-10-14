@@ -1,6 +1,6 @@
 <template>
   <button
-    class="quick-add-backdrop"
+    class="overlay-backdrop z-4800"
     :class="{ active: isOpen && revealed }"
     @click="close"
   >
@@ -62,7 +62,7 @@
 
       <template #tab>
         <button
-          class="close"
+          class="notch-close notch-close-tall text-grey-6"
           :aria-label="$t('quickAdd.close')"
           @click="close"
         >
@@ -212,23 +212,6 @@ watch(cartOpen, (open) => {
 </script>
 
 <style scoped>
-.quick-add-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 4800;
-  background-color: rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(6px);
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
-
-  &.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
-}
-
 .quick-add-drawer {
   position: fixed;
   z-index: 4900;
@@ -305,32 +288,6 @@ watch(cartOpen, (open) => {
   @media (min-width: 768px) {
     right: auto;
     width: calc(50vw - (var(--spacing-base) * 1.5));
-  }
-}
-
-/* Tab shape/background/fillet come from NotchPanel — this is just the
-   button's own size and content layout. */
-.close {
-  width: 5rem;
-  height: 5.2rem;
-  color: var(--color-grey-6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  @media (min-width: 768px) {
-    height: 6.2rem;
-  }
-}
-
-/* Top-level, not nested inside .close: the scoped-CSS compiler mangles
-   :deep() inside native CSS nesting (emits `& [data-v] .icon-x`, which
-   requires an intermediate scoped element and never matches here). */
-.close :deep(.icon-x) {
-  width: 3rem;
-
-  @media (min-width: 768px) {
-    transform: translateX(-0.5rem);
   }
 }
 

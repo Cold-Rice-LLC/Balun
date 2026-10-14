@@ -31,8 +31,9 @@
        siblings in MainFooter, so their resolve order already matches tree
        order. Making either switcher async would break that. -->
   <Teleport to="#teleports">
+    <!-- Above the MainNav header (z 5000): a modal covers everything. -->
     <button
-      class="locale-backdrop"
+      class="overlay-backdrop z-5100"
       :class="{ active: open }"
       tabindex="-1"
       @click="open = false"
@@ -149,25 +150,6 @@ onBeforeUnmount(() => {
 
   span {
     flex: none;
-  }
-}
-
-/* Same backdrop treatment as the cart/quick-add overlays, but layered above
-   the MainNav header (z 5000) — a modal covers everything. */
-.locale-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 5100;
-  background-color: rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(6px);
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
-
-  &.active {
-    opacity: 1;
-    pointer-events: auto;
   }
 }
 

@@ -236,6 +236,56 @@ live page's featured-product and shop buttons.
 }
 
 /*
+Overlay backdrop — the dim + blur behind the cart, quick-add and locale
+overlays (and the live page's in-stage one). Full-window and hidden until
+.active; each overlay sets its own z-index.
+*/
+
+.overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+
+  &.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/*
+Notch close — the X button in a NotchPanel's tab (the panel supplies the
+tab's shape and background). .notch-close-tall is the side-tab size the
+quick-add drawer and PDP buy panel grow to from 768px up.
+*/
+
+.notch-close {
+  width: 5rem;
+  height: 5.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & .icon-x {
+    width: 3rem;
+  }
+}
+
+.notch-close-tall {
+  @media (min-width: 768px) {
+    height: 6.2rem;
+
+    & .icon-x {
+      transform: translateX(-0.5rem);
+    }
+  }
+}
+
+/*
 Feed categories — shared by the feed card and the feed detail panel. Sets
 NotchPanel's --notch-bg (body + tab) and the text color that rides along
 (also the chip/RSVP outlines).
@@ -272,5 +322,19 @@ Rich Text
 .rich-text {
   & > * + * {
     margin-top: 1em;
+  }
+}
+
+/* Editorial body copy (legal pages, the info page, feed text modules):
+   uppercase headings with headroom, underlined links. */
+.body-copy {
+  & h2 {
+    text-transform: uppercase;
+    margin-top: var(--spacing-base);
+  }
+
+  & a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 }

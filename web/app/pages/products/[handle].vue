@@ -536,13 +536,13 @@ useHead({
    Desktop: sticky on the inner within the tall grid area instead — the buy
    panel expands upward from here either way. */
 .buy-col {
-  @media (max-width: 767px) {
-    order: 1;
-    position: sticky;
-    bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
-  }
+  order: 1;
+  position: sticky;
+  bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
 
   @media (min-width: 768px) {
+    order: 0;
+    position: static;
     height: 100%;
     display: flex;
     flex-direction: column;

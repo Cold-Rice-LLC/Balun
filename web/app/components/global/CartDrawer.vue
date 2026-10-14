@@ -1,6 +1,6 @@
 <template>
   <button
-    class="cart-backdrop"
+    class="overlay-backdrop z-4800"
     :class="{ active: isOpen }"
     @click="close"
   >
@@ -168,23 +168,6 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
 </script>
 
 <style scoped>
-.cart-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 4800;
-  background-color: rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(6px);
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
-
-  &.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
-}
-
 .cart-drawer {
   position: fixed;
   bottom: 0;
