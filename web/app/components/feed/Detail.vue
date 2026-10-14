@@ -192,7 +192,7 @@ onBeforeRouteLeave(async () => {
   padding: calc(var(--spacing-page-top) + 5rem) var(--spacing-base) 15rem;
 
   @media (min-width: 768px) {
-    padding-top: calc(var(--spacing-page-top) + 2rem);
+    padding-top: calc(var(--spacing-page-top) + var(--spacing-base));
     /* Room for the side tab, which hangs outside the panel's box. */
     padding-right: calc(var(--spacing-base) + 5rem);
   }

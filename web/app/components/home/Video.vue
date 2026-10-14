@@ -139,7 +139,7 @@ const play = () => {
   left: var(--spacing-base);
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: var(--spacing-xs);
   border-radius: 0.4rem;
   padding: 0.4rem 1rem;
   background-color: var(--color-black);

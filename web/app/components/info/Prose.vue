@@ -47,13 +47,13 @@ const components = {
   grid-column: 1 / -1;
   color: var(--color-purple);
   /* Placeholder mobile scale until there's a spec for small screens. */
-  font-size: 4rem;
+  font-size: var(--text-xl);
   line-height: 0.84;
-  padding-right: 2rem;
+  padding-right: var(--spacing-base);
 
   @media (min-width: 768px) {
     font-size: 9.4vw;
-    padding-right: 4rem;
+    padding-right: var(--spacing-md);
   }
 }
 

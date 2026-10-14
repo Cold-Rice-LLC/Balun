@@ -174,8 +174,8 @@ const toggleFilter = (cat) => {
 
 .filter-pill {
   border: 1px solid currentColor;
-  border-radius: 2rem;
-  padding: 0.2rem 1.2rem;
+  border-radius: var(--radius-def);
+  padding: 0.2rem var(--spacing-sm);
   background-color: transparent;
   color: inherit;
   transition:

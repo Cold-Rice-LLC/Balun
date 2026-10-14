@@ -444,7 +444,7 @@ useHead({
 
 .pdp-header {
   padding-top: 4.5rem;
-  padding-bottom: 2rem;
+  padding-bottom: var(--spacing-base);
 }
 
 .price {

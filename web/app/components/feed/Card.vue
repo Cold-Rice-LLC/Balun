@@ -263,7 +263,7 @@ const accentStyle = computed(() => {
   width: auto;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: var(--spacing-xs);
 }
 
 .watch :deep(.icon-play) {
@@ -280,7 +280,7 @@ const accentStyle = computed(() => {
 .chips {
   position: absolute;
   top: 100%;
-  right: 15px;
+  right: 1.5rem;
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -294,7 +294,7 @@ const accentStyle = computed(() => {
 
 .chip {
   border: 1px solid currentColor;
-  border-radius: 2rem;
-  padding: 0.2rem 1.2rem;
+  border-radius: var(--radius-def);
+  padding: 0.2rem var(--spacing-sm);
 }
 </style>
