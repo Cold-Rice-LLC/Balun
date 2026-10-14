@@ -1,5 +1,6 @@
 import {ImageIcon} from '@sanity/icons'
 import {englishIfAny, requireEnglish} from '../lib/i18nValidation'
+import {altField, mediaFields} from '../lib/fields'
 
 /**
  * Home page module: a full-viewport panel with the media inset to about half
@@ -14,70 +15,17 @@ export default {
   title: 'Headline Over Image',
   icon: ImageIcon,
   fields: [
-    {
-      name: 'mediaType',
-      type: 'string',
-      title: 'Media Type',
-      description: 'Image or a silent looping video.',
-      options: {
-        list: [
-          {title: 'Image', value: 'image'},
-          {title: 'Video', value: 'video'},
-        ],
-        layout: 'radio',
-      },
-      initialValue: 'image',
-      validation: (Rule) => Rule.required(),
-    },
-    {
-      name: 'image',
-      type: 'image',
-      title: 'Image',
-      description:
+    ...mediaFields({
+      imageDescription:
         'Shown at about half the window width, centered, with the headline overlapping it. Set the hotspot to choose what stays visible when it is cropped.',
-      options: {hotspot: true},
-      fields: [
-        {
-          name: 'alt',
-          type: 'string',
-          title: 'Alt Text',
-          description:
-            'Screen-reader description of the image. Leave empty if it is purely decorative.',
-        },
-      ],
-      hidden: ({parent}) => parent?.mediaType !== 'image',
-      validation: (Rule) =>
-        Rule.custom((value, context) =>
-          context.parent?.mediaType === 'image' && !value?.asset ? 'Image is required.' : true,
-        ),
-    },
-    {
-      name: 'video',
-      type: 'file',
-      title: 'Video',
-      description: 'Plays as a silent loop.',
-      options: {accept: 'video/*'},
-      hidden: ({parent}) => parent?.mediaType !== 'video',
-      validation: (Rule) =>
-        Rule.custom((value, context) =>
-          context.parent?.mediaType === 'video' && !value?.asset ? 'Video is required.' : true,
-        ),
-    },
+    }),
     {
       name: 'mobileImage',
       type: 'image',
       title: 'Mobile Image',
       description: 'Optional portrait image for phones. Falls back to the main image when empty.',
       options: {hotspot: true},
-      fields: [
-        {
-          name: 'alt',
-          type: 'string',
-          title: 'Alt Text',
-          description:
-            'Screen-reader description of the image. Leave empty if it is purely decorative.',
-        },
-      ],
+      fields: [altField()],
       hidden: ({parent}) => parent?.mediaType !== 'image',
     },
     {

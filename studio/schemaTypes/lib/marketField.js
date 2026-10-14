@@ -6,6 +6,32 @@ import {MARKETS} from '../../../locales.mjs'
 const MARKET_OPTIONS = MARKETS.map(({id, title}) => ({title, value: id}))
 
 /**
+ * Counts OTHER documents of `type` (excluding this document's draft and
+ * published copies) that share its market — both default (no market) when
+ * `market` is nullish. Pass `slug` to count only documents with that slug.
+ */
+export const countMarketSiblings = (context, {type, market, slug}) => {
+  const client = context.getClient({apiVersion: '2024-10-01'})
+  const publishedId = context.document._id.replace(/^drafts\./, '')
+  const scopeToSlug = slug !== undefined
+  return client.fetch(
+    `count(*[
+      _type == $type
+      && !(_id in [$draft, $published])
+      && (market == $market || (!defined(market) && !defined($market)))
+      ${scopeToSlug ? '&& slug.current == $slug' : ''}
+    ])`,
+    {
+      type,
+      draft: `drafts.${publishedId}`,
+      published: publishedId,
+      market: market ?? null,
+      ...(scopeToSlug ? {slug} : {}),
+    },
+  )
+}
+
+/**
  * The document-level market override field (docs/shopify-and-localization-
  * strategy.md §3, Pattern B): no market = the DEFAULT document, a market set =
  * a whole-document override for that market only. Queries resolve with
@@ -24,29 +50,13 @@ export const marketField = (type, {scopeToSlug = false} = {}) => ({
   options: {list: MARKET_OPTIONS, layout: 'radio'},
   validation: (Rule) =>
     Rule.custom(async (market, context) => {
-      const {document, getClient} = context
+      const {document} = context
       if (!document) return true
       // No slug yet = nothing to clash with; the slug field's own isUnique
       // re-checks the (slug, market) pair once it exists.
-      const slug = scopeToSlug ? document.slug?.current : null
+      const slug = scopeToSlug ? document.slug?.current : undefined
       if (scopeToSlug && !slug) return true
-      const client = getClient({apiVersion: '2024-10-01'})
-      const publishedId = document._id.replace(/^drafts\./, '')
-      const count = await client.fetch(
-        `count(*[
-          _type == $type
-          && !(_id in [$draft, $published])
-          && (market == $market || (!defined(market) && !defined($market)))
-          ${scopeToSlug ? '&& slug.current == $slug' : ''}
-        ])`,
-        {
-          type,
-          draft: `drafts.${publishedId}`,
-          published: publishedId,
-          market: market ?? null,
-          ...(scopeToSlug ? {slug} : {}),
-        },
-      )
+      const count = await countMarketSiblings(context, {type, market, slug})
       if (count > 0) {
         const what = scopeToSlug ? `"/${slug}" page` : 'page'
         return market

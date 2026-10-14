@@ -1,5 +1,6 @@
 import {TagIcon} from '@sanity/icons'
 import {englishIfAny} from '../lib/i18nValidation'
+import {altField} from '../lib/fields'
 
 /**
  * A Shopify product. Documents are created and kept in sync by Sanity Connect
@@ -45,14 +46,7 @@ export default {
       description:
         'The product image used on grid cards. Leave empty to fall back to the Shopify product image.',
       options: {hotspot: true},
-      fields: [
-        {
-          name: 'alt',
-          type: 'string',
-          title: 'Alt Text',
-          description: 'Screen-reader description. Leave empty to use the product title.',
-        },
-      ],
+      fields: [altField('Screen-reader description. Leave empty to use the product title.')],
     },
     {
       name: 'gallery',

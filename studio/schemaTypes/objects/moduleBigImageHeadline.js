@@ -1,6 +1,7 @@
 import {BlockElementIcon} from '@sanity/icons'
 import {englishIfAny, requireEnglish} from '../lib/i18nValidation'
 import {linkTargetSelect, linkTargetSubtitle} from './linkTarget'
+import {mediaFields, styleField} from '../lib/fields'
 
 /**
  * Home page module: a media hero with a large yellow headline over the media
@@ -16,55 +17,10 @@ export default {
   title: 'Big Image + Headline',
   icon: BlockElementIcon,
   fields: [
-    {
-      name: 'mediaType',
-      type: 'string',
-      title: 'Media Type',
-      description: 'Image or a silent looping video.',
-      options: {
-        list: [
-          {title: 'Image', value: 'image'},
-          {title: 'Video', value: 'video'},
-        ],
-        layout: 'radio',
-      },
-      initialValue: 'image',
-      validation: (Rule) => Rule.required(),
-    },
-    {
-      name: 'image',
-      type: 'image',
-      title: 'Image',
-      description:
+    ...mediaFields({
+      imageDescription:
         'Cover-cropped to fill the module, so landscape works best. Set the hotspot to choose what stays visible when it is cropped.',
-      options: {hotspot: true},
-      fields: [
-        {
-          name: 'alt',
-          type: 'string',
-          title: 'Alt Text',
-          description:
-            'Screen-reader description of the image. Leave empty if it is purely decorative.',
-        },
-      ],
-      hidden: ({parent}) => parent?.mediaType !== 'image',
-      validation: (Rule) =>
-        Rule.custom((value, context) =>
-          context.parent?.mediaType === 'image' && !value?.asset ? 'Image is required.' : true,
-        ),
-    },
-    {
-      name: 'video',
-      type: 'file',
-      title: 'Video',
-      description: 'Plays as a silent loop.',
-      options: {accept: 'video/*'},
-      hidden: ({parent}) => parent?.mediaType !== 'video',
-      validation: (Rule) =>
-        Rule.custom((value, context) =>
-          context.parent?.mediaType === 'video' && !value?.asset ? 'Video is required.' : true,
-        ),
-    },
+    }),
     {
       name: 'headline',
       type: 'internationalizedArrayString',
@@ -107,22 +63,9 @@ export default {
         },
       ],
     },
-    {
-      name: 'style',
-      type: 'string',
-      title: 'Style',
-      description:
-        'Full Width bleeds edge to edge; Contained insets the media into a rounded panel (matches Big Image + Logo).',
-      options: {
-        list: [
-          {title: 'Full Width', value: 'fullWidth'},
-          {title: 'Contained', value: 'contained'},
-        ],
-        layout: 'radio',
-      },
-      initialValue: 'fullWidth',
-      validation: (Rule) => Rule.required(),
-    },
+    styleField(
+      'Full Width bleeds edge to edge; Contained insets the media into a rounded panel (matches Big Image + Logo).',
+    ),
   ],
   preview: {
     select: {media: 'image', headline: 'headline.0.value', style: 'style', mediaType: 'mediaType'},

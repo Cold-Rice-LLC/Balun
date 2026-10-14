@@ -1,6 +1,6 @@
 import {DocumentTextIcon} from '@sanity/icons'
 import {requireEnglish} from '../lib/i18nValidation'
-import {marketField} from '../lib/marketField'
+import {countMarketSiblings, marketField} from '../lib/marketField'
 
 /**
  * A reusable policy/legal page (Terms, Returns, Privacy, …). One schema, many
@@ -40,26 +40,12 @@ export default {
         // Default slug uniqueness is per type, which would block a market
         // override from reusing the default's slug. Unique per (slug, market)
         // instead, mirroring the market field's own validation.
-        isUnique: async (slug, context) => {
-          const {document, getClient} = context
-          const client = getClient({apiVersion: '2024-10-01'})
-          const publishedId = document._id.replace(/^drafts\./, '')
-          const count = await client.fetch(
-            `count(*[
-              _type == "legalPage"
-              && !(_id in [$draft, $published])
-              && slug.current == $slug
-              && (market == $market || (!defined(market) && !defined($market)))
-            ])`,
-            {
-              draft: `drafts.${publishedId}`,
-              published: publishedId,
-              slug,
-              market: document.market ?? null,
-            },
-          )
-          return count === 0
-        },
+        isUnique: async (slug, context) =>
+          (await countMarketSiblings(context, {
+            type: 'legalPage',
+            market: context.document.market,
+            slug,
+          })) === 0,
       },
       validation: (Rule) => Rule.required(),
     },

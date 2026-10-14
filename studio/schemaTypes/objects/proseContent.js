@@ -1,4 +1,5 @@
 import {linkTargetFields} from './linkTarget'
+import {altField} from '../lib/fields'
 
 /**
  * Portable Text for the info page's intermingled text+image module: plain
@@ -36,14 +37,7 @@ export default {
         {
           type: 'image',
           options: {hotspot: true},
-          fields: [
-            {
-              name: 'alt',
-              type: 'string',
-              title: 'Alt Text',
-              description: 'Screen-reader description of the inline image.',
-            },
-          ],
+          fields: [altField('Screen-reader description of the inline image.')],
         },
       ],
     },

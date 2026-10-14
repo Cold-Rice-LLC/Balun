@@ -1,6 +1,7 @@
 import {PlayIcon} from '@sanity/icons'
 import {englishIfAny} from '../lib/i18nValidation'
 import {youtubeUrlRule} from '../lib/youtube'
+import {altField} from '../lib/fields'
 
 /**
  * Home page module: a click-to-play video in the headline-over-image media
@@ -61,15 +62,7 @@ export default {
       title: 'Poster',
       description: 'Shown with the "watch" pill until the video is played.',
       options: {hotspot: true},
-      fields: [
-        {
-          name: 'alt',
-          type: 'string',
-          title: 'Alt Text',
-          description:
-            'Screen-reader description of the image. Leave empty if it is purely decorative.',
-        },
-      ],
+      fields: [altField()],
       validation: (Rule) => Rule.required(),
     },
   ],

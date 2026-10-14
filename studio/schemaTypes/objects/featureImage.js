@@ -1,4 +1,5 @@
 import {requireEnglish} from '../lib/i18nValidation'
+import {altField} from '../lib/fields'
 
 /**
  * A feature-carousel slide: an image with positioned text callouts
@@ -16,12 +17,7 @@ export default {
   title: 'Feature Image',
   options: {hotspot: true},
   fields: [
-    {
-      name: 'alt',
-      type: 'string',
-      title: 'Alt Text',
-      description: 'Screen-reader description of the slide. Leave empty to use the product title.',
-    },
+    altField('Screen-reader description of the slide. Leave empty to use the product title.'),
     {
       name: 'highlights',
       type: 'array',
