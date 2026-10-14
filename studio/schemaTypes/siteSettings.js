@@ -1,3 +1,4 @@
+import {englishIfAnyMaxLength} from './lib/i18nValidation'
 import {youtubeUrlRule} from './lib/youtube'
 
 /**
@@ -13,6 +14,13 @@ export default {
   title: 'Site Settings',
   fieldsets: [
     {
+      name: 'metadata',
+      title: 'Metadata',
+      description:
+        'What search results and shared links show for any page that doesn’t set its own (each page’s SEO section overrides these).',
+      options: {collapsible: true, collapsed: false},
+    },
+    {
       name: 'liveStream',
       title: 'Live Stream',
       description:
@@ -26,22 +34,30 @@ export default {
       type: 'string',
       title: 'Site Title',
       description:
-        'Intended for the browser tab and search results. Not wired up on the site yet — page titles are set in code for now.',
+        'Follows every page’s title (“Feed — Balun”), and is the home page’s title alone.',
+      validation: (Rule) => Rule.required(),
+      fieldset: 'metadata',
     },
     {
       name: 'metaDescription',
-      type: 'text',
+      type: 'internationalizedArrayText',
       title: 'Meta Description',
-      rows: 3,
       description:
-        'Intended as the site-wide fallback for search-result snippets. Not wired up on the site yet.',
+        'The search-result snippet and share text for pages with no description of their own.',
+      validation: englishIfAnyMaxLength(
+        160,
+        'Search results cut descriptions off at about 160 characters.',
+      ),
+      fieldset: 'metadata',
     },
     {
       name: 'ogImage',
       type: 'image',
-      title: 'OG Image',
+      title: 'Share Image',
       description:
-        'Intended as the preview image when a link to the site is shared. Not wired up on the site yet.',
+        'Shown when a link to the site is shared, for pages with no image of their own. Cropped to 1200 × 630 around the hotspot.',
+      options: {hotspot: true},
+      fieldset: 'metadata',
     },
     {
       name: 'footerPrimaryLinks',

@@ -91,8 +91,10 @@ const liveByGid = computed(() => {
   return map
 })
 
+// No title of its own: the home page is the site title alone.
+useSeo(() => ({ seo: home.value?.seo }))
+
 useHead({
-  title: () => `Balun`,
   bodyAttrs: { class: 'template-home' },
 })
 </script>

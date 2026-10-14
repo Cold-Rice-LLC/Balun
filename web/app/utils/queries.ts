@@ -88,6 +88,15 @@ const heroMediaProjection = `
   "videoUrl": video.asset->url
 `
 
+// A page's SEO overrides from the Studio (see the `seo` object): each field
+// may be empty, and useSeo falls back to the page's own content, then Site
+// Settings.
+const seoProjection = `"seo": seo{
+  ${i18nField('title')},
+  ${i18nField('description')},
+  image
+}`
+
 // A singleton that's market-scoped at the DOCUMENT level
 // (docs/shopify-and-localization-strategy.md §3, document Pattern B): this
 // market's document if it exists, else the default (no market). Ordering
@@ -144,7 +153,8 @@ export const homeQuery = groq`${marketDoc('homePage')}{
       ${optionalLinkProjection}
     },
     _type == "moduleVideo" => {${moduleVideoProjection}}
-  }
+  },
+  ${seoProjection}
 }`
 
 // Modular; the title only feeds the tab title. Market-scoped at the document
@@ -164,7 +174,8 @@ export const infoQuery = groq`${marketDoc('infoPage')}{
       ${i18nRichText('body')}
     },
     _type == "moduleVideo" => {${moduleVideoProjection}}
-  }
+  },
+  ${seoProjection}
 }`
 
 // A reusable policy page by slug. Title/body are internationalized arrays
@@ -174,7 +185,8 @@ export const infoQuery = groq`${marketDoc('infoPage')}{
 // scoped at the document level like home, per slug.
 export const legalPageQuery = groq`${marketDoc('legalPage', ' && slug.current == $slug')}{
   ${i18nField('title')},
-  ${i18nRichText('body')}
+  ${i18nRichText('body')},
+  ${seoProjection}
 }`
 
 export const FEED_PAGE_SIZE = 12
@@ -227,7 +239,8 @@ export const feedPostsQuery = groq`*[
 
 // One post for the feed detail, by slug.
 export const feedPostQuery = groq`*[_type == "feedPost" && slug.current == $slug][0]{
-  ${feedPostProjection}
+  ${feedPostProjection},
+  ${seoProjection}
 }`
 
 // Market-scoped at the document level like home.
@@ -240,7 +253,8 @@ export const liveQuery = groq`${marketDoc('livePage')}{
   "liveSource": coalesce(${siteSettings}.liveSource, "mux"),
   "muxPlaybackId": ${siteSettings}.muxPlaybackId,
   "youtubeUrl": ${siteSettings}.youtubeUrl,
-  "isLive": ${siteSettings}.isLive == true
+  "isLive": ${siteSettings}.isLive == true,
+  ${seoProjection}
 }`
 
 // Site-wide live status for the nav's live tab: whether the stream is on
@@ -262,8 +276,10 @@ export const productPageQuery = groq`*[
   "tags": store.tags,
   ${i18nField('tagline')},
   ${i18nRichText('body')},
+  featuredImage,
   gallery,
-  featureCarousel${featureCarouselProjection}
+  featureCarousel${featureCarouselProjection},
+  ${seoProjection}
 }`
 
 // Colorway group members: products sharing the group:<slug> Shopify tag (see
@@ -292,7 +308,12 @@ const navLinkProjection = `
   ${linkTargetProjection}
 `
 
+// Site-wide settings: the SEO fallbacks (useSeo) and the footer's link lists.
+// The meta description is translated, so this takes $lang.
 export const siteSettingsQuery = groq`${siteSettings}{
+  siteTitle,
+  ${i18nField('metaDescription')},
+  ogImage,
   footerPrimaryLinks[]{${navLinkProjection}},
   footerSecondaryLinks[]{${navLinkProjection}}
 }`

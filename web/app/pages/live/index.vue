@@ -107,8 +107,9 @@ const stream = computed(() => {
   return page.value.muxPlaybackId ? { type: 'mux', playbackId: page.value.muxPlaybackId } : null
 })
 
+useSeo(() => ({ seo: page.value?.seo, title: t('meta.live'), description: page.value?.description }))
+
 useHead({
-  title: () => `${t('meta.live')} — Balun`,
   bodyAttrs: { class: 'template-live' },
 })
 </script>

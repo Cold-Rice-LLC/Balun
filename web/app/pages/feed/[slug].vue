@@ -36,7 +36,10 @@ const { data: post } = await useAsyncData(
 
 useNotFound(post, 'Post not found')
 
-useHead({
-  title: () => `${post.value?.title ?? ''} — Balun`,
-})
+useSeo(() => ({
+  seo: post.value?.seo,
+  title: post.value?.title,
+  description: post.value?.excerpt,
+  image: post.value?.coverImage,
+}))
 </script>

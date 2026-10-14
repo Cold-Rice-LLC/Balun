@@ -188,6 +188,7 @@ import { productPageQuery, colorwaysQuery } from '~/utils/queries'
 // Nuxt's default route key, which interpolates the path and would remount the
 // page on every handle change.
 definePageMeta({ key: 'products-handle' })
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const handle = computed(() => String(route.params.handle))
@@ -316,8 +317,14 @@ const onGallerySwiper = (swiper) => {
   activeIndex.value = swiper.realIndex
 }
 
+useSeo(() => ({
+  seo: doc.value?.seo,
+  title: doc.value?.title ?? t('meta.product'),
+  description: doc.value?.tagline,
+  image: doc.value?.featuredImage ?? doc.value?.gallery?.[0],
+}))
+
 useHead({
-  title: () => `${doc.value?.title ?? t('meta.product')} — Balun`,
   bodyAttrs: { class: 'template-pdp' },
 })
 </script>

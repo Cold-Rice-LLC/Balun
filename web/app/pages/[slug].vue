@@ -37,6 +37,8 @@ const { data: page } = await useAsyncData(
 )
 
 useNotFound(page, 'Page not found')
+
+useSeo(() => ({ seo: page.value?.seo, title: page.value?.title }))
 </script>
 
 <style scoped>

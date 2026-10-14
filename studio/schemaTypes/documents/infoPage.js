@@ -38,6 +38,10 @@ export default {
         {type: 'moduleVideo'},
       ],
     },
+    {
+      name: 'seo',
+      type: 'seo',
+    },
   ],
   preview: {
     select: {market: 'market'},

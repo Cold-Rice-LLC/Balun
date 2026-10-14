@@ -59,7 +59,9 @@ useHead(() => ({
 }))
 ```
 
-`seo: true` is the default, so `useLocaleHead()` bare is enough. The `link` and
+`seo: true` is the default, so `useLocaleHead()` bare is enough. It also
+emits `og:url` and `og:locale` — the only Open Graph tags `useSeo` (which
+handles title, description and share image) deliberately leaves out. The `link` and
 `meta` arrays are where the new tags actually live — `htmlAttrs` alone (today's
 version) carries only `lang`/`dir`, which is why adding them is part of the
 change and not automatic. Delete the comment block explaining the deferral.

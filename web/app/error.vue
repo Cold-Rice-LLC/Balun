@@ -26,6 +26,8 @@ const props = defineProps({
 const { t } = useI18n()
 const message = computed(() => (props.error?.statusCode === 404 ? t('error.notFound') : t('error.generic')))
 
+useSeo(() => ({ title: message.value, noindex: true }))
+
 // The error page renders outside the normal page lifecycle, so the router's
 // scroll-to-top behavior never fires — do it ourselves.
 onMounted(() => window.scrollTo(0, 0))

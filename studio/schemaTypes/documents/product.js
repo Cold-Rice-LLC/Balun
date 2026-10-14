@@ -71,6 +71,10 @@ export default {
         'Synced from Shopify by Sanity Connect. Read-only — edit these in Shopify, not here.',
       options: {collapsible: true, collapsed: true},
     },
+    {
+      name: 'seo',
+      type: 'seo',
+    },
   ],
   preview: {
     select: {

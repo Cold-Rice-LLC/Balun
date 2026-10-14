@@ -39,6 +39,10 @@ export default {
       to: [{type: 'product'}],
       description: 'Opens in the quick-add popup from the "featured product" button.',
     },
+    {
+      name: 'seo',
+      type: 'seo',
+    },
   ],
   preview: {
     select: {market: 'market'},

@@ -36,8 +36,9 @@ provide(feedPostsKey, posts)
 const localePath = useLocalePath()
 onMounted(() => preloadRouteComponents(localePath('/feed/_')))
 
+useSeo(() => ({ title: t('meta.feed') }))
+
 useHead({
-  title: () => `${t('meta.feed')} — Balun`,
   bodyAttrs: { class: 'template-feed' },
 })
 </script>

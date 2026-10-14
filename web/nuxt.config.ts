@@ -55,6 +55,9 @@ export default defineNuxtConfig({
     // See docs/newsletter.md.
     klaviyoPrivateApiKey: '',
     klaviyoListId: '',
+    // Server-only (NUXT_NOINDEX=true on staging): X-Robots-Tag: noindex on
+    // every response, so a staging deploy never gets indexed.
+    noindex: false,
     public: {
       // Overridden by NUXT_PUBLIC_SHOPIFY_STORE_DOMAIN / NUXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN.
       // Storefront tokens are public-safe (read-only storefront + cart scope).

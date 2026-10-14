@@ -10,12 +10,13 @@ import {LANGUAGES, DEFAULT_LANGUAGE} from '../../../locales.mjs'
  * contract at publish time.
  */
 
-const DEFAULT_TITLE =
-  LANGUAGES.find((l) => l.id === DEFAULT_LANGUAGE)?.title ?? DEFAULT_LANGUAGE
+const DEFAULT_TITLE = LANGUAGES.find((l) => l.id === DEFAULT_LANGUAGE)?.title ?? DEFAULT_LANGUAGE
 
 // Non-empty for both field shapes: string values and blockContent arrays.
 const hasValue = (item) =>
-  item?.value != null && item.value !== '' && !(Array.isArray(item.value) && item.value.length === 0)
+  item?.value != null &&
+  item.value !== '' &&
+  !(Array.isArray(item.value) && item.value.length === 0)
 
 const defaultLanguageItem = (value) =>
   (value ?? []).find((item) => item.language === DEFAULT_LANGUAGE)
@@ -38,3 +39,12 @@ export const englishIfAny = (Rule) =>
       ? true
       : `Add the ${DEFAULT_TITLE} version too — it's the fallback every other language uses.`
   })
+
+// Optional field with a soft length limit (search results cut text off),
+// checked per language; adds englishIfAny's default-language check.
+export const englishIfAnyMaxLength = (max, message) => (Rule) => [
+  englishIfAny(Rule),
+  Rule.custom((value) =>
+    (value ?? []).some((item) => (item?.value ?? '').length > max) ? message : true,
+  ).warning(),
+]

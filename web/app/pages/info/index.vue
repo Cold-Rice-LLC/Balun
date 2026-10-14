@@ -33,6 +33,7 @@
 <script setup>
 import { infoQuery } from '~/utils/queries'
 
+const { t } = useI18n()
 const { data: page } = await useMarketPage('info', infoQuery)
 
 // String names don't resolve components in dynamic :is at runtime.
@@ -51,9 +52,10 @@ const modules = computed(() => (page.value?.modules ?? []).filter((m) => m._type
 // visual space — the page top tightens when it comes first.
 const leadsProse = computed(() => modules.value[0]?._type === 'moduleInfoProse')
 
+// Schema title is tab/SEO only — the modular page renders no heading.
+useSeo(() => ({ seo: page.value?.seo, title: page.value?.title || t('meta.info') }))
+
 useHead({
-  // Schema title is tab/SEO only — the modular page renders no heading.
-  title: () => `${page.value?.title || t('meta.info')} — Balun`,
   bodyAttrs: { class: 'template-info' },
 })
 </script>

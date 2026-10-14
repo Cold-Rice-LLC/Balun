@@ -21,6 +21,7 @@ import labeledLink from './objects/labeledLink'
 import linkTarget from './objects/linkTarget'
 import featureImage from './objects/featureImage'
 import proseContent from './objects/proseContent'
+import seo from './objects/seo'
 import product from './documents/product'
 import productVariant from './documents/productVariant'
 import collection from './documents/collection'
@@ -40,6 +41,7 @@ export const schemaTypes = [
   shopifyProductVariant,
   shopifyCollection,
   featureImage,
+  seo,
   // Home page modules (page builder)
   moduleProductGrid,
   moduleFeaturedProduct,

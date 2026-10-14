@@ -125,6 +125,10 @@ export default {
       description: 'Recap of the stream, shown in the detail view once it is over.',
       hidden: ({parent}) => parent?.category !== 'stream',
     },
+    {
+      name: 'seo',
+      type: 'seo',
+    },
   ],
   orderings: [
     {

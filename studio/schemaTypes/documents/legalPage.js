@@ -56,6 +56,10 @@ export default {
       description: 'The policy text. Headings, lists, links and images are supported.',
       validation: requireEnglish,
     },
+    {
+      name: 'seo',
+      type: 'seo',
+    },
   ],
   preview: {
     select: {title: 'title', slug: 'slug.current', market: 'market'},
