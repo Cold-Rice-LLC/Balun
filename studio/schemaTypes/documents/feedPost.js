@@ -75,7 +75,7 @@ export default {
       type: 'image',
       title: 'Cover Image',
       description:
-        'Card background for stream/products posts; the right-side image on detail pages.',
+        'Fills the feed card behind its text (any category), and is the right-side image on the detail page.',
       options: {hotspot: true},
     },
     {
@@ -94,7 +94,8 @@ export default {
       name: 'excerpt',
       type: 'internationalizedArrayText',
       title: 'Excerpt',
-      description: 'Short text on the feed card itself (e.g. event details).',
+      description:
+        'Short text on the detail page, and the post’s search and share description. The feed card shows it too for Events and Blog posts.',
       validation: englishIfAny,
     },
     {

@@ -51,6 +51,14 @@ export default {
               type: 'linkTarget',
               title: 'Link',
               description: 'Where the label links to.',
+              // The site drops a row with no destination, so a label saved
+              // without one would never show.
+              validation: (Rule) =>
+                Rule.custom((link) =>
+                  ['internal', 'external'].includes(link?.linkType)
+                    ? true
+                    : 'Choose where this goes, or remove the row.',
+                ),
             },
           ],
           preview: {
