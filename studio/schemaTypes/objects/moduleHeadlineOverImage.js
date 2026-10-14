@@ -1,6 +1,9 @@
 import {ImageIcon} from '@sanity/icons'
-import {englishIfAny, requireEnglish} from '../lib/i18nValidation'
+import {requireEnglish, requireEnglishWhen} from '../lib/i18nValidation'
 import {altField, mediaFields} from '../lib/fields'
+
+// The caption link only renders once the editor has picked where it goes.
+const hasLink = (module) => ['internal', 'external'].includes(module?.link?.linkType)
 
 /**
  * Home page module: a full-viewport panel with the media inset to about half
@@ -36,19 +39,19 @@ export default {
       validation: requireEnglish,
     },
     {
-      name: 'linkLabel',
-      type: 'internationalizedArrayString',
-      title: 'Link Label',
-      description:
-        'Optional caption-style link under the media (e.g. "The world\'s fastest shoe").',
-      validation: englishIfAny,
-    },
-    {
       name: 'link',
       type: 'linkTarget',
       title: 'Link',
       description:
-        'Where the caption links. The caption only renders with both a label and a target.',
+        'Optional caption-style link under the media. None for no link; pick a page or URL to add one and give it a label.',
+    },
+    {
+      name: 'linkLabel',
+      type: 'internationalizedArrayString',
+      title: 'Link Label',
+      description: 'The caption\'s text (e.g. "The world\'s fastest shoe").',
+      hidden: ({parent}) => !hasLink(parent),
+      validation: requireEnglishWhen(({parent}) => hasLink(parent)),
     },
   ],
   preview: {

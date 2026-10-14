@@ -40,6 +40,16 @@ export const englishIfAny = (Rule) =>
       : `Add the ${DEFAULT_TITLE} version too — it's the fallback every other language uses.`
   })
 
+// Required only while `when(context)` holds (e.g. a label that only matters
+// once its link is set); otherwise optional, like englishIfAny.
+export const requireEnglishWhen = (when) => (Rule) =>
+  Rule.custom((value, context) => {
+    if (!when(context)) return true
+    return hasValue(defaultLanguageItem(value))
+      ? true
+      : `${DEFAULT_TITLE} is required — it's the fallback every other language uses.`
+  })
+
 // Optional field with a soft length limit (search results cut text off),
 // checked per language; adds englishIfAny's default-language check.
 export const englishIfAnyMaxLength = (max, message) => (Rule) => [
