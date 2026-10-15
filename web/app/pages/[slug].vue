@@ -1,10 +1,12 @@
 <template>
-  <article class="legal-page px-base">
-    <h1 class="uppercase text-lg">{{ page.title }}</h1>
+  <!-- Title small and centered up top; the text a centered half-width
+       column from 768px (full width on phones). -->
+  <article class="pt-page-top pb-lg px-base">
+    <h1 class="text-sm uppercase text-center">{{ page.title }}</h1>
 
     <div
       v-if="page.body"
-      class="body-copy mt-base space-y-base text-grey-4 [&_h2]:text-grey-1"
+      class="body-copy mt-md mx-auto md:w-1/2 space-y-base font-secondary text-grey-6 [&_h2]:text-black"
     >
       <RichText :value="page.body" />
     </div>
@@ -40,11 +42,3 @@ useNotFound(page, 'Page not found')
 
 useSeo(() => ({ seo: page.value?.seo, title: page.value?.title }))
 </script>
-
-<style scoped>
-.legal-page {
-  padding-top: var(--spacing-page-top);
-  padding-bottom: var(--spacing-base);
-  max-width: var(--container-measure);
-}
-</style>

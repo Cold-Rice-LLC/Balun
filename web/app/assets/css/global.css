@@ -344,8 +344,9 @@ Rich Text
   }
 }
 
-/* Editorial body copy (legal pages, the info page, feed text modules):
-   uppercase headings with headroom, underlined links. */
+/* Editorial body copy (legal pages, feed text modules): uppercase headings
+   with headroom, underlined links, and list markers (Tailwind's reset strips
+   them). */
 .body-copy {
   & h2 {
     text-transform: uppercase;
@@ -355,5 +356,18 @@ Rich Text
   & a {
     text-decoration: underline;
     text-underline-offset: 0.2em;
+  }
+
+  & ul,
+  & ol {
+    padding-left: 1.2em;
+  }
+
+  & ul {
+    list-style: disc;
+  }
+
+  & ol {
+    list-style: decimal;
   }
 }
