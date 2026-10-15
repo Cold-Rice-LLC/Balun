@@ -1,5 +1,7 @@
 <template>
   <div class="pt-page-top pb-base enter-in-fade-up">
+    <h1 class="sr-only">{{ $t('meta.shop') }}</h1>
+
     <HomeProductGrid
       v-if="products.length"
       :module="{ products }"

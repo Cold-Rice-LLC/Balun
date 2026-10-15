@@ -4,7 +4,14 @@
     "feed": "novedades",
     "info": "información",
     "cart": "carrito ({n})",
-    "checkout": "pagar"
+    "checkout": "pagar",
+    "skip": "Saltar al contenido",
+    "primary": "Principal",
+    "shopCart": "Tienda y carrito"
+  },
+  "footer": {
+    "links": "Enlaces del sitio",
+    "legal": "Legal"
   },
   "cart": {
     "close": "Cerrar carrito",

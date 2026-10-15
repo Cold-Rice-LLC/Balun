@@ -9,7 +9,10 @@
       </div>
 
       <div class="footer-links flex justify-between items-start">
-        <nav class="text-base md:text-lg text-left uppercase leading-none">
+        <nav
+          class="text-base md:text-lg text-left uppercase leading-none"
+          :aria-label="$t('footer.links')"
+        >
           <ul>
             <li
               v-for="(link, i) in primaryLinks"
@@ -26,7 +29,10 @@
             <LanguageSwitcher />
           </div>
 
-          <nav class="text-right uppercase leading-none">
+          <nav
+            class="text-right uppercase leading-none"
+            :aria-label="$t('footer.legal')"
+          >
             <ul>
               <li
                 v-for="(link, i) in secondaryLinks"

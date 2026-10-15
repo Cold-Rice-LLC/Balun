@@ -1,6 +1,7 @@
 <template>
   <svg
     class="icon-wordmark"
+    aria-hidden="true"
     viewBox="0 0 1920 586"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

@@ -11,7 +11,10 @@
       </NuxtLink>
     </div>
 
-    <nav class="flex justify-end items-start lg:items-center">
+    <nav
+      class="flex justify-end items-start lg:items-center"
+      :aria-label="$t('nav.primary')"
+    >
       <ul class="text-base lg:text-xs flex gap-x-xs">
         <li>
           <NuxtLink

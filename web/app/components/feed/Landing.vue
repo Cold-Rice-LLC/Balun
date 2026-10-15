@@ -13,6 +13,10 @@
     <!-- Filters stay up whenever a filter is active, even over zero results —
          otherwise there'd be no way to clear it. -->
     <template v-if="posts.length || filter">
+      <!-- The stub below shows the same title visibly; here the cards' h2s
+           need an h1 above them. -->
+      <h1 class="sr-only">{{ $t('meta.feed') }}</h1>
+
       <!-- Single-select category filter, mirrored into ?filter= so filtered
            views are shareable URLs. Clicking the active pill clears it. -->
       <nav

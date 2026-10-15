@@ -5,6 +5,10 @@
     class="info-page px-base enter-in-fade-up"
     :class="{ 'leads-prose': leadsProse }"
   >
+    <!-- The modules carry no heading of their own; the page title is tab and
+         SEO copy (see useSeo), so it heads the outline invisibly. -->
+    <h1 class="sr-only">{{ page?.title || $t('meta.info') }}</h1>
+
     <!-- Shoe outlines overlaid on the content block: absolute over the
          article's full box, so it scrolls with the page. width/height 100%
          + slice = the SVG crops like background-size: cover on that area. -->

@@ -4,7 +4,14 @@
     "feed": "feed",
     "info": "info",
     "cart": "cart ({n})",
-    "checkout": "checkout"
+    "checkout": "checkout",
+    "skip": "Skip to content",
+    "primary": "Primary",
+    "shopCart": "Shop and cart"
+  },
+  "footer": {
+    "links": "Site links",
+    "legal": "Legal"
   },
   "cart": {
     "close": "Close cart",

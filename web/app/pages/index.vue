@@ -11,6 +11,10 @@
     class="home-page enter-in-fade-up"
     :class="{ 'hero-first': heroFirst, 'featured-first': featuredFirst }"
   >
+    <!-- No visible title: the home page is the site title alone (see useSeo
+         below), so the page outline gets the site name. -->
+    <h1 class="sr-only">Balun</h1>
+
     <component
       :is="moduleComponents[m._type]"
       v-for="m in modules"

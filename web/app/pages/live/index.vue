@@ -5,6 +5,8 @@
        docs/live-streaming.md for how `isLive` flips), and the editorial
        corner sticks to its bottom edge. -->
   <div class="stage">
+    <h1 class="sr-only">{{ $t('meta.live') }}</h1>
+
     <LivePlayer
       v-if="stream?.type === 'mux'"
       v-model:muted="muted"

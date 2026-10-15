@@ -42,29 +42,36 @@
          its wrapper, and a transformed ancestor becomes the containing block
          for position:fixed — which pinned these to the bottom of the page
          instead of the viewport. Out here they fix to the viewport again.
-         Must stay the only body teleport — LocaleModal explains why. -->
-    <Teleport to="body">
-      <div
-        v-if="product"
-        class="ctas"
-        :class="{ 'is-visible': ctasVisible && !quickAddOpen }"
-      >
-        <ProductQuickAddTrigger
-          class="cta cta-quick-add text-base"
-          :doc="product"
-          :live="live"
+         Client-only so the teleport appends to the end of body at mount:
+         SSR-teleported body content lands before the Nuxt root, which made
+         these CTAs the page's first tab stops, ahead of the skip link. It
+         also keeps this out of the SSR teleport ordering LocaleModal
+         explains. Nothing is lost server-side: quick add needs live data
+         anyway, and the carousel already links to the product. -->
+    <ClientOnly>
+      <Teleport to="body">
+        <div
+          v-if="product"
+          class="ctas"
+          :class="{ 'is-visible': ctasVisible && !quickAddOpen }"
         >
-          {{ $t('quickAdd.cta') }}
-        </ProductQuickAddTrigger>
+          <ProductQuickAddTrigger
+            class="cta cta-quick-add text-base"
+            :doc="product"
+            :live="live"
+          >
+            {{ $t('quickAdd.cta') }}
+          </ProductQuickAddTrigger>
 
-        <NuxtLink
-          :to="localePath(`/products/${product.slug}`)"
-          class="cta cta-learn-more text-base"
-        >
-          {{ $t('quickAdd.learnMore') }}
-        </NuxtLink>
-      </div>
-    </Teleport>
+          <NuxtLink
+            :to="localePath(`/products/${product.slug}`)"
+            class="cta cta-learn-more text-base"
+          >
+            {{ $t('quickAdd.learnMore') }}
+          </NuxtLink>
+        </div>
+      </Teleport>
+    </ClientOnly>
   </section>
 </template>
 
