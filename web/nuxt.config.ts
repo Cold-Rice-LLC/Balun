@@ -29,6 +29,19 @@ export default defineNuxtConfig({
     detectBrowserLanguage: false,
   },
 
+  app: {
+    head: {
+      // The nav logo as the site icon: SVG for modern browsers (light/dark
+      // fills via its own media query), .ico fallback, and the iOS home-screen
+      // tile (opaque, so it carries the PDP grey behind the logo).
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico', sizes: '48x48' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      ],
+    },
+  },
+
   css: ['~/assets/css/global.css'],
 
   // <mux-player> is a web component (the live page's player), not a Vue
