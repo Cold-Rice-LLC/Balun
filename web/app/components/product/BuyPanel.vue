@@ -4,6 +4,8 @@
       <Transition name="panel-pop">
         <NotchPanel
           v-if="expanded"
+          id="buy-panel"
+          ref="panelEl"
           class="panel tab-top-max-md text-green"
         >
           <ProductOptionsPanel
@@ -28,6 +30,7 @@
 
           <template #tab>
             <button
+              ref="closeButton"
               class="notch-close notch-close-tall text-grey-6"
               :aria-label="$t('quickAdd.close')"
               @click="expanded = false"
@@ -46,9 +49,11 @@
       <Transition name="button-fade">
         <button
           v-if="!expanded"
+          ref="purchaseButton"
           class="purchase text-base-plus font-primary"
           :disabled="!live || (!live.availableForSale && !hasAlternatives)"
-          aria-expanded="false"
+          :aria-expanded="expanded"
+          aria-controls="buy-panel"
           @click="expanded = true"
         >
           {{ label }}
@@ -103,6 +108,22 @@ const { t } = useI18n()
 const variantId = defineModel('variantId', { default: null })
 
 const expanded = ref(false)
+
+// Keyboard: Escape collapses; the purchase button unmounts as the panel
+// opens (and vice versa), which would drop focus on <body> — so focus moves
+// to the panel's close button on expand and back to the (remounted)
+// purchase button on collapse. The cart opening over the panel keeps focus.
+onKeyStroke('Escape', () => {
+  if (expanded.value) expanded.value = false
+})
+const panelEl = ref(null)
+const closeButton = ref(null)
+const purchaseButton = ref(null)
+useOverlayFocus(expanded, {
+  root: () => panelEl.value?.$el,
+  initial: () => closeButton.value,
+  returnTo: () => purchaseButton.value,
+})
 
 const variants = computed(() => props.live?.variants.nodes ?? [])
 

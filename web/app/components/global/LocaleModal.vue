@@ -1,13 +1,16 @@
 <template>
+  <!-- Named "Market, United States": the label for screen readers, then the
+       visible current value (an aria-label would hide the value). -->
   <button
+    ref="triggerEl"
     type="button"
     class="trigger text-lg leading-none"
-    :aria-label="label"
     aria-haspopup="dialog"
     :aria-expanded="open"
     @click="open = true"
   >
     <IconsGlobe />
+    <span class="sr-only">{{ label }}, </span>
     <span>{{ currentName }}</span>
   </button>
 
@@ -45,6 +48,7 @@
     </button>
 
     <div
+      ref="modalEl"
       class="locale-modal uppercase"
       :class="{ active: open }"
       role="dialog"
@@ -54,16 +58,12 @@
     >
       <p class="modal-label text-sm">{{ label }}</p>
 
-      <ul
-        class="text-lg"
-        role="listbox"
-        :aria-label="label"
-      >
+      <!-- A plain list of links (no listbox: that promises arrow-key
+           selection); the current locale carries aria-current. -->
+      <ul class="text-lg">
         <li
           v-for="item in items"
           :key="item.code"
-          role="option"
-          :aria-selected="item.active"
         >
           <!-- external: a locale switch is a full page load, not a client-side
                transition. In-app it swaps vue-i18n's locale while the OLD page
@@ -74,6 +74,7 @@
           <NuxtLink
             :to="switchLocalePath(item.code)"
             :class="{ 'is-active': item.active }"
+            :aria-current="item.active ? 'true' : undefined"
             external
             @click="onSelect"
           >
@@ -118,17 +119,21 @@ const onSelect = () => {
 
 const currentName = computed(() => props.items.find((i) => i.active)?.name ?? props.items[0]?.name ?? '')
 
-const onKey = (e) => {
-  if (e.key === 'Escape') open.value = false
-}
+onKeyStroke('Escape', () => {
+  if (open.value) open.value = false
+})
 
 useScrollLock(open)
 
-onMounted(() => {
-  document.addEventListener('keydown', onKey)
-})
-onBeforeUnmount(() => {
-  document.removeEventListener('keydown', onKey)
+// Focus moves to the current locale's link on open (the modal is teleported
+// to the end of the document, so it would otherwise stay on the trigger
+// behind the backdrop) and back to the trigger on close.
+const triggerEl = ref(null)
+const modalEl = ref(null)
+useOverlayFocus(open, {
+  root: () => modalEl.value,
+  initial: () => modalEl.value?.querySelector('a.is-active') ?? modalEl.value?.querySelector('a'),
+  fallback: () => triggerEl.value,
 })
 </script>
 

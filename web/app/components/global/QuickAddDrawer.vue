@@ -11,10 +11,13 @@
     <span class="sr-only">{{ $t('quickAdd.close') }}</span>
   </button>
 
+  <!-- A dialog, not a modal one: the nav stays usable while it's open. -->
   <aside
     id="quick-add-drawer"
+    ref="drawerEl"
     class="quick-add-drawer"
     :class="{ active: isOpen && revealed }"
+    role="dialog"
     :aria-label="$t('quickAdd.label')"
     :inert="!(isOpen && revealed)"
   >
@@ -67,6 +70,7 @@
 
       <template #tab>
         <button
+          ref="closeButton"
           class="notch-close notch-close-tall text-grey-6"
           :aria-label="$t('quickAdd.close')"
           @click="close"
@@ -110,6 +114,20 @@ const route = useRoute()
 const formatPrice = useMoney()
 
 useScrollLock(isOpen)
+
+// Keyboard: Escape closes; focus moves to the close button once the drawer
+// is revealed (a cold open holds it through the fetch) and returns to the
+// card's trigger on close. No fallback: the only close path that loses the
+// trigger is a navigation, where the new page takes over.
+onKeyStroke('Escape', () => {
+  if (isOpen.value) close()
+})
+const drawerEl = ref(null)
+const closeButton = ref(null)
+useOverlayFocus(
+  computed(() => isOpen.value && revealed.value),
+  { root: () => drawerEl.value, initial: () => closeButton.value },
+)
 
 // The backdrop blocks clicks but not navigation itself (back button,
 // programmatic) — close instead of lingering over the new page with the old

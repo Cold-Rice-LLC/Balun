@@ -11,12 +11,18 @@
     <span class="sr-only">{{ $t('cart.close') }}</span>
   </button>
 
+  <!-- A dialog, not a modal one: the nav stays usable while it's open (from
+       768px its cart button is the checkout). tabindex -1 so focus can land
+       on the drawer itself on open — it has no close button of its own. -->
   <aside
     id="cart-drawer"
+    ref="drawerEl"
     class="cart-drawer"
     :class="{ active: isOpen }"
+    role="dialog"
     :aria-label="$t('cart.label')"
     :inert="!isOpen"
+    tabindex="-1"
   >
     <div
       v-if="lines.length"
@@ -139,6 +145,21 @@ const { isOpen, lines, lineCount, subtotal, close, checkout, updateLine, removeL
 const formatPrice = useMoney()
 
 useScrollLock(isOpen)
+
+// Keyboard: Escape closes; focus moves onto the drawer on open and back to
+// whatever opened it on close (the nav button keeps it when it did the
+// closing). Opened by an add to cart, the opener is the add button inside
+// the quick-add drawer or buy panel, inert or gone by then — the nav's cart
+// button is the fallback.
+onKeyStroke('Escape', () => {
+  if (isOpen.value) close()
+})
+const drawerEl = ref(null)
+useOverlayFocus(isOpen, {
+  root: () => drawerEl.value,
+  initial: () => drawerEl.value,
+  fallback: () => document.querySelector('[aria-controls="cart-drawer"]'),
+})
 
 // Line mutations hit the Storefront API async; flag while one is in flight so
 // the controls can show a progress cursor and disable to prevent double-taps.

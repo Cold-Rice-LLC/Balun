@@ -161,6 +161,26 @@ onMounted(() => {
   else open.value = true
 })
 
+// Closing returns focus to the card that opened the post — once the route
+// has changed and the landing is no longer inert, i.e. after this unmounts.
+// A post that isn't in the list (a direct link) falls back to the first
+// filter pill; leaving the feed altogether focuses nothing, the new page
+// takes over. The card's href carries the list's query after the path.
+let postPath = ''
+watch(
+  () => props.post?.slug,
+  (slug) => {
+    if (slug) postPath = localePath(`/feed/${slug}`)
+  },
+  { immediate: true },
+)
+onUnmounted(async () => {
+  await nextTick()
+  const card = document.querySelector(`a[href="${postPath}"], a[href^="${postPath}?"]`)
+  const target = card ?? document.querySelector('.feed-page .filter-pill')
+  target?.focus()
+})
+
 // Closing holds the route change until the leave animation ends.
 let resolveLeft
 const afterLeave = () => resolveLeft?.()

@@ -8,12 +8,21 @@
     >{{ $t('nav.skip') }}</a
   >
 
-  <MainNav />
-  <SecondaryNav />
+  <MainNav :inert="modalOpen" />
+  <SecondaryNav :inert="modalOpen" />
 
   <main id="main">
     <slot />
   </main>
 
-  <MainFooter />
+  <MainFooter :inert="modalOpen" />
 </template>
+
+<script setup>
+// The feed detail is a modal route over the feed landing (the landing makes
+// itself inert in pages/feed.vue); the chrome goes inert with it, so focus
+// and screen readers can't wander behind the dialog. Route names carry the
+// i18n locale suffix (feed-slug___en-us).
+const route = useRoute()
+const modalOpen = computed(() => /^feed-slug___/.test(String(route.name ?? '')))
+</script>

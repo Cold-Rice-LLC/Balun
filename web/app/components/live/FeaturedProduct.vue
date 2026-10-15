@@ -1,7 +1,16 @@
 <template>
-  <div class="featured">
+  <!-- The root is the dialog while open (the trigger pill alone otherwise):
+       a wrapper around the two panels would take their place as this flex
+       column's items and lose the scroll cap. -->
+  <div
+    ref="rootEl"
+    class="featured"
+    :role="open ? 'dialog' : undefined"
+    :aria-label="open ? title : undefined"
+  >
     <button
       v-if="!open"
+      ref="triggerEl"
       class="pill-button featured-button text-base-plus"
       :class="{ 'is-pending': pending }"
       aria-haspopup="dialog"
@@ -25,6 +34,7 @@
 
         <template #tab>
           <button
+            ref="closeButton"
             class="notch-close text-grey-1"
             :aria-label="$t('live.closeFeatured')"
             @click="open = false"
@@ -35,11 +45,7 @@
         </template>
       </NotchPanel>
 
-      <div
-        class="options-wrap"
-        role="dialog"
-        :aria-label="title"
-      >
+      <div class="options-wrap">
         <header class="flex items-start justify-between gap-base p-base font-secondary text-base leading-snug">
           <p class="uppercase">{{ title }}</p>
           <p v-if="price">{{ price }}</p>
@@ -101,6 +107,18 @@ const show = async () => {
 
 onKeyStroke('Escape', () => {
   open.value = false
+})
+
+// The pill unmounts as the panels open (and remounts as they close), which
+// would drop focus on <body>: focus moves to the close button on open and
+// back to the remounted pill on close.
+const rootEl = ref(null)
+const triggerEl = ref(null)
+const closeButton = ref(null)
+useOverlayFocus(open, {
+  root: () => rootEl.value,
+  initial: () => closeButton.value,
+  returnTo: () => triggerEl.value,
 })
 
 const detail = computed(() => data.value?.product ?? null)
