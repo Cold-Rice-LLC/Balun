@@ -1,3 +1,4 @@
+import {altField} from '../lib/fields'
 import {linkTargetFields} from './linkTarget'
 
 /**
@@ -40,6 +41,26 @@ export default {
         ],
       },
     },
-    {type: 'image', options: {hotspot: true}},
+    {
+      type: 'image',
+      options: {hotspot: true},
+      fields: [altField()],
+    },
   ],
+  // Headings must nest: a Subheading (h3) with no Heading (h2) above it skips
+  // a level in the page outline. A warning rather than an error, so a draft
+  // mid-edit still saves.
+  validation: (Rule) =>
+    Rule.custom((blocks) => {
+      if (!Array.isArray(blocks)) return true
+      let seenHeading = false
+      for (const block of blocks) {
+        if (block._type !== 'block') continue
+        if (block.style === 'h2') seenHeading = true
+        else if (block.style === 'h3' && !seenHeading) {
+          return 'A Subheading needs a Heading above it — use Heading for the first heading.'
+        }
+      }
+      return true
+    }).warning(),
 }

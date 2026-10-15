@@ -1,4 +1,5 @@
 import {DocumentTextIcon} from '@sanity/icons'
+import {altField} from '../lib/fields'
 import {requireEnglish, englishIfAny} from '../lib/i18nValidation'
 import {FeedModulesInput} from '../../components/FeedModulesInput'
 
@@ -77,6 +78,11 @@ export default {
       description:
         'Fills the feed card behind its text (any category), and is the right-side image on the detail page.',
       options: {hotspot: true},
+      fields: [
+        altField(
+          'Screen-reader description of the image on the detail page. Leave empty if it is purely decorative; on the card it is never read, the title names the card.',
+        ),
+      ],
     },
     {
       name: 'cardBackground',

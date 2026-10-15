@@ -32,11 +32,13 @@ const linkTargetProjection = `
 // A translated rich text field with its link marks resolved: `...` keeps
 // each block as-is; the conditional adds the referenced document behind an
 // internal link, in the same shape linkTargetProjection produces so
-// internalLinkPath routes both (RichText renders them). Inline images
-// (proseContent) get their alt resolved like any other image.
+// internalLinkPath routes both (RichText renders them). Images get their alt
+// resolved like any other image: block-level ones (blockContent) and inline
+// children (proseContent).
 const i18nRichText = (name: string) => {
   const marks = `[]{
     ...,
+    _type == "image" => {${i18nField('alt')}},
     markDefs[]{
       ...,
       _type == "link" => {${internalLinkProjection}}
@@ -225,7 +227,7 @@ const feedPostProjection = `
   "slug": slug.current,
   category,
   publishedAt,
-  coverImage,
+  ${i18nImage('coverImage')},
   "bgColor": cardBackground.hex,
   ${i18nField('excerpt')},
   link,
