@@ -82,6 +82,13 @@ nav {
     padding: var(--spacing-xs) 1.5rem;
     border-radius: calc(infinity * 1px);
 
+    /* Filled pills: the ring hugs the fill, so it reads against the pill's
+       own color rather than whichever page background the fixed header
+       floats over (the feed pill's grey ring vanished on the grey PDP). */
+    &:focus-visible {
+      outline-offset: 0;
+    }
+
     @media (min-width: 768px) {
       padding: var(--spacing-xs) var(--spacing-sm);
     }

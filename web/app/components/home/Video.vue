@@ -117,6 +117,15 @@ const play = () => {
   inset: 0;
   padding: 0;
   background: none;
+  border-radius: inherit;
+
+  /* The wrap's overflow clip swallows the default offset ring; draw it
+     inside, along the rounded corners, in the watch pill's white rather
+     than the button's default black — this sits on a photo, not a page. */
+  &:focus-visible {
+    outline-color: var(--color-white);
+    outline-offset: -0.2rem;
+  }
 
   img {
     width: 100%;
