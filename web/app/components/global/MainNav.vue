@@ -27,7 +27,7 @@
         <li>
           <NuxtLink
             :to="localePath('/info')"
-            class="bg-purple text-white"
+            class="info-link bg-purple text-white"
             >{{ $t('nav.info') }}</NuxtLink
           >
         </li>
@@ -82,16 +82,23 @@ nav {
     padding: var(--spacing-xs) 1.5rem;
     border-radius: calc(infinity * 1px);
 
-    /* Filled pills: the ring hugs the fill, so it reads against the pill's
-       own color rather than whichever page background the fixed header
-       floats over (the feed pill's grey ring vanished on the grey PDP). */
+    /* Filled pills: the ring sits inside the fill, so it reads against the
+       pill's own color rather than whichever page background the fixed
+       header floats over (the feed pill's grey ring vanished on the grey
+       PDP). Same treatment on every filled control site-wide. */
     &:focus-visible {
-      outline-offset: 0;
+      outline-offset: -0.2rem;
     }
 
     @media (min-width: 768px) {
       padding: var(--spacing-xs) var(--spacing-sm);
     }
+  }
+
+  /* A white ring inside the purple reads as a border, not focus — the
+     accent instead. */
+  .info-link:focus-visible {
+    outline-color: var(--color-yellow);
   }
 }
 

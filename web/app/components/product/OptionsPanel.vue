@@ -213,6 +213,11 @@ onUnmounted(() => clearTimeout(addedTimer))
     color: var(--color-white);
   }
 
+  /* Filled control: ring inside the fill (see MainNav). */
+  &:focus-visible {
+    outline-offset: -0.2rem;
+  }
+
   &.is-oos {
     opacity: 0.4;
     cursor: not-allowed;
@@ -234,6 +239,11 @@ onUnmounted(() => clearTimeout(addedTimer))
 
   &:disabled {
     cursor: not-allowed;
+  }
+
+  /* Filled control: ring inside the fill (see MainNav). */
+  &:focus-visible {
+    outline-offset: -0.2rem;
   }
 
   /* After :disabled so it wins while the add is in flight — "working",

@@ -120,10 +120,11 @@ const play = () => {
   border-radius: inherit;
 
   /* The wrap's overflow clip swallows the default offset ring; draw it
-     inside, along the rounded corners, in the watch pill's white rather
-     than the button's default black — this sits on a photo, not a page. */
+     inside, along the rounded corners, in the accent rather than the
+     button's default black — this sits on a photo, not a page, and white
+     got lost in it. */
   &:focus-visible {
-    outline-color: var(--color-white);
+    outline-color: var(--color-yellow);
     outline-offset: -0.2rem;
   }
 

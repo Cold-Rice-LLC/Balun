@@ -120,6 +120,14 @@ const submit = async () => {
     &::placeholder {
       color: var(--color-grey-4);
     }
+
+    /* Text fields match :focus-visible on click as well as on Tab (the
+       browser assumes typing follows), so the ring would box every click.
+       The underline brightens instead — still a visible indicator. */
+    &:focus-visible {
+      outline: none;
+      border-color: var(--color-grey-1);
+    }
   }
 }
 </style>

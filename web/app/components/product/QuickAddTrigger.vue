@@ -57,6 +57,11 @@ const { open, pendingOpen, isOpen, active } = useQuickAdd()
     color: var(--color-black);
   }
 
+  /* Filled control: ring inside the fill (see MainNav). */
+  &:focus-visible {
+    outline-offset: -0.2rem;
+  }
+
   /* The drawer is holding its reveal for the variants fetch — mirror the
      cart controls' in-flight feedback. Custom over Tailwind's
      cursor-progress: global.css's unlayered `button { cursor: pointer }`

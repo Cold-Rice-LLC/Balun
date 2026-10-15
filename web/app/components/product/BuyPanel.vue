@@ -183,6 +183,11 @@ watch(
     cursor: not-allowed;
     opacity: 0.6;
   }
+
+  /* Filled control: ring inside the fill (see MainNav). */
+  &:focus-visible {
+    outline-offset: -0.2rem;
+  }
 }
 
 .panel {

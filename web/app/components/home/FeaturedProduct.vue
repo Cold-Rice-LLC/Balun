@@ -224,6 +224,11 @@ const { isOpen: quickAddOpen } = useQuickAdd()
     transition:
       background-color 0.3s,
       color 0.3s;
+
+    /* Filled control: ring inside the fill (see MainNav). */
+    &:focus-visible {
+      outline-offset: -0.2rem;
+    }
   }
 
   .cta-quick-add {

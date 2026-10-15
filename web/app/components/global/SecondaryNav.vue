@@ -131,6 +131,11 @@ nav {
         background-color 0.3s,
         color 0.3s;
 
+      /* Filled control: ring inside the fill (see MainNav). */
+      &:focus-visible {
+        outline-offset: -0.2rem;
+      }
+
       @media (min-width: 768px) {
         height: var(--spacing-button-lg-height);
       }

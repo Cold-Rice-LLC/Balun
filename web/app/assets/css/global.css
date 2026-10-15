@@ -285,6 +285,11 @@ live page's featured-product and shop buttons.
   &:hover {
     color: var(--color-grey-7);
   }
+
+  /* Filled control: ring inside the fill (see MainNav). */
+  &:focus-visible {
+    outline-offset: -0.2rem;
+  }
 }
 
 /*
@@ -321,9 +326,15 @@ quick-add drawer and PDP buy panel grow to from 768px up.
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: inherit;
 
   & .icon-x {
     width: 3rem;
+  }
+
+  /* Fills the tab: ring inside it, along its corners (see MainNav). */
+  &:focus-visible {
+    outline-offset: -0.2rem;
   }
 }
 

@@ -66,6 +66,11 @@ const step = (delta) => {
     &:disabled {
       cursor: not-allowed;
     }
+
+    /* Filled control: ring inside the fill (see MainNav). */
+    &:focus-visible {
+      outline-offset: -0.2rem;
+    }
   }
 
   .qty {

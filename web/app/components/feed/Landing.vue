@@ -201,6 +201,11 @@ const toggleFilter = (cat) => {
   &.active {
     background-color: var(--color-grey-1);
     color: var(--color-black);
+
+    /* Filled while active: ring inside the fill (see MainNav). */
+    &:focus-visible {
+      outline-offset: -0.2rem;
+    }
   }
 }
 

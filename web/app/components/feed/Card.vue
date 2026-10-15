@@ -256,6 +256,18 @@ const accentStyle = computed(() => {
   position: absolute;
   inset: 0;
   z-index: 1;
+  border-radius: inherit;
+
+  /* The body's overflow clip swallows the default offset ring; draw it
+     inside, along the rounded corners. */
+  &:focus-visible {
+    outline-offset: -0.2rem;
+  }
+}
+
+/* Filled control: ring inside the fill (see MainNav). */
+.rsvp:focus-visible {
+  outline-offset: -0.2rem;
 }
 
 .head {

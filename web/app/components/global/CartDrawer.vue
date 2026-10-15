@@ -325,6 +325,11 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
   &:disabled {
     cursor: progress;
   }
+
+  /* Filled control: ring inside the fill (see MainNav). */
+  &:focus-visible {
+    outline-offset: -0.2rem;
+  }
 }
 
 .cart-empty {

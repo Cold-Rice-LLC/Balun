@@ -277,6 +277,13 @@ onBeforeRouteLeave(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: inherit;
+
+  /* Fills the category-colored tab: ring inside it, along its corners,
+     rather than out over the backdrop (black on black for events). */
+  &:focus-visible {
+    outline-offset: -0.2rem;
+  }
 }
 
 .close :deep(.icon-x) {
@@ -301,6 +308,11 @@ onBeforeRouteLeave(async () => {
 
 .content :deep(.video-module .media-wrap) {
   width: 100%;
+}
+
+/* Filled control: ring inside the fill (see MainNav). */
+.rsvp:focus-visible {
+  outline-offset: -0.2rem;
 }
 
 .cover {
