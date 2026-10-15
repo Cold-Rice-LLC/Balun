@@ -119,6 +119,7 @@ useOverlayFocus(open, {
   root: () => rootEl.value,
   initial: () => closeButton.value,
   returnTo: () => triggerEl.value,
+  trap: true,
 })
 
 const detail = computed(() => data.value?.product ?? null)

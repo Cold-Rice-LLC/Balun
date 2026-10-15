@@ -11,9 +11,9 @@
     <span class="sr-only">{{ $t('cart.close') }}</span>
   </button>
 
-  <!-- A dialog, not a modal one: the nav stays usable while it's open (from
-       768px its cart button is the checkout). tabindex -1 so focus can land
-       on the drawer itself on open — it has no close button of its own. -->
+  <!-- A dialog, not a modal one: the nav stays clickable while it's open
+       (from 768px its cart button is the checkout). Tab stays inside the
+       drawer plus that button until it closes. -->
   <aside
     id="cart-drawer"
     ref="drawerEl"
@@ -22,121 +22,137 @@
     role="dialog"
     :aria-label="$t('cart.label')"
     :inert="!isOpen"
-    tabindex="-1"
   >
-    <div
-      v-if="lines.length"
-      class="cart-body text-green md:pb-base h-full flex flex-col"
-      :class="{ 'is-pending': pending }"
-      :aria-busy="pending"
-    >
-      <ul class="lines flex-1 p-base">
-        <li
-          v-for="line in lines"
-          :key="line.id"
-          class="line font-secondary"
-        >
-          <!-- Thumb and title link back to the line's PDP; navigating away
+    <!-- The quick-add drawer's panel mirrored: the close tab hangs off the
+         left edge (the drawer hugs the viewport's right side), and sits on
+         top, flush left, on mobile. -->
+    <NotchPanel class="cart-panel tab-left tab-top-max-md h-full">
+      <div
+        v-if="lines.length"
+        class="cart-body text-green md:pb-base flex-1 flex flex-col"
+        :class="{ 'is-pending': pending }"
+        :aria-busy="pending"
+      >
+        <ul class="lines flex-1 p-base">
+          <li
+            v-for="line in lines"
+            :key="line.id"
+            class="line font-secondary"
+          >
+            <!-- Thumb and title link back to the line's PDP; navigating away
                closes the drawer over it. The thumb is hidden from keyboard
                and screen readers: the title link beside it is the same link
                with the same name, so this one would only repeat it. -->
-          <NuxtLink
-            class="thumb"
-            :to="pdpPath(line)"
-            tabindex="-1"
-            aria-hidden="true"
-            @click="close"
-          >
-            <img
-              v-if="lineImage(line)"
-              :src="lineImage(line).url"
-              loading="lazy"
-              :alt="lineImage(line).altText || ''"
-              class="w-full h-full object-cover"
-            />
-          </NuxtLink>
+            <NuxtLink
+              class="thumb"
+              :to="pdpPath(line)"
+              tabindex="-1"
+              aria-hidden="true"
+              @click="close"
+            >
+              <img
+                v-if="lineImage(line)"
+                :src="lineImage(line).url"
+                loading="lazy"
+                :alt="lineImage(line).altText || ''"
+                class="w-full h-full object-cover"
+              />
+            </NuxtLink>
 
-          <div class="flex justify-between gap-base">
-            <div class="flex flex-col gap-2">
-              <NuxtLink
-                class="title text-base uppercase leading-none"
-                :to="pdpPath(line)"
-                @click="close"
-              >
-                {{ baseName(line.merchandise.product.title) }}
-              </NuxtLink>
-
-              <div class="opacity-50 text-sm flex flex-col gap-1">
-                <p
-                  v-if="colorName(line.merchandise.product.title)"
-                  class="sub"
+            <div class="flex justify-between gap-base">
+              <div class="flex flex-col gap-2">
+                <NuxtLink
+                  class="title text-base uppercase leading-none"
+                  :to="pdpPath(line)"
+                  @click="close"
                 >
-                  {{ colorName(line.merchandise.product.title) }}
+                  {{ baseName(line.merchandise.product.title) }}
+                </NuxtLink>
+
+                <div class="opacity-50 text-sm flex flex-col gap-1">
+                  <p
+                    v-if="colorName(line.merchandise.product.title)"
+                    class="sub"
+                  >
+                    {{ colorName(line.merchandise.product.title) }}
+                  </p>
+                  <p class="sub">{{ line.merchandise.title }}</p>
+                </div>
+              </div>
+
+              <div class="ml-auto flex flex-col justify-between items-end h-full">
+                <p class="line-price text-base leading-none">
+                  {{ formatPrice(line.cost.totalAmount) }}
                 </p>
-                <p class="sub">{{ line.merchandise.title }}</p>
+
+                <div class="line-controls text-sm uppercase">
+                  <QuantityStepper
+                    :model-value="line.quantity"
+                    :min="0"
+                    :aria-label="$t('quickAdd.quantity')"
+                    :disabled="pending"
+                    @update:model-value="onUpdate(line.id, $event)"
+                  />
+
+                  <button
+                    type="button"
+                    class="remove"
+                    :disabled="pending"
+                    @click="onRemove(line.id)"
+                  >
+                    {{ $t('cart.remove') }}
+                  </button>
+                </div>
               </div>
             </div>
+          </li>
+        </ul>
 
-            <div class="ml-auto flex flex-col justify-between items-end h-full">
-              <p class="line-price text-base leading-none">
-                {{ formatPrice(line.cost.totalAmount) }}
-              </p>
+        <div class="summary font-secondary flex-none px-base pb-base">
+          <div class="border-t border-grey-5 pt-base flex flex-col gap-3">
+            <p class="text-base summary-label">{{ $t('cart.subtotal') }}</p>
 
-              <div class="line-controls text-sm uppercase">
-                <QuantityStepper
-                  :model-value="line.quantity"
-                  :min="0"
-                  :aria-label="$t('quickAdd.quantity')"
-                  :disabled="pending"
-                  @update:model-value="onUpdate(line.id, $event)"
-                />
-
-                <button
-                  type="button"
-                  class="remove"
-                  :disabled="pending"
-                  @click="onRemove(line.id)"
-                >
-                  {{ $t('cart.remove') }}
-                </button>
-              </div>
+            <div class="summary-row text-base flex justify-between">
+              <span>{{ $t('cart.items', lineCount) }}</span>
+              <span>{{ formatPrice(subtotal) }}</span>
             </div>
+
+            <p class="text-sm note opacity-50">{{ $t('cart.taxesNote') }}</p>
           </div>
-        </li>
-      </ul>
-
-      <div class="summary font-secondary flex-none px-base pb-base">
-        <div class="border-t border-grey-5 pt-base flex flex-col gap-3">
-          <p class="text-base summary-label">{{ $t('cart.subtotal') }}</p>
-
-          <div class="summary-row text-base flex justify-between">
-            <span>{{ $t('cart.items', lineCount) }}</span>
-            <span>{{ formatPrice(subtotal) }}</span>
-          </div>
-
-          <p class="text-sm note opacity-50">{{ $t('cart.taxesNote') }}</p>
         </div>
-      </div>
 
-      <!-- Mobile: the drawer covers the secondary nav, so checkout lives
+        <!-- Mobile: the drawer covers the secondary nav, so checkout lives
            here, full width at the bottom edge. From 768px it stays the
            nav's cart button. -->
-      <button
-        type="button"
-        class="checkout md:hidden flex-none text-base-plus"
-        :disabled="pending"
-        @click="checkout"
-      >
-        {{ $t('nav.checkout') }}
-      </button>
-    </div>
+        <button
+          type="button"
+          class="checkout md:hidden flex-none text-base-plus"
+          :disabled="pending"
+          @click="checkout"
+        >
+          {{ $t('nav.checkout') }}
+        </button>
+      </div>
 
-    <div
-      v-else
-      class="cart-empty"
-    >
-      <p class="text-base-plus lg:text-lg uppercase">{{ $t('cart.empty') }}</p>
-    </div>
+      <div
+        v-else
+        class="cart-empty"
+      >
+        <p class="text-base-plus lg:text-lg uppercase">{{ $t('cart.empty') }}</p>
+      </div>
+
+      <template #tab>
+        <button
+          ref="closeButton"
+          class="notch-close notch-close-tall text-grey-6"
+          :aria-label="$t('cart.close')"
+          @click="close"
+        >
+          <IconsX />
+          <span class="sr-only">{{ $t('cart.close') }}</span>
+        </button>
+      </template>
+    </NotchPanel>
   </aside>
 </template>
 
@@ -152,19 +168,25 @@ const formatPrice = useMoney()
 
 useScrollLock(isOpen)
 
-// Keyboard: Escape closes; focus moves onto the drawer on open and back to
-// whatever opened it on close (the nav button keeps it when it did the
-// closing). Opened by an add to cart, the opener is the add button inside
+// Keyboard: Escape closes; Tab cycles inside; focus moves to the close
+// button on open and back to whatever opened it on close (the nav button keeps it
+// when it did the closing). Opened by an add to cart, the opener is the add button inside
 // the quick-add drawer or buy panel, inert or gone by then — the nav's cart
 // button is the fallback.
 onKeyStroke('Escape', () => {
   if (isOpen.value) close()
 })
 const drawerEl = ref(null)
+const closeButton = ref(null)
 useOverlayFocus(isOpen, {
   root: () => drawerEl.value,
-  initial: () => drawerEl.value,
+  initial: () => closeButton.value,
   fallback: () => document.querySelector('[aria-controls="cart-drawer"]'),
+  // From 768px the nav's cart button is the drawer's checkout, so it joins
+  // the cycle; below that the drawer covers it and carries its own.
+  trap: true,
+  include: () =>
+    matchMedia('(width >= 768px)').matches ? [drawerEl.value?.closest('nav')?.querySelector('.cart-button')] : [],
 })
 
 // Line mutations hit the Storefront API async; flag while one is in flight so
@@ -203,12 +225,6 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
   /* Full width on mobile; the right column from 768px up. */
   left: var(--spacing-base);
   height: 50rem;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--color-grey-1);
-  border-top-left-radius: var(--radius-def);
-  border-top-right-radius: var(--radius-def);
-  overflow: hidden;
   color: var(--color-green);
   transform: translateY(100%);
   transition: transform 0.3s;
@@ -226,8 +242,54 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
   @media (min-width: 768px) {
     z-index: var(--z-drawer);
     left: calc(50% + var(--spacing-base) / 2);
-    padding-bottom: var(--spacing-button-lg-height);
     transform: translateY(calc(100% - var(--spacing-button-lg-height)));
+  }
+}
+
+.cart-panel {
+  --notch-tab-radius: 3rem;
+
+  /* The quick-add tab nudges its X toward the body; the mirror nudges it
+     the other way. */
+  & .notch-close-tall .icon-x {
+    @media (width >= 768px) {
+      transform: translateX(0.5rem);
+    }
+  }
+}
+
+/* Closed, the drawer only slides down: the tab, outside the body rect,
+   would still show — above the body on mobile, in the gap between the nav
+   buttons from 768px. */
+.cart-panel :deep(.panel-tab) {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.cart-drawer.active .cart-panel :deep(.panel-tab) {
+  opacity: 1;
+}
+
+/* Closed, the top-left corner rounds again: from 768px the drawer's top
+   edge waits under the nav's cart button, and the square corner the tab
+   needs would fill in the button's rounded one. It squares as the tab
+   fades in. */
+.cart-drawer:not(.active) .cart-panel :deep(.panel-body) {
+  border-top-left-radius: var(--radius-def);
+}
+
+/* Square along the bottom edge (it sits on the viewport bottom, or under
+   the nav from 768px — where it clears the nav with the bottom padding). */
+.cart-panel :deep(.panel-body) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  transition: border-top-left-radius 0.3s;
+
+  @media (width >= 768px) {
+    padding-bottom: var(--spacing-button-lg-height);
   }
 }
 
@@ -338,6 +400,6 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
   justify-content: center;
   padding: var(--spacing-base);
   text-align: center;
-  height: 100%;
+  flex: 1;
 }
 </style>

@@ -134,6 +134,7 @@ useOverlayFocus(open, {
   root: () => modalEl.value,
   initial: () => modalEl.value?.querySelector('a.is-active') ?? modalEl.value?.querySelector('a'),
   fallback: () => triggerEl.value,
+  trap: true,
 })
 </script>
 

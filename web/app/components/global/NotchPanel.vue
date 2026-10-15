@@ -20,6 +20,10 @@
  * The tab and fillet sit OUTSIDE the body rect, so the body background can
  * be anything — solid color or a full-bleed image — without breaking the
  * fillet illusion; only the page behind the panel shows through the carve.
+ * `tab-left` (consumer class) mirrors it onto the top-LEFT edge — the cart
+ * drawer, which hugs the viewport's right side. With `tab-top-max-md` too,
+ * the mobile tab sits above the body flush left.
+ *
  * Size the tab by sizing the slot content; theme with CSS vars:
  *
  *   --notch-bg          tab background + fillet color (default grey-1); set
@@ -108,6 +112,74 @@
     right: 100%;
     background: radial-gradient(
       circle at 0 0,
+      transparent calc(var(--fillet) - 0.5px),
+      var(--notch-bg-resolved) var(--fillet)
+    );
+  }
+}
+
+/* Left variant (`tab-left`): the side tab mirrored onto the left edge —
+   top-left corner square instead, fillet hanging under the tab's right
+   side, carving from the tab's bottom edge into the body's left edge. */
+.notch-panel.tab-left .panel-body {
+  border-top-left-radius: 0;
+  border-top-right-radius: var(--notch-radius-resolved);
+}
+
+.notch-panel.tab-left .panel-tab {
+  left: 0;
+  right: auto;
+  transform: translateX(calc(-100% + 1px));
+  border-top-left-radius: var(--notch-tab-radius, var(--notch-radius-resolved));
+  border-bottom-left-radius: var(--notch-tab-radius, var(--notch-radius-resolved));
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.notch-panel.tab-left .panel-tab::after {
+  left: auto;
+  right: 0;
+  background: radial-gradient(
+    circle at 0 100%,
+    transparent calc(var(--fillet) - 0.5px),
+    var(--notch-bg-resolved) var(--fillet)
+  );
+}
+
+/* Left + top (`tab-left tab-top-max-md`): under 768px the tab sits ABOVE
+   the body flush left, its left edge continuing the body's; the fillet
+   hangs to its RIGHT, carving from the tab's right edge into the body's
+   top edge. From 768px it's the left side tab above. */
+.notch-panel.tab-left.tab-top-max-md .panel-tab {
+  transform: translateY(calc(-100% + 1px));
+  border-top-right-radius: var(--notch-tab-radius, var(--notch-radius-resolved));
+  border-bottom-left-radius: 0;
+
+  @media (width >= 768px) {
+    transform: translateX(calc(-100% + 1px));
+    border-top-right-radius: 0;
+    border-bottom-left-radius: var(--notch-tab-radius, var(--notch-radius-resolved));
+  }
+}
+
+.notch-panel.tab-left.tab-top-max-md .panel-tab::after {
+  top: auto;
+  bottom: 0;
+  left: 100%;
+  right: auto;
+  background: radial-gradient(
+    circle at 100% 0,
+    transparent calc(var(--fillet) - 0.5px),
+    var(--notch-bg-resolved) var(--fillet)
+  );
+
+  @media (width >= 768px) {
+    top: 100%;
+    bottom: auto;
+    left: auto;
+    right: 0;
+    background: radial-gradient(
+      circle at 0 100%,
       transparent calc(var(--fillet) - 0.5px),
       var(--notch-bg-resolved) var(--fillet)
     );

@@ -143,6 +143,13 @@ Global Styles
 
 html {
   font-size: 10px;
+  /* Keyboard focus scrolls clear of the fixed bottom nav instead of
+     stopping with the focused element under it. */
+  scroll-padding-bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
+
+  @media (width >= 768px) {
+    scroll-padding-bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  }
 }
 
 body {

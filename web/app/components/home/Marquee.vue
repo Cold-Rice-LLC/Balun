@@ -76,6 +76,12 @@ const COPIES = 6
 .band {
   display: block;
   padding: 0.2rem 0;
+
+  /* Filled control: ring inside the band (see MainNav) — the section's
+     overflow clip cuts off an outset one. */
+  &:focus-visible {
+    outline-offset: -0.2rem;
+  }
 }
 
 .track {

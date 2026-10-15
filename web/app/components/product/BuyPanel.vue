@@ -123,6 +123,7 @@ useOverlayFocus(expanded, {
   root: () => panelEl.value?.$el,
   initial: () => closeButton.value,
   returnTo: () => purchaseButton.value,
+  trap: true,
 })
 
 const variants = computed(() => props.live?.variants.nodes ?? [])
@@ -184,8 +185,10 @@ watch(
     opacity: 0.6;
   }
 
-  /* Filled control: ring inside the fill (see MainNav). */
+  /* Filled control: ring inside the fill (see MainNav); yellow, as white
+     got lost on the dark fill (the home quick-add CTA's treatment). */
   &:focus-visible {
+    outline-color: var(--color-yellow);
     outline-offset: -0.2rem;
   }
 }

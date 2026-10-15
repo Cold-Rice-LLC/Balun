@@ -53,9 +53,10 @@
         <!-- inert while faded out, or the hidden CTAs stay tabbable. -->
         <div
           v-if="product"
+          ref="ctasEl"
           class="ctas"
-          :class="{ 'is-visible': ctasVisible && !quickAddOpen }"
-          :inert="!(ctasVisible && !quickAddOpen)"
+          :class="{ 'is-visible': ctasShown }"
+          :inert="!ctasShown"
         >
           <ProductQuickAddTrigger
             class="cta cta-quick-add text-base"
@@ -105,10 +106,45 @@ const isLead = useIsLeadModule(props.module)
 const moduleEl = ref(null)
 const ctasVisible = useInView(moduleEl, { threshold: 0.75 })
 
-// ...and drop out of the way once the drawer they opened is up. Destructured
-// so the template unwraps the ref — reaching through the returned object
-// (quickAdd.isOpen) yields the Ref itself, which is always truthy.
-const { isOpen: quickAddOpen } = useQuickAdd()
+// ...and drop out of the way once the drawer they opened is up — revealed,
+// not just opened: a cold open holds the drawer through its fetch, and
+// hiding (inerting) the focused CTA meanwhile would drop focus to <body>,
+// leaving quick add no opener to hand focus back to on close.
+const { isOpen: quickAddOpen, pendingOpen: quickAddPending } = useQuickAdd()
+const quickAddUp = computed(() => quickAddOpen.value && !quickAddPending.value)
+
+// Keyboard: the teleport parks the CTAs after the footer in the DOM, so
+// Tab is routed into them straight after the carousel instead. They show
+// while focus is in the module or on them, too — and when Shift+Tab comes
+// back to them from below, with the module mostly scrolled away, or
+// returns to quick add once the drawer it opened closes.
+const ctasEl = ref(null)
+const { focused: moduleFocused } = useFocusWithin(moduleEl)
+const { focused: ctasFocused } = useFocusWithin(ctasEl)
+const revealing = ref(false)
+watch(ctasFocused, (focused) => {
+  if (focused) revealing.value = false
+})
+watch(quickAddUp, (up) => {
+  if (up && ctasFocused.value) revealing.value = true
+})
+// And they step aside while keyboard focus is on something else — the next
+// module's marquee band, say — that they'd sit on top of. Mouse focus
+// (a clicked nav button) doesn't count.
+const activeEl = useActiveElement()
+const focusElsewhere = computed(() => {
+  const el = activeEl.value
+  return !!el && el !== document.body && !moduleFocused.value && !ctasFocused.value && el.matches(':focus-visible')
+})
+const ctasShown = computed(
+  () =>
+    ((ctasVisible.value && !focusElsewhere.value) || moduleFocused.value || ctasFocused.value || revealing.value) &&
+    !quickAddUp.value,
+)
+useTeleportTabOrder(moduleEl, ctasEl, {
+  enabled: computed(() => !quickAddUp.value),
+  reveal: () => (revealing.value = true),
+})
 </script>
 
 <style scoped>
@@ -234,6 +270,11 @@ const { isOpen: quickAddOpen } = useQuickAdd()
   .cta-quick-add {
     background-color: var(--color-grey-7);
     color: var(--color-white);
+
+    /* White got lost on the dark fill (as on the info pill). */
+    &:focus-visible {
+      outline-color: var(--color-yellow);
+    }
 
     &:hover {
       background-color: var(--color-yellow);

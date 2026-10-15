@@ -11,7 +11,8 @@
     <span class="sr-only">{{ $t('quickAdd.close') }}</span>
   </button>
 
-  <!-- A dialog, not a modal one: the nav stays usable while it's open. -->
+  <!-- A dialog, not a modal one: the nav stays clickable while it's open,
+       but Tab stays inside the drawer until it closes. -->
   <aside
     id="quick-add-drawer"
     ref="drawerEl"
@@ -115,9 +116,9 @@ const formatPrice = useMoney()
 
 useScrollLock(isOpen)
 
-// Keyboard: Escape closes; focus moves to the close button once the drawer
-// is revealed (a cold open holds it through the fetch) and returns to the
-// card's trigger on close. No fallback: the only close path that loses the
+// Keyboard: Escape closes; Tab cycles inside; focus moves to the close
+// button once the drawer is revealed (a cold open holds it through the
+// fetch) and returns to the card's trigger on close. No fallback: the only close path that loses the
 // trigger is a navigation, where the new page takes over.
 onKeyStroke('Escape', () => {
   if (isOpen.value) close()
@@ -126,7 +127,7 @@ const drawerEl = ref(null)
 const closeButton = ref(null)
 useOverlayFocus(
   computed(() => isOpen.value && revealed.value),
-  { root: () => drawerEl.value, initial: () => closeButton.value },
+  { root: () => drawerEl.value, initial: () => closeButton.value, trap: true },
 )
 
 // The backdrop blocks clicks but not navigation itself (back button,
