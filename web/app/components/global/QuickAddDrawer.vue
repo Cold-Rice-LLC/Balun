@@ -102,6 +102,7 @@ const { active, isOpen, pendingOpen, close } = useQuickAdd()
 const localePath = useLocalePath()
 const market = useMarket()
 const route = useRoute()
+const formatPrice = useMoney()
 
 useScrollLock(isOpen)
 
@@ -188,7 +189,7 @@ const selectedId = ref(null)
 const selectedVariant = computed(() => pickVariant(variants.value, selectedId.value))
 
 const price = computed(() =>
-  formatMoney(selectedVariant.value?.price ?? active.value?.live?.priceRange?.minVariantPrice),
+  formatPrice(selectedVariant.value?.price ?? active.value?.live?.priceRange?.minVariantPrice),
 )
 
 const pdpPath = computed(() => (handle.value ? localePath(`/products/${handle.value}`) : null))

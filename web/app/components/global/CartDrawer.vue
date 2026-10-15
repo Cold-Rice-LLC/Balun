@@ -65,7 +65,7 @@
 
             <div class="ml-auto flex flex-col justify-between items-end h-full">
               <p class="line-price text-base leading-none">
-                {{ formatMoney(line.cost.totalAmount) }}
+                {{ formatPrice(line.cost.totalAmount) }}
               </p>
 
               <div class="line-controls text-sm uppercase">
@@ -95,7 +95,7 @@
 
           <div class="summary-row text-base flex justify-between">
             <span>{{ $t('cart.items', lineCount) }}</span>
-            <span>{{ formatMoney(subtotal) }}</span>
+            <span>{{ formatPrice(subtotal) }}</span>
           </div>
 
           <p class="text-sm note opacity-50">{{ $t('cart.taxesNote') }}</p>
@@ -131,6 +131,7 @@
  * its own full-width button; from 768px the action is the nav's cart button.
  */
 const { isOpen, lines, lineCount, subtotal, close, checkout, updateLine, removeLine } = useCart()
+const formatPrice = useMoney()
 
 useScrollLock(isOpen)
 

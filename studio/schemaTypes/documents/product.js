@@ -53,7 +53,13 @@ export default {
       type: 'array',
       title: 'Gallery',
       description: 'Lifestyle/editorial images — the draggable carousel on the left of the PDP.',
-      of: [{type: 'image', options: {hotspot: true}}],
+      of: [
+        {
+          type: 'image',
+          options: {hotspot: true},
+          fields: [altField('Screen-reader description. Leave empty to use the product title.')],
+        },
+      ],
     },
     {
       name: 'featureCarousel',

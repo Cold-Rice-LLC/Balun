@@ -1,18 +1,24 @@
 import {ImageIcon} from '@sanity/icons'
+import {englishIfAny} from './i18nValidation'
 
 /**
  * Shared field definitions, so repeated fields stay word-for-word identical
  * across schema types.
  */
 
-// Image `alt` subfield. Pass a description where the fallback differs.
+// Image `alt` subfield, translated like every other editorial string (the
+// front end resolves it per $lang with the English fallback). Optional, but
+// a translation without English would fall back to blank, so English is
+// required once any language is filled. Pass a description where the
+// fallback differs.
 export const altField = (
   description = 'Screen-reader description of the image. Leave empty if it is purely decorative.',
 ) => ({
   name: 'alt',
-  type: 'string',
+  type: 'internationalizedArrayString',
   title: 'Alt Text',
   description,
+  validation: englishIfAny,
 })
 
 /**
@@ -101,7 +107,7 @@ export const imageModule = ({name, imageDescription}) => ({
     },
   ],
   preview: {
-    select: {media: 'image', alt: 'image.alt'},
+    select: {media: 'image', alt: 'image.alt.0.value'},
     prepare({media, alt}) {
       return {title: alt || 'Image', subtitle: 'Image module', media}
     },

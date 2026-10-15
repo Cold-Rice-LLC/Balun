@@ -1,7 +1,8 @@
 import {linkTargetFields, linkTargetSelect, linkTargetSubtitle} from './linkTarget'
+import {requireEnglish} from '../lib/i18nValidation'
 
 /**
- * Reusable nav link: a plain label plus a required destination (see
+ * Reusable nav link: a translated label plus a required destination (see
  * linkTarget). Used by siteSettings.footerPrimaryLinks / footerSecondaryLinks
  * (and reusable by the header nav later).
  */
@@ -12,15 +13,15 @@ export default {
   fields: [
     {
       name: 'label',
-      type: 'string',
+      type: 'internationalizedArrayString',
       title: 'Label',
       description: 'The link text as it appears in the footer.',
-      validation: (Rule) => Rule.required(),
+      validation: requireEnglish,
     },
     ...linkTargetFields({required: true}),
   ],
   preview: {
-    select: {label: 'label', ...linkTargetSelect()},
-    prepare: ({label, ...link}) => ({title: label, subtitle: linkTargetSubtitle(link)}),
+    select: {label: 'label.0.value', ...linkTargetSelect()},
+    prepare: ({label, ...link}) => ({title: label || 'Link', subtitle: linkTargetSubtitle(link)}),
   },
 }

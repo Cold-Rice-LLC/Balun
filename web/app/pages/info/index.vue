@@ -26,7 +26,7 @@
     v-else
     class="h-svh flex justify-center items-center enter-in-fade-up"
   >
-    <h1>Info</h1>
+    <h1>{{ $t('meta.info') }}</h1>
   </div>
 </template>
 

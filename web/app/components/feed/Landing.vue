@@ -71,7 +71,7 @@
       v-else
       class="stub h-svh flex justify-center items-center"
     >
-      <h1>Feed</h1>
+      <h1>{{ $t('meta.feed') }}</h1>
     </div>
   </div>
 </template>

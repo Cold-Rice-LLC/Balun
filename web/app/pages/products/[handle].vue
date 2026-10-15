@@ -33,7 +33,7 @@
                   sizes="(min-width: 768px) 50vw, 100vw"
                   :loading="i === 0 ? 'eager' : 'lazy'"
                   :fetchpriority="i === 0 ? 'high' : undefined"
-                  :alt="liveForDoc?.title || doc.title"
+                  :alt="image.alt || liveForDoc?.title || doc.title"
                   class="w-full"
                 />
               </div>
@@ -57,7 +57,7 @@
                     sizes="(min-width: 768px) 50vw, 100vw"
                     :loading="i === 0 ? 'eager' : 'lazy'"
                     :fetchpriority="i === 0 ? 'high' : undefined"
-                    :alt="liveForDoc?.title || doc.title"
+                    :alt="image.alt || liveForDoc?.title || doc.title"
                     class="media-cover"
                   />
                 </SwiperSlide>
@@ -106,7 +106,7 @@
             <ClientOnly>
               <p class="price font-secondary">
                 <template v-if="liveForDoc">
-                  {{ formatMoney(selectedVariant?.price ?? liveForDoc.priceRange.minVariantPrice) }}
+                  {{ formatPrice(selectedVariant?.price ?? liveForDoc.priceRange.minVariantPrice) }}
                   <s
                     v-if="compareAt"
                     class="compare-at"
@@ -195,6 +195,7 @@ const handle = computed(() => String(route.params.handle))
 const sanity = useSanity()
 const market = useMarket()
 const urlFor = useSanityImage()
+const formatPrice = useMoney()
 const srcsetFor = useSanitySrcset()
 
 // SSR shell (cached per locale URL): Sanity editorial + synced identity.
@@ -218,15 +219,16 @@ useNotFound(doc, 'Product not found')
 
 // The colorway group (current product INCLUDED — the rail marks it) via the
 // shared group:<slug> Shopify tag. Empty tag matches nothing (safe for
-// ungrouped products). Keyed by GROUP, not handle: switching to a sibling
-// serves the same cached member list and only the current marker moves.
+// ungrouped products). Keyed by GROUP (and language, for the image alt), not
+// handle: switching to a sibling serves the same cached member list and only
+// the current marker moves.
 const groupTag = computed(() => (doc.value?.tags ?? '').split(', ').find((t) => t.startsWith('group:')) ?? '')
 const { data: colorwayDocs } = await useAsyncData(
-  () => `pdp-colorways-${groupTag.value}`,
-  () => sanity.fetch(colorwaysQuery, { groupTag: groupTag.value }),
+  () => `pdp-colorways-${groupTag.value}-${market.value.lang}`,
+  () => sanity.fetch(colorwaysQuery, { groupTag: groupTag.value, lang: market.value.lang }),
   // groupTag resolves from doc a tick after handle changes; watch it so the
   // rail refetches once a NEW group is known (cross-group navigation).
-  { watch: [groupTag] },
+  { watch: [groupTag, () => market.value.lang] },
 )
 
 // Live market-priced data, client-side only. useFetch keeps the previous
@@ -304,7 +306,7 @@ const selectedVariant = computed(() => pickVariant(variants.value, selectedVaria
 
 const compareAt = computed(() => {
   const price = selectedVariant.value?.compareAtPrice
-  return price && Number(price.amount) > 0 ? formatMoney(price) : null
+  return price && Number(price.amount) > 0 ? formatPrice(price) : null
 })
 
 // The gallery swiper instance, captured for the custom pagination. A

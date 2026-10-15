@@ -110,7 +110,8 @@ const variants = computed(() => detail.value?.variants.nodes ?? [])
 const title = computed(() => baseName(detail.value?.title ?? props.product.title ?? ''))
 
 const selectedVariant = computed(() => pickVariant(variants.value, selectedId.value))
-const price = computed(() => formatMoney(selectedVariant.value?.price ?? detail.value?.priceRange?.minVariantPrice))
+const formatPrice = useMoney()
+const price = computed(() => formatPrice(selectedVariant.value?.price ?? detail.value?.priceRange?.minVariantPrice))
 
 // Editorial featured image first, Shopify's as the fallback.
 const productImage = useProductImage()

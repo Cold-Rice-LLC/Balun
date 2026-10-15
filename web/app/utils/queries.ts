@@ -7,6 +7,15 @@ import { groq } from '#imports'
 const i18nField = (name: string) =>
   `"${name}": coalesce(${name}[language == $lang][0].value, ${name}[language == "en"][0].value)`
 
+// An image field with its alt resolved: `...` keeps the asset ref, hotspot
+// and crop (useSanityImage builds the CDN URL from them), and the resolved
+// string replaces the raw alt array under the same key (later keys win in a
+// GROQ projection), so components keep reading image.alt as a string.
+// i18nImages is the same for an array of images.
+const imageProjection = `{..., ${i18nField('alt')}}`
+const i18nImage = (name: string) => `"${name}": ${name}${imageProjection}`
+const i18nImages = (name: string) => `"${name}": ${name}[]${imageProjection}`
+
 // An internal link's referenced document, dereferenced to the type-and-slug
 // shape internalLinkPath resolves to a route — no stored paths anywhere.
 // Products keep their slug under the synced store object.
@@ -23,13 +32,18 @@ const linkTargetProjection = `
 // A translated rich text field with its link marks resolved: `...` keeps
 // each block as-is; the conditional adds the referenced document behind an
 // internal link, in the same shape linkTargetProjection produces so
-// internalLinkPath routes both (RichText renders them).
+// internalLinkPath routes both (RichText renders them). Inline images
+// (proseContent) get their alt resolved like any other image.
 const i18nRichText = (name: string) => {
   const marks = `[]{
     ...,
     markDefs[]{
       ...,
       _type == "link" => {${internalLinkProjection}}
+    },
+    children[]{
+      ...,
+      _type == "image" => {${i18nField('alt')}}
     }
   }`
   return `"${name}": coalesce(${name}[language == $lang][0].value${marks}, ${name}[language == "en"][0].value${marks})`
@@ -49,7 +63,7 @@ const moduleVideoProjection = `
   "videoUrl": video.asset->url,
   youtubeUrl,
   ${i18nField('buttonText')},
-  poster
+  ${i18nImage('poster')}
 `
 
 // Shared product projection. Product docs are synced by Sanity Connect:
@@ -62,8 +76,8 @@ const productProjection = `
   "gid": store.gid,
   "slug": store.slug.current,
   ${i18nField('tagline')},
-  featuredImage,
-  gallery
+  ${i18nImage('featuredImage')},
+  ${i18nImages('gallery')}
 `
 
 // A curated product list (home grid, shop page), dereferenced to the shared
@@ -73,9 +87,10 @@ const sellableProducts = (field: string) =>
   `"${field}": ${field}[@->store.status == "active" && @->store.isDeleted != true]->{${productProjection}}`
 
 // A product's feature carousel slides (shared by the home featured-product
-// module and the PDP), with each highlight's text resolved.
+// module and the PDP), with each slide's alt and highlight text resolved.
 const featureCarouselProjection = `[]{
   ...,
+  ${i18nField('alt')},
   highlights[]{
     ${i18nField('text')},
     xPosition,
@@ -87,10 +102,11 @@ const featureCarouselProjection = `[]{
 }`
 
 // Hero-module media: images keep the raw ref (useSanityImage builds the CDN
-// URL); file assets have no ref-encoded URL, so videos dereference here.
+// URL) with alt resolved; file assets have no ref-encoded URL, so videos
+// dereference here.
 const heroMediaProjection = `
   mediaType,
-  image,
+  ${i18nImage('image')},
   "videoUrl": video.asset->url
 `
 
@@ -152,7 +168,7 @@ export const homeQuery = groq`${marketDoc('homePage')}{
     },
     _type == "moduleHeadlineOverImage" => {
       ${heroMediaProjection},
-      mobileImage,
+      ${i18nImage('mobileImage')},
       ${i18nField('headline')},
       ${i18nField('linkLabel')},
       ${optionalLinkProjection}
@@ -180,7 +196,7 @@ export const infoQuery = groq`${marketDoc('infoPage')}{
       ${i18nField('text')}
     },
     _type == "moduleInfoImage" => {
-      image
+      ${i18nImage('image')}
     },
     _type == "moduleInfoProse" => {
       ${i18nRichText('body')}
@@ -218,7 +234,7 @@ const feedPostProjection = `
     _type,
     _key,
     _type == "moduleFeedText" => {${i18nRichText('body')}},
-    _type == "moduleFeedImage" => {image},
+    _type == "moduleFeedImage" => {${i18nImage('image')}},
     _type == "moduleVideo" => {${moduleVideoProjection}},
     _type == "moduleFeedLinks" => {
       links[]{
@@ -288,8 +304,8 @@ export const productPageQuery = groq`*[
   "tags": store.tags,
   ${i18nField('tagline')},
   ${i18nRichText('body')},
-  featuredImage,
-  gallery,
+  ${i18nImage('featuredImage')},
+  ${i18nImages('gallery')},
   featureCarousel${featureCarouselProjection},
   ${seoProjection}
 }`
@@ -298,7 +314,7 @@ export const productPageQuery = groq`*[
 // docs/shopify-and-localization-strategy.md §4), INCLUDING the current
 // product — the PDP marks it as current in the rail rather than hiding it.
 // $groupTag == "" (product has no group tag) matches nothing, so callers can
-// pass it unconditionally.
+// pass it unconditionally. Image alt is translated, so this takes $lang.
 export const colorwaysQuery = groq`*[
   _type == "product"
   && $groupTag != ""
@@ -310,18 +326,19 @@ export const colorwaysQuery = groq`*[
   "title": store.title,
   "slug": store.slug.current,
   "gid": store.gid,
-  featuredImage,
-  gallery
+  ${i18nImage('featuredImage')},
+  ${i18nImages('gallery')}
 }`
 
-// Shared nav-link projection — used by both footer link lists.
+// Shared nav-link projection — used by both footer link lists. The label is
+// translated (navLink.label).
 const navLinkProjection = `
-  label,
+  ${i18nField('label')},
   ${linkTargetProjection}
 `
 
 // Site-wide settings: the SEO fallbacks (useSeo) and the footer's link lists.
-// The meta description is translated, so this takes $lang.
+// The meta description and link labels are translated, so this takes $lang.
 export const siteSettingsQuery = groq`${siteSettings}{
   siteTitle,
   ${i18nField('metaDescription')},
