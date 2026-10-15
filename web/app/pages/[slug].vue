@@ -1,13 +1,14 @@
 <template>
   <!-- Half again the usual headroom above the title; the title centered and
-       a step above the body's headings; the text a centered half-width column
-       from 768px (full width on phones). -->
+       a step above the body's headings; the text a centered column, half the
+       page wide but never under 300px (or the screen, on the smallest
+       phones) nor over 400px. -->
   <article class="pt-[calc(var(--spacing-page-top)*1.5)] pb-lg px-base text-black">
     <h1 class="text-base-plus uppercase text-center">{{ page.title }}</h1>
 
     <div
       v-if="page.body"
-      class="body-copy mt-md mx-auto md:w-1/2 space-y-base font-secondary"
+      class="body-copy mt-md mx-auto w-1/2 min-w-[min(30rem,100%)] max-w-[40rem] space-y-base font-secondary"
     >
       <RichText :value="page.body" />
     </div>
