@@ -9,8 +9,8 @@ import { INTRO_PIECES } from './pieces'
  * The pieces fall from where the first frame drew them into a matter.js
  * world, settle on the floor, then pop: a beat of anticipation, a hard,
  * uneven blast with a shockwave and a shake, the pieces growing toward the
- * viewer as they fly, and a hole tearing open in the white sheet to reveal
- * the page. Pieces move by transform only — no layout per frame.
+ * viewer and fading as they fly clear, and a hole tearing open in the white
+ * sheet to reveal the page. Pieces move by transform only — no layout per frame.
  */
 
 // World
@@ -31,16 +31,22 @@ const SETTLED_SPEED = 3
 // The pop. Speeds are matter.js velocities (px per 60fps frame).
 const ANTICIPATION_MS = 140
 const ANTICIPATION_SCALE = 0.9
-// A hard burst that drags to a drift (air resistance), under lighter
-// gravity, so the flight reads instead of blinking off screen.
+// A hard burst that drags to a drift (air resistance), weightless, so the
+// flight reads instead of blinking off screen. A piece that wouldn't clear
+// the screen at its jittered speed before the drag stops it gets just enough
+// more (times POP_EXIT_MARGIN), up to POP_MAX_SPEED.
 const POP_SPEED = 75
 const POP_SPEED_JITTER = 0.3
 const POP_DRAG = 0.06
-const POP_GRAVITY = 0.5
+const POP_EXIT_MARGIN = 1.3
+const POP_MAX_SPEED = 220
 const POP_LIFT = 20
 const POP_SPIN = 0.5
 const POP_GROWTH = 0.7
 const POP_GROWTH_MS = 650
+// Pieces fade once clear of the blast, a steady fade the overlay waits for.
+const FADE_DELAY_MS = 200
+const FADE_MS = 450
 const REVEAL_MS = 700
 // The hole is fully clear inside this share of its radius, feathered beyond.
 const REVEAL_CLEAR = 0.8
@@ -48,9 +54,10 @@ const SHAKE_MS = 180
 const SHAKE_PX = 14
 const RING_MS = 550
 const RING_COLOR = 'var(--color-purple)'
-// After the reveal, while the last pieces fly off.
-const FINISH_MS = 250
+// A last beat once the reveal and fade are both done.
+const FINISH_MS = 100
 
+const linear = (t: number) => t
 const easeInQuad = (t: number) => t * t
 const easeOutCubic = (t: number) => 1 - (1 - t) ** 3
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - 2 ** (-10 * t))
@@ -61,6 +68,8 @@ interface Piece {
   // Center of mass within the image box, for transform-origin.
   originX: number
   originY: number
+  // Half the box's diagonal: how far past an edge it must be to be gone.
+  reach: number
 }
 
 export const runIntro = (root: HTMLElement, onDone: () => void) => {
@@ -112,7 +121,13 @@ export const runIntro = (root: HTMLElement, onDone: () => void) => {
       el.style.left = '0'
       el.style.top = '0'
       el.style.transformOrigin = `${centre.x}px ${centre.y}px`
-      return { el, body, originX: centre.x, originY: centre.y }
+      return {
+        el,
+        body,
+        originX: centre.x,
+        originY: centre.y,
+        reach: Math.hypot(box.width, box.height) / 2,
+      }
     })
 
   const render = (now: number) => {
@@ -189,6 +204,13 @@ export const runIntro = (root: HTMLElement, onDone: () => void) => {
       .finished.finally(() => ring.remove())
   }
 
+  // Distance along (ux, uy) from (x, y) until `margin` past the nearest edge.
+  const distanceOffScreen = (x: number, y: number, ux: number, uy: number, margin: number) => {
+    const alongX = ux > 0 ? (width + margin - x) / ux : ux < 0 ? (-margin - x) / ux : Infinity
+    const alongY = uy > 0 ? (height + margin - y) / uy : uy < 0 ? (-margin - y) / uy : Infinity
+    return Math.min(alongX, alongY)
+  }
+
   const pop = async () => {
     popping = true
 
@@ -206,17 +228,27 @@ export const runIntro = (root: HTMLElement, onDone: () => void) => {
     Matter.Body.setPosition(floor, { x: originX, y: height + 3000 })
     Matter.Body.setPosition(leftWall, { x: -3000, y: height / 2 })
     Matter.Body.setPosition(rightWall, { x: width + 3000, y: height / 2 })
-    engine.gravity.y = POP_GRAVITY
-    for (const { body } of pieces) {
+    // Weightless from here, so nothing arcs back into view.
+    engine.gravity.y = 0
+    const grownScale = ANTICIPATION_SCALE + POP_GROWTH
+    for (const { body, reach } of pieces) {
       body.frictionAir = POP_DRAG
+      // Pieces pass through each other from here: in a packed pile, ones
+      // blasted into their neighbours would otherwise lose their speed and
+      // stall on screen.
+      body.collisionFilter.mask = 0
       const dx = body.position.x - originX
       const dy = body.position.y - originY
       const distance = Math.hypot(dx, dy) || 1
-      const speed = POP_SPEED * (1 + (Math.random() * 2 - 1) * POP_SPEED_JITTER)
-      Matter.Body.setVelocity(body, {
-        x: (dx / distance) * speed,
-        y: (dy / distance) * speed - POP_LIFT,
-      })
+      const jittered = POP_SPEED * (1 + (Math.random() * 2 - 1) * POP_SPEED_JITTER)
+      const vx = (dx / distance) * jittered
+      const vy = (dy / distance) * jittered - POP_LIFT
+      // Drag stops a piece after about speed ÷ drag px of travel.
+      const launch = Math.hypot(vx, vy)
+      const { x, y } = body.position
+      const travel = distanceOffScreen(x, y, vx / launch, vy / launch, reach * grownScale)
+      const speed = Math.min(Math.max(launch, travel * POP_DRAG * POP_EXIT_MARGIN), POP_MAX_SPEED)
+      Matter.Body.setVelocity(body, { x: (vx / launch) * speed, y: (vy / launch) * speed })
       Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * POP_SPIN * 2)
     }
 
@@ -227,16 +259,18 @@ export const runIntro = (root: HTMLElement, onDone: () => void) => {
     tween(POP_GROWTH_MS, easeOutCubic, (t) => {
       scale = ANTICIPATION_SCALE + POP_GROWTH * t
     })
-    // Faded out by the time the overlay comes down, wherever they've got to.
-    tween(REVEAL_MS + FINISH_MS, easeInQuad, (t) => {
-      for (const { el } of pieces) el.style.opacity = `${1 - t}`
-    })
-    await tween(REVEAL_MS, easeOutExpo, (t) => {
+    const fade = new Promise<void>((resolve) => setTimeout(resolve, FADE_DELAY_MS)).then(() =>
+      tween(FADE_MS, linear, (t) => {
+        for (const { el } of pieces) el.style.opacity = `${1 - t}`
+      }),
+    )
+    const reveal = tween(REVEAL_MS, easeOutExpo, (t) => {
       const r = radius * t
       const mask = `radial-gradient(circle ${r}px at ${originX}px ${originY}px, transparent 0%, transparent ${REVEAL_CLEAR * 100}%, black 100%)`
       sheet.style.maskImage = mask
       sheet.style.webkitMaskImage = mask
     })
+    await Promise.all([fade, reveal])
 
     setTimeout(() => {
       cancelAnimationFrame(frameId)

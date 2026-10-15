@@ -28,9 +28,8 @@
  * white sheet, revealing the live page underneath. Animation ported from
  * channelstudio/balun.
  *
- * This component only renders the first frame — the letters peeking in along
- * the top edge, everything else waiting above the screen (intro/pieces.ts),
- * so the very first paint has the intro on it. The play itself is
+ * This component only renders the first frame — the white sheet, with every
+ * piece waiting just above the screen (intro/pieces.ts). The play itself is
  * intro/runIntro.ts, started by plugins/intro.client.ts as soon as the app's
  * script runs, before hydration; it reports back through the
  * `home-intro-done` state.
@@ -106,10 +105,10 @@ html.intro-pending .home-intro {
 }
 
 /* Shown at once, not through the global lazy-image fade (that waits on
-   hydration), and moved by transform every frame. */
+   hydration); moved by transform every frame and faded at the end. */
 .home-intro .intro-piece {
   opacity: 1;
-  will-change: transform;
+  will-change: transform, opacity;
 }
 
 /* Page pinned for the whole play — keyed on the html class (not a JS lock,

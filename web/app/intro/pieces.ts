@@ -3,10 +3,11 @@
  * frame, and their collision shapes.
  *
  * Sizes and offsets are in px against a 1440px-wide design and scale down
- * with the viewport below that (never up). The start layout is plain CSS so
- * the server-rendered first frame already shows the BALUN letters peeking in
- * along the top edge, with the shoes and character waiting above the screen;
- * runIntro reads the rendered boxes and drops them from exactly there.
+ * with the viewport below that (never up). Everything starts just above the
+ * screen — the BALUN letters in a row right above the edge, so they fall in
+ * first, then the shoes and character stacked above them. The start layout
+ * is plain CSS in the server-rendered overlay; runIntro reads the rendered
+ * boxes and drops them from exactly there.
  *
  * Hulls are each SVG's convex outline as fractions of its box, sampled every
  * ~10 design px along its paths (the four shoes share one artwork). If an SVG
@@ -22,9 +23,9 @@ interface Piece {
   ratio: number
   // Left edge, from the viewport's center.
   left: number
-  // Letters peek in at the top edge; the rest wait above it, `stagger`
-  // further up each so they rain in one after another.
-  peek?: boolean
+  // Letters wait in a row just above the edge; the rest above the letters,
+  // `stagger` rows further up each so they rain in one after another.
+  letter?: boolean
   stagger?: number
   hull: Hull
 }
@@ -41,13 +42,13 @@ const SHOE_HULL: Hull = [
 const SHOE_RATIO = 968 / 2459
 
 export const INTRO_PIECES: Piece[] = [
-  // BALUN, centered along the top edge
+  // BALUN, a centered row just above the top edge
   {
     src: '/svgs/Vector_B.svg',
     width: 225,
     ratio: 315 / 258,
     left: -597,
-    peek: true,
+    letter: true,
     hull: [
       [0, 0.012], [0.029, 0], [0.295, 0], [0.892, 0.471], [0.921, 0.498], [0.946, 0.528], [0.967, 0.56],
       [0.982, 0.594], [0.993, 0.629], [0.999, 0.665], [1, 0.701], [0.995, 0.737], [0.986, 0.772],
@@ -61,7 +62,7 @@ export const INTRO_PIECES: Piece[] = [
     width: 248,
     ratio: 256 / 261,
     left: -348,
-    peek: true,
+    letter: true,
     hull: [
       [0, 0.36], [0.002, 0.319], [0.009, 0.279], [0.02, 0.24], [0.035, 0.203], [0.054, 0.167],
       [0.078, 0.134], [0.104, 0.104], [0.134, 0.077], [0.167, 0.053], [0.202, 0.034], [0.239, 0.019],
@@ -77,7 +78,7 @@ export const INTRO_PIECES: Piece[] = [
     width: 225,
     ratio: 231 / 384,
     left: -76,
-    peek: true,
+    letter: true,
     hull: [
       [0, 0.388], [0.016, 0.321], [0.033, 0.253], [0.082, 0.051], [0.105, 0.007], [0.186, 0.062],
       [0.959, 0.582], [0.999, 0.609], [0.933, 0.88], [0.917, 0.947], [0.894, 0.991], [0.772, 0.909],
@@ -89,7 +90,7 @@ export const INTRO_PIECES: Piece[] = [
     width: 200,
     ratio: 1,
     left: 173,
-    peek: true,
+    letter: true,
     hull: [
       [0, 0.526], [0.003, 0.476], [0.008, 0.427], [0.013, 0.378], [0.046, 0.082], [0.051, 0.033],
       [0.071, 0.002], [0.64, 0.064], [0.837, 0.085], [0.985, 0.102], [0.996, 0.138], [0.974, 0.335],
@@ -106,7 +107,7 @@ export const INTRO_PIECES: Piece[] = [
     width: 200,
     ratio: 208 / 207,
     left: 397,
-    peek: true,
+    letter: true,
     hull: [
       [0.004, 0.546], [0.024, 0.506], [0.079, 0.423], [0.106, 0.381], [0.216, 0.215], [0.244, 0.174],
       [0.275, 0.135], [0.311, 0.101], [0.351, 0.071], [0.394, 0.046], [0.439, 0.026], [0.487, 0.011],
@@ -116,7 +117,7 @@ export const INTRO_PIECES: Piece[] = [
       [0.955, 0.603], [0.93, 0.646], [0.821, 0.812], [0.711, 0.978], [0.676, 0.984],
     ],
   },
-  // Above the screen, in the order they rain in
+  // Above the letters, in the order they rain in
   { src: '/svgs/Vector_RedShoe.svg', width: 500, ratio: SHOE_RATIO, left: -640, stagger: 0, hull: SHOE_HULL },
   { src: '/svgs/Vector_LavenderShoe.svg', width: 500, ratio: SHOE_RATIO, left: 140, stagger: 1, hull: SHOE_HULL },
   {
@@ -135,10 +136,10 @@ export const INTRO_PIECES: Piece[] = [
   { src: '/svgs/Vector_NavyShoe.svg', width: 500, ratio: SHOE_RATIO, left: 60, stagger: 4, hull: SHOE_HULL },
 ]
 
-// How much of a letter shows below the top edge in the first frame.
-const PEEK_VISIBLE = 0.4
-// Gap above the screen, and between each waiting piece.
+// Gap above the screen, between the letters and what waits above them, and
+// between each of those.
 const WAIT_GAP = 60
+const ROW_GAP = 40
 const STAGGER_GAP = 130
 const DESIGN_WIDTH = 1440
 
@@ -149,12 +150,18 @@ const scaled = (px: number) => {
   return px >= 0 ? `min(${rounded}px, ${vw})` : `max(${rounded}px, ${vw})`
 }
 
+// The pieces above the letters start clear of the tallest one, so nothing
+// begins overlapping (matter.js would fling overlapping bodies apart).
+const LETTER_ROW_HEIGHT = Math.max(
+  ...INTRO_PIECES.filter((piece) => piece.letter).map((piece) => piece.width * piece.ratio),
+)
+
 /** The piece's first-frame box, as inline CSS. */
 export const introStartStyle = (piece: Piece) => {
   const height = piece.width * piece.ratio
-  const top = piece.peek
-    ? -height * (1 - PEEK_VISIBLE)
-    : -(height + WAIT_GAP + (piece.stagger ?? 0) * STAGGER_GAP)
+  const top = piece.letter
+    ? -(height + WAIT_GAP)
+    : -(height + WAIT_GAP + LETTER_ROW_HEIGHT + ROW_GAP + (piece.stagger ?? 0) * STAGGER_GAP)
   return {
     left: `calc(50% + ${scaled(piece.left)})`,
     top: scaled(top),
