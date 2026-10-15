@@ -17,7 +17,9 @@ export default {
   title: 'Feature Image',
   options: {hotspot: true},
   fields: [
-    altField('Screen-reader description of the slide. Leave empty to use the product title.'),
+    altField(
+      'Screen-reader description of the slide. Leave empty to fall back to the product title (numbered per slide) where the slide links to the product, as on the home page; beside the product page's own title it is left out.',
+    ),
     {
       name: 'highlights',
       type: 'array',

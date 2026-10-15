@@ -20,7 +20,7 @@
         v-else-if="playing"
         class="player"
         :src="`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&playsinline=1&rel=0`"
-        title=""
+        :title="$t('video.player')"
         allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
         allowfullscreen
       ></iframe>

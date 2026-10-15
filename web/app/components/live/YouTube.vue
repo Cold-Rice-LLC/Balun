@@ -5,7 +5,7 @@
       class="player"
       :class="{ 'is-loaded': loaded }"
       :src="`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&playsinline=1&rel=0`"
-      title=""
+      :title="$t('live.player')"
       allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
       allowfullscreen
       @load="loaded = true"

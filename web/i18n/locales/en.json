@@ -72,7 +72,8 @@
     "error": "Something went wrong. Please try again."
   },
   "video": {
-    "watch": "watch"
+    "watch": "watch",
+    "player": "Video player"
   },
   "feed": {
     "filter": "filter:",
@@ -102,6 +103,7 @@
     "mute": "mute",
     "play": "play",
     "featuredProduct": "featured product",
+    "player": "Live stream",
     "closeFeatured": "Close featured product"
   },
   "error": {

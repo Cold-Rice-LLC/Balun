@@ -46,7 +46,11 @@ export default {
       description:
         'The product image used on grid cards. Leave empty to fall back to the Shopify product image.',
       options: {hotspot: true},
-      fields: [altField('Screen-reader description. Leave empty to use the product title.')],
+      fields: [
+        altField(
+          'Screen-reader description. Leave empty if the image needs none: it always appears beside the product title, which is not repeated.',
+        ),
+      ],
     },
     {
       name: 'gallery',
@@ -57,7 +61,11 @@ export default {
         {
           type: 'image',
           options: {hotspot: true},
-          fields: [altField('Screen-reader description. Leave empty to use the product title.')],
+          fields: [
+            altField(
+              'Screen-reader description. Leave empty if the image needs none: the gallery sits beside the product title, which is not repeated.',
+            ),
+          ],
         },
       ],
     },

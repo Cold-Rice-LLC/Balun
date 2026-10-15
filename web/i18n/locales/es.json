@@ -72,7 +72,8 @@
     "error": "Algo salió mal. Inténtalo de nuevo."
   },
   "video": {
-    "watch": "ver"
+    "watch": "ver",
+    "player": "Reproductor de vídeo"
   },
   "feed": {
     "filter": "filtrar:",
@@ -102,6 +103,7 @@
     "mute": "silenciar",
     "play": "reproducir",
     "featuredProduct": "producto destacado",
+    "player": "Transmisión en directo",
     "closeFeatured": "Cerrar producto destacado"
   },
   "error": {

@@ -33,7 +33,7 @@
                   sizes="(min-width: 768px) 50vw, 100vw"
                   :loading="i === 0 ? 'eager' : 'lazy'"
                   :fetchpriority="i === 0 ? 'high' : undefined"
-                  :alt="image.alt || liveForDoc?.title || doc.title"
+                  :alt="image.alt || ''"
                   class="w-full"
                 />
               </div>
@@ -59,7 +59,7 @@
                     sizes="(min-width: 768px) 50vw, 100vw"
                     :loading="i === 0 ? 'eager' : 'lazy'"
                     :fetchpriority="i === 0 ? 'high' : undefined"
-                    :alt="image.alt || liveForDoc?.title || doc.title"
+                    :alt="image.alt || ''"
                     class="media-cover"
                   />
                 </SwiperSlide>
@@ -131,9 +131,9 @@
           </header>
 
           <div class="carousel-region">
+            <!-- No fallback alt: the h1 above already names the product. -->
             <ProductFeatureCarousel
               :slides="doc.featureCarousel ?? []"
-              :alt="liveForDoc?.title || doc.title"
               sizes="50vw"
               mobile-nav-below
             />

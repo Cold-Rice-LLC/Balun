@@ -32,14 +32,15 @@ export const useProductImage = () => {
     live: LiveProduct | null | undefined,
     { w = 900 } = {},
   ): { src: string; alt: string } | null => {
-    const alt = live?.title || doc?.title || ''
-
+    // Editor alt (Sanity, then Shopify) or nothing: every use of this image
+    // sits beside the product's own title (cards, colorway rail, cart, live
+    // featured product), so a title fallback would be read twice.
     const editorial = doc?.featuredImage
     if (editorial?.asset) {
-      return { src: urlFor(editorial, { w }), alt: editorial.alt || alt }
+      return { src: urlFor(editorial, { w }), alt: editorial.alt || '' }
     }
 
     const shopify = live?.featuredImage
-    return shopify ? { src: shopify.url, alt: shopify.altText || alt } : null
+    return shopify ? { src: shopify.url, alt: shopify.altText || '' } : null
   }
 }

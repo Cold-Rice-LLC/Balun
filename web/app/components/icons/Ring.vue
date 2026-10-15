@@ -1,6 +1,7 @@
 <template>
   <svg
     class="icon-ring"
+    aria-hidden="true"
     viewBox="0 0 11 11"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

@@ -1,4 +1,6 @@
 <template>
+  <!-- Decorative background loop (no sound, no controls, no alt field in
+       the Studio): hidden from assistive tech. -->
   <video
     v-if="media.mediaType === 'video' && media.videoUrl"
     class="module-media"
@@ -8,6 +10,7 @@
     loop
     playsinline
     disablepictureinpicture
+    aria-hidden="true"
   ></video>
 
   <picture
@@ -31,7 +34,7 @@
       :src="urlFor(mobileImage || media.image, { w: mobileImage ? 1200 : 2400 })"
       :loading="eager ? 'eager' : 'lazy'"
       :fetchpriority="eager ? 'high' : undefined"
-      :alt="(mobileImage || media.image).alt || ''"
+      :alt="mobileImage?.alt || media.image.alt || ''"
     />
   </picture>
 </template>

@@ -45,7 +45,7 @@
             :sizes="mobileNavBelow ? `(min-width: 768px) ${sizes}, 100vw` : sizes"
             :loading="eager && i === 0 ? 'eager' : 'lazy'"
             :fetchpriority="eager && i === 0 ? 'high' : undefined"
-            :alt="slide.alt || alt"
+            :alt="slide.alt || (alt && slides.length > 1 ? `${alt} — ${i + 1} / ${slides.length}` : alt)"
           />
 
           <!-- Editor-positioned callouts. x/y are the ANCHOR the leader
@@ -126,7 +126,10 @@ const QUALITY = 85
 
 defineProps({
   slides: { type: Array, default: () => [] },
-  // Fallback alt text when a slide has none (e.g. the product title).
+  // Fallback alt text when a slide has none, for the home module where each
+  // slide is a link and nothing else names it: the product title, numbered
+  // per slide so a set of them doesn't read as one. The PDP passes none —
+  // its h1 is beside the carousel.
   alt: { type: String, default: '' },
   // Mobile variant (the home featured module): full-width slides with the
   // arrows and dot pagination in a row beneath. Desktop is unchanged.

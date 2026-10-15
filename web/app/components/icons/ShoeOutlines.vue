@@ -1,6 +1,7 @@
 <template>
   <svg
     class="icon-shoe-outlines"
+    aria-hidden="true"
     viewBox="0 0 1905 1374"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

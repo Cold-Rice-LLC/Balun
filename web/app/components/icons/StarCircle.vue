@@ -1,6 +1,7 @@
 <template>
   <svg
     class="icon-star-circle"
+    aria-hidden="true"
     viewBox="0 0 10 10"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

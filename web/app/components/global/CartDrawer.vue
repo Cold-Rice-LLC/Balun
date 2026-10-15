@@ -37,18 +37,21 @@
           class="line font-secondary"
         >
           <!-- Thumb and title link back to the line's PDP; navigating away
-               closes the drawer over it. -->
+               closes the drawer over it. The thumb is hidden from keyboard
+               and screen readers: the title link beside it is the same link
+               with the same name, so this one would only repeat it. -->
           <NuxtLink
             class="thumb"
             :to="pdpPath(line)"
-            :aria-label="line.merchandise.product.title"
+            tabindex="-1"
+            aria-hidden="true"
             @click="close"
           >
             <img
               v-if="lineImage(line)"
               :src="lineImage(line).url"
               loading="lazy"
-              :alt="lineImage(line).altText || line.merchandise.product.title"
+              :alt="lineImage(line).altText || ''"
               class="w-full h-full object-cover"
             />
           </NuxtLink>
