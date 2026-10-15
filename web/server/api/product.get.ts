@@ -96,7 +96,7 @@ export interface StorefrontProductDetail {
   variants: { nodes: StorefrontVariant[] }
 }
 
-export default defineCachedEventHandler(
+export default defineSwitchableCachedHandler(
   async (event) => {
     const query = getQuery(event)
 

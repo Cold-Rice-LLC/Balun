@@ -71,6 +71,13 @@ export default defineNuxtConfig({
     // Server-only (NUXT_NOINDEX=true on staging): X-Robots-Tag: noindex on
     // every response, so a staging deploy never gets indexed.
     noindex: false,
+    // Server-only (NUXT_DISABLE_CACHE=true): the cached Shopify routes
+    // (/api/products, /api/product) skip their SWR cache and hit Shopify on
+    // every request — for demos where prices/stock must update instantly.
+    // Pair with NUXT_PUBLIC_SANITY_USE_CDN=false for live Sanity content.
+    // Leave off in normal traffic: it removes the drop-day shield. See
+    // docs/performance-caching.md.
+    disableCache: false,
     public: {
       // Overridden by NUXT_PUBLIC_SHOPIFY_STORE_DOMAIN / NUXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN.
       // Storefront tokens are public-safe (read-only storefront + cart scope).
@@ -88,7 +95,8 @@ export default defineNuxtConfig({
     // The CDN serves the last published build, so Studio edits can take a
     // minute to appear — fine (and cheaper) in production, but it makes
     // authoring feel broken. $development below opts local dev out.
-    useCdn: true,
+    // useCdn: true,
+    useCdn: false,
     apiVersion: '2024-10-01',
   },
 

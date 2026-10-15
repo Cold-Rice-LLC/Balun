@@ -45,7 +45,7 @@ export interface StorefrontProduct {
   priceRange: StorefrontPriceRange
 }
 
-export default defineCachedEventHandler(
+export default defineSwitchableCachedHandler(
   async (event) => {
     const query = getQuery(event)
 
