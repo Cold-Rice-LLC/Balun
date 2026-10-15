@@ -99,9 +99,11 @@ Tailwind Config
   --spacing-lg: 10rem;
   --spacing-xl: 15rem;
   --spacing-2xl: 20rem;
-  --spacing-button-md-height: 5rem;
+  --spacing-button-md-height: 4.4rem;
   --spacing-button-lg-height: 6.8rem;
   --spacing-page-top: 8.5rem;
+  /* Page-edge gutter: half the base on phones; :root restores it from 768px. */
+  --spacing-gutter: 1rem;
 
   /* Line Height */
   --leading-snug: 1.2;
@@ -131,6 +133,10 @@ Root Variables (non tailwind)
   --z-modal-backdrop: 5100;
   --z-modal: 5200;
   --z-intro: 9000;
+
+  @media (width >= 768px) {
+    --spacing-gutter: var(--spacing-base);
+  }
 }
 
 /* 

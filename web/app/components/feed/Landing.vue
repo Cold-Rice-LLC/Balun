@@ -1,5 +1,5 @@
 <template>
-  <div class="feed-page px-base enter-in-fade-up">
+  <div class="feed-page enter-in-fade-up">
     <!-- Shoe outlines overlaid on the content block, same treatment as the
          info page but with the second outline set: absolute over the page's
          full box so it scrolls along, slice = background-size: cover. -->
@@ -25,7 +25,8 @@
         role="group"
         :aria-label="$t('feed.filterPosts')"
       >
-        <span>{{ $t('feed.filter') }}</span>
+        <!-- Own line on mobile, the pills wrapping beneath it. -->
+        <span class="basis-full md:basis-auto">{{ $t('feed.filter') }}</span>
 
         <button
           v-for="cat in FEED_CATEGORIES"
@@ -161,7 +162,7 @@ const toggleFilter = (cat) => {
   position: relative;
   /* Clips the fixed-scale shoe overlay on views shorter than the drawing. */
   overflow: clip;
-  padding: var(--spacing-xl) var(--spacing-base);
+  padding: var(--spacing-xl) var(--spacing-gutter);
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   column-gap: var(--spacing-base);
@@ -176,6 +177,7 @@ const toggleFilter = (cat) => {
 .filters {
   grid-column: 1 / -1;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--spacing-sm);
   padding-block: var(--spacing-sm);
@@ -210,29 +212,16 @@ const toggleFilter = (cat) => {
 }
 
 /* Same column as the filter row: full width on mobile, the center 6 from
-   768px up. Under 768px each card's chip tab hangs ABOVE its body (the
-   NotchPanel tab-top variant), so the list carries extra headroom per card
-   — overriding the space-y-base utility, which loses to unlayered scoped
-   CSS. */
+   768px up. */
 .posts {
   grid-column: 1 / -1;
   /* Above the shoe-outline overlay (z 20) — the outlines are page
      background, not something to draw over the cards. */
   position: relative;
   z-index: 30;
-  padding-top: 3rem;
-
-  > li + li {
-    margin-top: calc(var(--spacing-base) + 5rem);
-
-    @media (min-width: 768px) {
-      margin-top: 0;
-    }
-  }
 
   @media (min-width: 768px) {
     grid-column: 4 / span 6;
-    padding-top: 0;
   }
 }
 

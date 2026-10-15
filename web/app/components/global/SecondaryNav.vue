@@ -1,9 +1,9 @@
 <template>
   <nav
-    class="fixed bottom-0 left-0 w-full px-base"
+    class="fixed bottom-0 left-0 w-full px-gutter"
     :aria-label="$t('nav.shopCart')"
   >
-    <ul class="grid grid-cols-2 gap-base text-base-plus lg:text-lg">
+    <ul class="grid grid-cols-2 gap-gutter text-base-plus lg:text-lg">
       <li>
         <NuxtLink
           :to="localePath('/products')"

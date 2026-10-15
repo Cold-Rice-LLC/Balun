@@ -233,8 +233,8 @@ watch(cartOpen, (open) => {
   /* Full width on mobile regardless of anchor — half a phone screen fits
      nothing (the cart drawer goes full width the same way). Column-sized
      from 768px up. */
-  left: var(--spacing-base);
-  right: var(--spacing-base);
+  left: var(--spacing-gutter);
+  right: var(--spacing-gutter);
   /* A definite height, not max-height: the body's max-height: 100% below
      needs a resolvable parent height (percentages ignore an auto-height
      parent's max-height), or tall content grows the bottom-anchored body up

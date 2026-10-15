@@ -78,7 +78,7 @@ const contained = computed(() => props.module.style === 'contained')
 .wordmark {
   position: absolute;
   width: 100%;
-  inset-inline: var(--spacing-base);
+  inset-inline: var(--spacing-gutter);
   bottom: var(--spacing-base);
   transform: translateY(1.6%);
   color: var(--color-white);

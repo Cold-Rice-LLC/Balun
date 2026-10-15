@@ -230,7 +230,7 @@ onUnmounted(() => clearTimeout(addedTimer))
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: var(--spacing-button-lg-height);
+  height: var(--spacing-button-md-height);
   background-color: var(--color-grey-7);
   color: var(--color-white);
   transition:
@@ -260,6 +260,10 @@ onUnmounted(() => clearTimeout(addedTimer))
   &.is-failed {
     background-color: var(--color-orange);
     color: var(--color-white);
+  }
+
+  @media (min-width: 768px) {
+    height: var(--spacing-button-lg-height);
   }
 }
 </style>

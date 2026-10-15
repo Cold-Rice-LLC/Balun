@@ -52,7 +52,7 @@ const showLink = computed(() => props.module.linkLabel && props.module.link?.lin
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0 var(--spacing-base);
+  padding: 0 var(--spacing-gutter);
   height: 100svh;
 }
 
@@ -84,7 +84,7 @@ const showLink = computed(() => props.module.linkLabel && props.module.link?.lin
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: calc(100vw - var(--spacing-base) * 2);
+  width: calc(100vw - var(--spacing-gutter) * 2);
   color: var(--color-yellow);
   font-size: clamp(3.3rem, 8vw, 16rem);
   line-height: 1;

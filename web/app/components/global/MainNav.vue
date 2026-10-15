@@ -1,5 +1,5 @@
 <template>
-  <header class="fixed top-0 left-0 w-full grid grid-cols-3 p-base">
+  <header class="fixed top-0 left-0 w-full grid grid-cols-3 py-base px-gutter">
     <div class="col-start-2 flex justify-center items-center">
       <NuxtLink
         :to="localePath('/')"
@@ -15,7 +15,7 @@
       class="flex justify-end items-start lg:items-center"
       :aria-label="$t('nav.primary')"
     >
-      <ul class="text-base lg:text-xs flex gap-x-xs">
+      <ul class="text-sm md:text-base lg:text-xs flex gap-x-xs">
         <li>
           <NuxtLink
             :to="localePath('/feed')"
@@ -79,7 +79,7 @@ header {
 
 nav {
   a {
-    padding: var(--spacing-xs) 1.5rem;
+    padding: 0.6rem var(--spacing-sm);
     border-radius: calc(infinity * 1px);
 
     /* Filled pills: the ring sits inside the fill, so it reads against the

@@ -2,7 +2,7 @@
   <!-- Modular render; a stub until the modules are populated. -->
   <article
     v-if="modules.length"
-    class="info-page px-base enter-in-fade-up"
+    class="info-page enter-in-fade-up"
     :class="{ 'leads-prose': leadsProse }"
   >
     <!-- The modules carry no heading of their own; the page title is tab and
@@ -88,7 +88,7 @@ useHead({
    content just grows the container past min-height and flows normally. */
 .info-page {
   position: relative;
-  padding: var(--spacing-xl) var(--spacing-base);
+  padding: var(--spacing-xl) var(--spacing-gutter);
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   column-gap: var(--spacing-base);

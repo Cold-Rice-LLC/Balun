@@ -10,7 +10,7 @@
 
     <p
       v-else
-      class="px-base py-base font-quaternary text-xs text-grey-5"
+      class="px-gutter py-base font-quaternary text-xs text-grey-5"
     >
       {{ $t('shop.empty') }}
     </p>

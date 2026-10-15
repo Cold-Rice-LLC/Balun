@@ -1,7 +1,7 @@
 <template>
   <section
     ref="moduleEl"
-    class="featured-product text-grey-6"
+    class="featured-product overflow-x-clip text-grey-6"
   >
     <header
       v-if="module.heading || module.subheading"
@@ -9,10 +9,10 @@
     >
       <h2
         v-if="module.heading"
-        class="heading text-xl-minus lg:text-xl leading-none"
+        class="heading isolate text-xl-minus lg:text-xl leading-none"
       >
-        {{ module.heading }}
-        <span class="heading-highlight">
+        <span class="heading-highlight box-decoration-clone">
+          <span class="heading-text">{{ module.heading }}</span>
           <span class="bump"></span>
         </span>
       </h2>
@@ -166,49 +166,64 @@ useTeleportTabOrder(moduleEl, ctasEl, {
   }
 }
 
-.heading {
+/* Highlighter band behind each line of the heading: an inline background
+   with box-decoration-clone, so a wrapped heading gets one rounded
+   band per line rather than one block spanning the column. An inline
+   background covers the font's content area (1.3em for ABC Maxi Round),
+   too tall for a 0.8em band — so the highlight span shrinks its font-size
+   to make that content area 0.8em of the heading, and its children scale
+   back up by the same factor. The vertical-align pair re-centers the band
+   on the line (the smaller content area sits low around the shared
+   baseline) without moving the text. */
+.heading-highlight {
+  --k: calc(0.8 / 1.3);
+
   position: relative;
+  font-size: calc(var(--k) * 1em);
+  vertical-align: calc(0.135em / var(--k));
+  background-color: var(--color-yellow);
+  border-radius: calc(0.15em / var(--k));
 
-  .heading-highlight {
+  & > * {
+    font-size: calc(1em / var(--k));
+  }
+
+  .heading-text {
+    vertical-align: -0.135em;
+  }
+
+  /* Tab off the end of the last line (an absolute child of a wrapped inline
+     anchors right/bottom to its last fragment). Tucked one radius under the
+     band so it squares off the band's top-right corner, and behind it (the
+     heading isolates) so it doesn't paint over the last letter. */
+  .bump {
+    --radius: 0.15em;
+
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    height: 0.8em;
-    background-color: var(--color-yellow);
+    right: 0;
+    bottom: 0.35em;
+    transform: translateX(calc(100% - var(--radius)));
+    height: 0.45em;
+    width: calc(0.45em + var(--radius));
     z-index: -1;
-    border-top-left-radius: 0.15em;
-    border-bottom-left-radius: 0.15em;
-    border-bottom-right-radius: 0.15em;
+    background-color: var(--color-yellow);
+    border-bottom-right-radius: var(--radius);
+    border-top-right-radius: var(--radius);
 
-    .bump {
+    /* Fillet in the inside corner where the tab meets the band's edge. */
+    &::after {
+      content: '';
       position: absolute;
-      top: 0;
-      right: 0;
-      transform: translateX(100%);
-      height: 0.45em;
-      width: 0.45em;
-      background-color: var(--color-yellow);
-      border-bottom-right-radius: 0.15em;
-      border-top-right-radius: 0.15em;
-
-      &::after {
-        --fillet: 0.15em;
-
-        content: '';
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: var(--fillet);
-        height: var(--fillet);
-        background: radial-gradient(
-          circle at 100% 100%,
-          transparent calc(var(--fillet) - 0.5px),
-          var(--color-yellow) var(--fillet)
-        );
-        pointer-events: none;
-      }
+      top: 100%;
+      left: var(--radius);
+      width: var(--radius);
+      height: var(--radius);
+      background: radial-gradient(
+        circle at 100% 100%,
+        transparent calc(var(--radius) - 0.5px),
+        var(--color-yellow) var(--radius)
+      );
+      pointer-events: none;
     }
   }
 }
@@ -230,7 +245,7 @@ useTeleportTabOrder(moduleEl, ctasEl, {
   z-index: var(--z-floating);
   bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
   /* Full width on mobile; from 768px up, the quick-add drawer's left column. */
-  inset-inline: var(--spacing-base);
+  inset-inline: var(--spacing-gutter);
   display: grid;
   /* Quick add alone on mobile; learn more joins from 768px up. */
   grid-template-columns: 1fr;
@@ -252,7 +267,7 @@ useTeleportTabOrder(moduleEl, ctasEl, {
      trigger's own default (circle "+") styles lose. */
   .cta {
     width: 100%;
-    height: var(--spacing-button-lg-height);
+    height: var(--spacing-button-md-height);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -264,6 +279,10 @@ useTeleportTabOrder(moduleEl, ctasEl, {
     /* Filled control: ring inside the fill (see MainNav). */
     &:focus-visible {
       outline-offset: -0.2rem;
+    }
+
+    @media (min-width: 768px) {
+      height: var(--spacing-button-lg-height);
     }
   }
 

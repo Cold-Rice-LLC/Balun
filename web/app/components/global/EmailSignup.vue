@@ -47,19 +47,15 @@
       aria-hidden="true"
       class="sr-only"
     />
-    <!-- Named by its visible word at every width: the word stays as sr-only
-         text behind the desktop arrow. -->
+    <!-- Named by its visible word at every width: word + arrow below lg,
+         the arrow alone from lg with the word kept as sr-only text. -->
     <button
       type="submit"
       :disabled="status === 'sending'"
-      class="text-base md:text-lg uppercase leading-none flex-none"
+      class="text-base md:text-lg uppercase leading-none flex-none flex items-center gap-x-xs"
     >
       <span class="lg:sr-only">{{ $t('newsletter.subscribe') }}</span>
-      <span
-        class="hidden lg:block"
-        aria-hidden="true"
-        >→</span
-      >
+      <span aria-hidden="true">→</span>
     </button>
   </form>
 
@@ -111,9 +107,23 @@ const submit = async () => {
 </script>
 
 <style scoped>
+/* The underline runs under the whole row (input + subscribe) while the
+   label is sr-only; from lg, where the label joins the row, it's under the
+   input alone. Text fields match :focus-visible on click as well as on Tab
+   (the browser assumes typing follows), so the ring would box every click —
+   the underline brightens instead, still a visible indicator. */
 .email-signup {
+  border-bottom: 2px solid var(--color-grey-4);
+
+  &:has(input:focus-visible) {
+    border-color: var(--color-grey-1);
+  }
+
+  @media (width >= 1024px) {
+    border-bottom: 0;
+  }
+
   input {
-    border-bottom: 2px solid var(--color-grey-4);
     color: var(--color-grey-4);
     text-transform: uppercase;
 
@@ -121,12 +131,13 @@ const submit = async () => {
       color: var(--color-grey-4);
     }
 
-    /* Text fields match :focus-visible on click as well as on Tab (the
-       browser assumes typing follows), so the ring would box every click.
-       The underline brightens instead — still a visible indicator. */
     &:focus-visible {
       outline: none;
       border-color: var(--color-grey-1);
+    }
+
+    @media (width >= 1024px) {
+      border-bottom: 2px solid var(--color-grey-4);
     }
   }
 }

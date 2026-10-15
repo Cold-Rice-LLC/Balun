@@ -23,6 +23,7 @@
  * `tab-left` (consumer class) mirrors it onto the top-LEFT edge — the cart
  * drawer, which hugs the viewport's right side. With `tab-top-max-md` too,
  * the mobile tab sits above the body flush left.
+ * `no-tab-max-md` drops the nipple under 768px instead (feed cards).
  *
  * Size the tab by sizing the slot content; theme with CSS vars:
  *
@@ -115,6 +116,36 @@
       transparent calc(var(--fillet) - 0.5px),
       var(--notch-bg-resolved) var(--fillet)
     );
+  }
+}
+
+/* No-tab mobile variant (`no-tab-max-md`): under 768px there's no nipple —
+   the tab drops its fill and fillet and sits inside the body's top-right
+   corner, still hosting its slot content, and that corner rounds like the
+   rest. From 768px it's the default side tab. */
+.notch-panel.no-tab-max-md .panel-body {
+  border-top-right-radius: var(--notch-radius-resolved);
+
+  @media (width >= 768px) {
+    border-top-right-radius: 0;
+  }
+}
+
+.notch-panel.no-tab-max-md .panel-tab {
+  transform: none;
+  background-color: transparent;
+
+  @media (width >= 768px) {
+    transform: translateX(calc(100% - 1px));
+    background-color: var(--notch-bg-resolved);
+  }
+}
+
+.notch-panel.no-tab-max-md .panel-tab::after {
+  display: none;
+
+  @media (width >= 768px) {
+    display: block;
   }
 }
 

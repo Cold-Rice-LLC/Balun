@@ -3,7 +3,7 @@
     <!-- Mobile stacks in DOM order: newsletter, the links row, wordmark at
          the very bottom. From 768px the links-container overlays the
          wordmark absolutely, so the order change is invisible there. -->
-    <div class="links-container md:absolute md:inset-0 grid md:grid-cols-2 gap-y-base md:gap-y-0 px-base">
+    <div class="links-container md:absolute md:inset-0 grid md:grid-cols-2 gap-y-base md:gap-y-0 px-gutter">
       <div class="newsletter">
         <EmailSignup />
       </div>
@@ -87,11 +87,11 @@ body.template-live footer {
    overlay layout keeps the deliberate full-bleed (the +1px kills a subpixel
    edge gap). */
 :deep(.icon-wordmark) {
-  width: calc(100vw - var(--spacing-base) * 2);
+  width: calc(100vw - var(--spacing-gutter) * 2);
   height: auto;
   pointer-events: auto;
   margin-top: var(--spacing-base);
-  margin-inline: var(--spacing-base);
+  margin-inline: var(--spacing-gutter);
 
   @media (min-width: 768px) {
     width: calc(100vw + 1px);

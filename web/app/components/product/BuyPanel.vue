@@ -162,11 +162,15 @@ watch(
    overlays from it, so the sticky buy column never grows. */
 .buy-panel {
   position: relative;
-  height: var(--spacing-button-lg-height);
+  height: var(--spacing-button-md-height);
+
+  @media (min-width: 768px) {
+    height: var(--spacing-button-lg-height);
+  }
 }
 
 .purchase {
-  height: var(--spacing-button-lg-height);
+  height: var(--spacing-button-md-height);
   width: 100%;
   border-radius: var(--radius-def);
   background-color: var(--color-grey-7);
@@ -190,6 +194,10 @@ watch(
   &:focus-visible {
     outline-color: var(--color-yellow);
     outline-offset: -0.2rem;
+  }
+
+  @media (min-width: 768px) {
+    height: var(--spacing-button-lg-height);
   }
 }
 
@@ -241,7 +249,7 @@ watch(
   padding-top: var(--spacing-base);
   overflow-y: auto;
   /* Mobile also clears the tab-top close button (5rem) hanging above. */
-  max-height: calc(100svh - var(--spacing-button-lg-height) * 2 - var(--spacing-base) * 2 - 5rem);
+  max-height: calc(100svh - var(--spacing-button-md-height) * 2 - var(--spacing-base) * 2 - 5rem);
 
   @media (min-width: 768px) {
     max-height: calc(100svh - var(--spacing-button-lg-height) * 2 - var(--spacing-base) * 2);

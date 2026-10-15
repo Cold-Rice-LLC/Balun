@@ -210,7 +210,7 @@ onBeforeRouteLeave(async () => {
   flex-direction: column;
   /* Headroom for the mobile tab-top nipple (5rem) above the panel, plus
      clearance for the fixed navs. */
-  padding: calc(var(--spacing-page-top) + 5rem) var(--spacing-base) var(--spacing-xl);
+  padding: calc(var(--spacing-page-top) + 5rem) var(--spacing-gutter) var(--spacing-xl);
 
   @media (min-width: 768px) {
     padding-top: calc(var(--spacing-page-top) + var(--spacing-base));

@@ -86,7 +86,7 @@ const play = () => {
   grid-column: 1 / -1;
   display: flex;
   justify-content: center;
-  padding: 0 var(--spacing-base);
+  padding: 0 var(--spacing-gutter);
 }
 
 /* The headline-over-image media geometry, so the two modules read as one

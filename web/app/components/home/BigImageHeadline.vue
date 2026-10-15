@@ -71,7 +71,7 @@ const links = computed(() => (props.module.links ?? []).filter((item) => item.li
      header above and the bottom nav below, so the panel sits in the space
      between them. */
   &.is-contained {
-    padding: var(--spacing-base);
+    padding: var(--spacing-base) var(--spacing-gutter);
 
     @media (min-width: 768px) {
       padding: var(--spacing-page-top) 8rem calc(var(--spacing-md) + var(--spacing-button-lg-height));

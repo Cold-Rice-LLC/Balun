@@ -3,7 +3,7 @@
        a step above the body's headings; the text a centered column, half the
        page wide but never under 390px (or the screen, on phones) nor
        over 520px. -->
-  <article class="pt-[calc(var(--spacing-page-top)*1.5)] pb-lg px-base text-black">
+  <article class="pt-[calc(var(--spacing-page-top)*1.5)] pb-lg px-gutter text-black">
     <h1 class="text-base-plus uppercase text-center">{{ page.title }}</h1>
 
     <div

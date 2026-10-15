@@ -259,13 +259,13 @@ const highlightTextStyle = (highlight) => {
     .nav-prev {
       grid-area: 2 / 1;
       left: auto;
-      margin-left: var(--spacing-base);
+      margin-left: var(--spacing-gutter);
     }
 
     .nav-next {
       grid-area: 2 / 3;
       right: auto;
-      margin-right: var(--spacing-base);
+      margin-right: var(--spacing-gutter);
     }
   }
 }
@@ -308,7 +308,7 @@ const highlightTextStyle = (highlight) => {
   /* Horizontal safe-area: edge gap + arrow + gap on each side. The frame
      caps to the space between the arrows, so highlight text (which hugs the
      frame edge) can never overlap them. */
-  padding-inline: calc(var(--arrow-width-resolved) + var(--spacing-base) * 2);
+  padding-inline: calc(var(--spacing-gutter) + var(--arrow-width-resolved) + var(--spacing-base));
 }
 
 /* The inline aspect-ratio (from the asset's intrinsic dimensions) plus these
@@ -402,11 +402,11 @@ const highlightTextStyle = (highlight) => {
 }
 
 .nav-prev {
-  left: var(--spacing-base);
+  left: var(--spacing-gutter);
 }
 
 .nav-next {
-  right: var(--spacing-base);
+  right: var(--spacing-gutter);
 }
 
 /* The icon points left; mirror it for next. */

@@ -176,7 +176,7 @@ useHead({
   position: sticky;
   z-index: 2;
   bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
-  margin: 0 var(--spacing-base) calc(var(--spacing-button-md-height) + var(--spacing-base));
+  margin: 0 var(--spacing-gutter) calc(var(--spacing-button-md-height) + var(--spacing-base));
   max-height: calc(100svh - var(--spacing-button-md-height) - var(--spacing-page-top));
   display: flex;
   flex-direction: column;
@@ -197,7 +197,7 @@ useHead({
 .mute {
   position: absolute;
   z-index: 2;
-  right: var(--spacing-base);
+  right: var(--spacing-gutter);
   bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
   color: var(--color-grey-1);
 

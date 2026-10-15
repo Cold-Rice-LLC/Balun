@@ -221,9 +221,9 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
 .cart-drawer {
   position: fixed;
   bottom: 0;
-  right: var(--spacing-base);
+  right: var(--spacing-gutter);
   /* Full width on mobile; the right column from 768px up. */
-  left: var(--spacing-base);
+  left: var(--spacing-gutter);
   height: 50rem;
   color: var(--color-green);
   transform: translateY(100%);

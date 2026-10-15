@@ -1,6 +1,6 @@
 <template>
   <NotchPanel
-    class="feed-card tab-top-max-md"
+    class="feed-card no-tab-max-md"
     :class="[`cat-${post.category}`, { 'has-cover': !!post.coverImage }]"
     :style="accentStyle"
   >
@@ -297,25 +297,20 @@ const accentStyle = computed(() => {
   flex: none;
 }
 
-/* From 768px: anchored to the nipple's outer edge, running back in over
-   the card's corner, where the blend (or the card's own color) backs the
-   row (the tab never clips, unlike the body). On mobile the nipple sits
-   above the card and its left flank is bare page — black-on-black for some
-   categories — so the row tucks just inside the card's top edge instead.
+/* Anchored to the tab's outer edge, running back in over the card's corner,
+   where the blend (or the card's own color) backs the row (the tab never
+   clips, unlike the body). On mobile there's no nipple (no-tab-max-md):
+   the tab sits inside the card's top-right corner, so the row does too.
    Display only — clicks pass through to the card link below. */
 .chips {
   position: absolute;
-  top: 100%;
+  top: 0;
   right: 1.5rem;
   display: flex;
   align-items: center;
   gap: 0.6rem;
   height: var(--notch-tab-size);
   pointer-events: none;
-
-  @media (min-width: 768px) {
-    top: 0;
-  }
 }
 
 .chip {

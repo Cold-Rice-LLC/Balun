@@ -100,7 +100,7 @@
           class="details"
           :class="{ 'no-description': !doc.body?.length }"
         >
-          <header class="pdp-header text-center px-base">
+          <header class="pdp-header text-center px-gutter">
             <h1 class="uppercase text-lg leading-none">{{ liveForDoc?.title || doc.title }}</h1>
 
             <!-- Live price is the geo-varying client island; SSR renders the
@@ -150,7 +150,7 @@
                column scrolls. The buy panel owns the whole flow in place —
                "purchase" expands it into sizes, the colorway rail, quantity,
                and add to cart. -->
-          <div class="buy-row font-secondary px-base">
+          <div class="buy-row font-secondary px-gutter">
             <div class="buy-col">
               <div class="buy-col-inner">
                 <ProductBuyPanel
