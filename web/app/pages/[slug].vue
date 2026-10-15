@@ -8,7 +8,7 @@
 
     <div
       v-if="page.body"
-      class="body-copy mt-md mx-auto w-1/2 min-w-[min(39rem,100%)] max-w-[52rem] space-y-base font-secondary"
+      class="legal-body body-copy mt-md mx-auto w-1/2 min-w-[min(39rem,100%)] max-w-[52rem] space-y-base font-secondary"
     >
       <RichText :value="page.body" />
     </div>
@@ -44,3 +44,10 @@ useNotFound(page, 'Page not found')
 
 useSeo(() => ({ seo: page.value?.seo, title: page.value?.title }))
 </script>
+
+<style scoped>
+/* A quarter more room above each heading than the shared body copy gives. */
+.legal-body :deep(h2) {
+  margin-top: calc(var(--spacing-base) * 1.25);
+}
+</style>
