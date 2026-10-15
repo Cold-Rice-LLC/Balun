@@ -30,12 +30,14 @@
              coordinates stay true) while max-height caps it to the space
              the parent leaves. With `to`, the frame itself is the link
              (no extra wrapper); Swiper's preventClicks swallows the click
-             that ends a drag, so swiping never navigates. -->
+             that ends a drag, so swiping never navigates. Off-screen slides
+             are inert: only the shown slide is tabbable and read. -->
         <component
           :is="to ? NuxtLink : 'figure'"
           :to="to"
           class="slide-frame"
           :style="{ aspectRatio: frameRatio(slide) }"
+          :inert="i !== activeIndex"
         >
           <img
             :src="urlFor(slide, { w: 1600, q: QUALITY })"

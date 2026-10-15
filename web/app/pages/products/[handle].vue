@@ -46,10 +46,12 @@
                 @swiper="onGallerySwiper"
                 @slide-change="(s) => (activeIndex = s.realIndex)"
               >
+                <!-- Off-screen slides are inert so only the shown image is read. -->
                 <SwiperSlide
                   v-for="(image, i) in doc.gallery"
                   :key="i"
                   class="media-slide"
+                  :inert="i !== activeIndex"
                 >
                   <img
                     :src="urlFor(image, { w: 1400, q: 85 })"

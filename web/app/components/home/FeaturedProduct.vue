@@ -50,10 +50,12 @@
          anyway, and the carousel already links to the product. -->
     <ClientOnly>
       <Teleport to="body">
+        <!-- inert while faded out, or the hidden CTAs stay tabbable. -->
         <div
           v-if="product"
           class="ctas"
           :class="{ 'is-visible': ctasVisible && !quickAddOpen }"
+          :inert="!(ctasVisible && !quickAddOpen)"
         >
           <ProductQuickAddTrigger
             class="cta cta-quick-add text-base"

@@ -1,7 +1,11 @@
 <template>
+  <!-- inert until revealed: closed, the drawer is only faded out, so without
+       it the options panel, learn-more links and close button would stay in
+       the tab order and the accessibility tree. -->
   <button
     class="overlay-backdrop z-(--z-backdrop)"
     :class="{ active: isOpen && revealed }"
+    :inert="!(isOpen && revealed)"
     @click="close"
   >
     <span class="sr-only">{{ $t('quickAdd.close') }}</span>
@@ -12,6 +16,7 @@
     class="quick-add-drawer"
     :class="{ active: isOpen && revealed }"
     :aria-label="$t('quickAdd.label')"
+    :inert="!(isOpen && revealed)"
   >
     <NotchPanel class="quick-add-body tab-top-max-md text-green">
       <div class="p-base space-y-base">

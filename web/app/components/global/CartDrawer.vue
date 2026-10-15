@@ -1,7 +1,11 @@
 <template>
+  <!-- inert while closed: the drawer is only slid off-screen, so without it
+       every line link, stepper and the close button would stay in the tab
+       order and the accessibility tree. -->
   <button
     class="overlay-backdrop z-(--z-backdrop)"
     :class="{ active: isOpen }"
+    :inert="!isOpen"
     @click="close"
   >
     <span class="sr-only">{{ $t('cart.close') }}</span>
@@ -12,6 +16,7 @@
     class="cart-drawer"
     :class="{ active: isOpen }"
     :aria-label="$t('cart.label')"
+    :inert="!isOpen"
   >
     <div
       v-if="lines.length"

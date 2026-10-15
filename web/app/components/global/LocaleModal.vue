@@ -31,10 +31,13 @@
        siblings in MainFooter, so their resolve order already matches tree
        order. Making either switcher async would break that. -->
   <Teleport to="#teleports">
-    <!-- Above the navs: a modal covers everything. -->
+    <!-- Above the navs: a modal covers everything. inert while closed: the
+         modal is only faded out, so without it the locale links would stay
+         in the tab order and a closed aria-modal dialog in the tree. -->
     <button
       class="overlay-backdrop z-(--z-modal-backdrop)"
       :class="{ active: open }"
+      :inert="!open"
       tabindex="-1"
       @click="open = false"
     >
@@ -47,6 +50,7 @@
       role="dialog"
       aria-modal="true"
       :aria-label="label"
+      :inert="!open"
     >
       <p class="modal-label text-sm">{{ label }}</p>
 
