@@ -41,15 +41,17 @@ const { isOpen, lineCount, open, close, checkout, init } = useCart()
 const { close: closeQuickAdd } = useQuickAdd()
 
 // The shop button should clear both overlays on the way to the Shop page.
-// Already there, the NuxtLink is a no-op — scroll to the top instead. nextTick:
-// closing the overlays releases the scroll lock on the watcher flush, and
-// scrollTo is itself a no-op while html overflow is still hidden.
+// Already there, the NuxtLink is a no-op — scroll to the top instead (instantly
+// under reduced motion). nextTick: closing the overlays releases the scroll
+// lock on the watcher flush, and scrollTo is itself a no-op while html
+// overflow is still hidden.
 const onShopLink = () => {
   close()
   closeQuickAdd()
   const strip = (p) => p.replace(/\/+$/, '')
   if (strip(route.path) === strip(localePath('/products'))) {
-    nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    nextTick(() => window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' }))
   }
 }
 

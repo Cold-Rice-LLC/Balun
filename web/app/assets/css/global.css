@@ -155,13 +155,32 @@ main {
 
 button {
   cursor: pointer;
-  outline: none;
   box-shadow: none;
   border: none;
 }
 
-input {
-  outline: none;
+/* Keyboard focus ring, everywhere. currentColor: text colors are already
+   chosen for contrast against their backgrounds, so the ring inherits that;
+   a fixed accent could not promise 3:1 on every surface. */
+:focus-visible {
+  outline: 0.2rem solid currentColor;
+  outline-offset: 0.2rem;
+}
+
+/* Reduced motion: collapse every animation and transition to a single
+   instant frame rather than removing them, so Vue <Transition> hooks and
+   the lazy-image fade still fire their end events. Components that need a
+   different static state (the marquee, the live blink) keep their own
+   animation: none rules. */
+*,
+::before,
+::after {
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 figure {
