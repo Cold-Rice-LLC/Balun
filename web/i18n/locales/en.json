@@ -15,6 +15,7 @@
   },
   "cart": {
     "close": "Close cart",
+    "updated": "Cart updated: {items}",
     "empty": "Your cart is empty",
     "subtotal": "Subtotal",
     "items": "{n} item | {n} items",
@@ -52,6 +53,12 @@
     "soldOut": "sold out",
     "unavailable": "Not available in your region"
   },
+  "price": {
+    "was": "was"
+  },
+  "link": {
+    "newTab": "(opens in a new tab)"
+  },
   "product": {
     "unavailable": "Unavailable",
     "outOfStock": "out of stock",
@@ -77,6 +84,7 @@
   },
   "feed": {
     "filter": "filter:",
+    "results": "{n} post shown | {n} posts shown",
     "categories": {
       "stream": "stream",
       "products": "products",

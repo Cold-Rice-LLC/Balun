@@ -65,10 +65,12 @@
     <!-- Bottom-right, level with the corner: the Mux player has no controls
          of its own, so this is the one way to hear it. YouTube's embed
          keeps its own. -->
+    <!-- The label says what the press will do (unmute / mute), so no
+         aria-pressed: the two together read as contradictory. -->
     <button
       v-if="stream?.type === 'mux'"
+      type="button"
       class="mute font-secondary text-base uppercase leading-snug"
-      :aria-pressed="!muted"
       @click="muted = !muted"
     >
       {{ $t(muted ? 'live.unmute' : 'live.mute') }}

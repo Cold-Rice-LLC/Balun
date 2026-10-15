@@ -25,7 +25,7 @@ const props = defineProps({
   components: { type: Object, default: () => ({}) },
 })
 
-const { locale } = useI18n()
+const { t, locale } = useI18n()
 const urlFor = useSanityImage()
 
 // Block-level images (blockContent allows them in product bodies and feed /
@@ -41,11 +41,15 @@ const image = ({ value }) =>
     ...sanityImageDimensions(value),
   })
 
-// mailto:/tel: are same-tab; everything else external opens a new tab.
+// mailto:/tel: are same-tab; everything else external opens a new tab, and
+// says so for screen readers.
 const externalLink = (url, slots) =>
   /^(mailto:|tel:)/i.test(url)
     ? h('a', { href: url }, slots.default?.())
-    : h('a', { href: url, target: '_blank', rel: 'noopener noreferrer' }, slots.default?.())
+    : h('a', { href: url, target: '_blank', rel: 'noopener noreferrer' }, [
+        slots.default?.(),
+        h('span', { class: 'sr-only' }, ` ${t('link.newTab')}`),
+      ])
 
 const link = (mark, { slots }) => {
   const value = mark.value ?? {}

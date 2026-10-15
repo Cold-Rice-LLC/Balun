@@ -15,6 +15,7 @@
   },
   "cart": {
     "close": "Cerrar carrito",
+    "updated": "Carrito actualizado: {items}",
     "empty": "Tu carrito está vacío",
     "subtotal": "Subtotal",
     "items": "{n} artículo | {n} artículos",
@@ -52,6 +53,12 @@
     "soldOut": "Agotado",
     "unavailable": "No disponible en tu región"
   },
+  "price": {
+    "was": "antes"
+  },
+  "link": {
+    "newTab": "(se abre en una pestaña nueva)"
+  },
   "product": {
     "unavailable": "No disponible",
     "outOfStock": "agotado",
@@ -77,6 +84,7 @@
   },
   "feed": {
     "filter": "filtrar:",
+    "results": "{n} publicación mostrada | {n} publicaciones mostradas",
     "categories": {
       "stream": "stream",
       "products": "productos",

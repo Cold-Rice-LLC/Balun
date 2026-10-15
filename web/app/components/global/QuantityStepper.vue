@@ -1,14 +1,25 @@
 <template>
-  <div class="stepper">
+  <!-- A named group (the caller passes aria-label or aria-labelledby); the
+       value announces as it changes. -->
+  <div
+    class="stepper"
+    role="group"
+  >
     <button
+      type="button"
       :aria-label="$t('stepper.decrease')"
       :disabled="disabled"
       @click="step(-1)"
     >
       −
     </button>
-    <span class="qty">{{ modelValue }}</span>
+    <span
+      class="qty"
+      aria-live="polite"
+      >{{ modelValue }}</span
+    >
     <button
+      type="button"
       :aria-label="$t('stepper.increase')"
       :disabled="disabled"
       @click="step(1)"

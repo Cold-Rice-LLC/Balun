@@ -13,11 +13,15 @@
       </li>
 
       <li>
+        <!-- A disclosure toggle while it opens and closes the drawer; once it
+             reads "checkout" it navigates instead, so the toggle semantics
+             come off. -->
         <button
+          type="button"
           class="cart-button"
-          :class="{ 'is-checkout': lineCount > 0 && isOpen }"
-          :aria-expanded="isOpen"
-          aria-controls="cart-drawer"
+          :class="{ 'is-checkout': isCheckout }"
+          :aria-expanded="isCheckout ? undefined : isOpen"
+          :aria-controls="isCheckout ? undefined : 'cart-drawer'"
           @click="onCartButton"
         >
           <span
@@ -28,6 +32,16 @@
         </button>
       </li>
     </ul>
+
+    <!-- Cart changes announce here: the only other signal is the count in
+         the button label. Skips the initial load (the region is empty until
+         the first change after init). -->
+    <p
+      class="sr-only"
+      aria-live="polite"
+    >
+      {{ cartAnnouncement }}
+    </p>
 
     <!-- Rendered inside the nav so the cart button and drawer it controls
          (aria-controls) live in the same landmark for assistive tech. -->
@@ -67,9 +81,14 @@ onMounted(async () => {
 })
 
 // Closed → "cart (N)"; open with items → "checkout"; open empty → "cart".
-const cartLabel = computed(() => {
-  if (!isOpen.value) return t('nav.cart', { n: lineCount.value })
-  return lineCount.value > 0 ? t('nav.checkout') : t('nav.cart', { n: lineCount.value })
+const isCheckout = computed(() => isOpen.value && lineCount.value > 0)
+const cartLabel = computed(() => (isCheckout.value ? t('nav.checkout') : t('nav.cart', { n: lineCount.value })))
+
+// Announce count changes once the persisted cart is in (its arrival is not
+// a change the visitor made).
+const cartAnnouncement = ref('')
+watch(lineCount, (n) => {
+  if (ready.value) cartAnnouncement.value = t('cart.updated', { items: t('cart.items', n) })
 })
 
 // Open the drawer; once open, the button checks out (if filled) or closes it.

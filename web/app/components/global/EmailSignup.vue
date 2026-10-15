@@ -1,9 +1,11 @@
 <template>
   <!-- Once subscribed the whole row (heading included) gives way to the
-       thank-you; errors go to a native alert so the row never reflows. -->
+       thank-you; errors go to a native alert so the row never reflows.
+       The sr-only region below is the one screen readers hear it from: it
+       exists from the first render, which a status element that mounts
+       with its text does not reliably get announced. -->
   <p
     v-if="status === 'success'"
-    role="status"
     class="text-base md:text-lg uppercase leading-none"
   >
     {{ $t('newsletter.success') }}
@@ -12,10 +14,18 @@
     v-else
     class="email-signup flex items-center gap-x-sm"
     novalidate
+    :aria-busy="status === 'sending'"
     @submit.prevent="submit"
   >
-    <p class="text-base md:text-lg uppercase leading-none flex-none hidden lg:block">{{ $t('newsletter.heading') }}</p>
+    <!-- The visible heading doubles as the input's label; below lg it is
+         sr-only rather than hidden, so the field keeps its name. -->
+    <label
+      :for="inputId"
+      class="text-base md:text-lg uppercase leading-none flex-none sr-only lg:not-sr-only"
+      >{{ $t('newsletter.heading') }}</label
+    >
     <input
+      :id="inputId"
       v-model="email"
       type="email"
       name="email"
@@ -37,20 +47,33 @@
       aria-hidden="true"
       class="sr-only"
     />
+    <!-- Named by its visible word at every width: the word stays as sr-only
+         text behind the desktop arrow. -->
     <button
       type="submit"
       :disabled="status === 'sending'"
       class="text-base md:text-lg uppercase leading-none flex-none"
-      :aria-label="$t('newsletter.submit')"
     >
-      <span class="block lg:hidden">{{ $t('newsletter.subscribe') }}</span>
-      <span class="hidden lg:block">→</span>
+      <span class="lg:sr-only">{{ $t('newsletter.subscribe') }}</span>
+      <span
+        class="hidden lg:block"
+        aria-hidden="true"
+        >→</span
+      >
     </button>
   </form>
+
+  <p
+    class="sr-only"
+    aria-live="polite"
+  >
+    {{ status === 'success' ? $t('newsletter.success') : '' }}
+  </p>
 </template>
 
 <script setup>
 const { t, locale } = useI18n()
+const inputId = useId()
 
 const email = ref('')
 const website = ref('')

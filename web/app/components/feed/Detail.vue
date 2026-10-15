@@ -57,6 +57,7 @@
             rel="noopener"
           >
             {{ $t('feed.rsvp') }}
+            <span class="sr-only"> {{ $t('link.newTab') }}</span>
           </a>
 
           <component

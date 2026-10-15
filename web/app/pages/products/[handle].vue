@@ -112,7 +112,7 @@
                   <s
                     v-if="compareAt"
                     class="compare-at"
-                    >{{ compareAt }}</s
+                    ><span class="sr-only">{{ $t('price.was') }} </span>{{ compareAt }}</s
                   >
                   <span
                     v-if="!liveForDoc.availableForSale"

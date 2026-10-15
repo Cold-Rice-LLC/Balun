@@ -1,8 +1,17 @@
 <template>
   <div class="options-panel">
     <div class="options font-secondary px-base pb-base space-y-base">
-      <div class="sizes">
-        <p class="uppercase label">{{ optionLabel }}</p>
+      <div
+        class="sizes"
+        role="group"
+        :aria-labelledby="sizesLabelId"
+      >
+        <p
+          :id="sizesLabelId"
+          class="uppercase label"
+        >
+          {{ optionLabel }}
+        </p>
 
         <ul class="grid grid-cols-2 gap-xs">
           <li
@@ -10,11 +19,13 @@
             :key="variant.id"
           >
             <button
+              type="button"
               class="size-pill"
               :class="{
                 'is-selected': variant.id === selectedVariant?.id,
                 'is-oos': !variant.availableForSale,
               }"
+              :aria-pressed="variant.id === selectedVariant?.id"
               :disabled="!variant.availableForSale"
               @click="variantId = variant.id"
             >
@@ -34,18 +45,28 @@
         class="quantity flex items-center justify-between"
         :class="{ 'is-oos': !selectedVariant?.availableForSale }"
       >
-        <p class="uppercase label">{{ $t('quickAdd.quantity') }}</p>
+        <p
+          :id="quantityLabelId"
+          class="uppercase label"
+        >
+          {{ $t('quickAdd.quantity') }}
+        </p>
 
         <QuantityStepper
           v-model="quantity"
           class="text-base"
+          :aria-labelledby="quantityLabelId"
           :disabled="!selectedVariant?.availableForSale"
         />
       </div>
     </div>
 
+    <!-- aria-live: the label swaps through adding / added / failed, which
+         is the only feedback the add gives. -->
     <button
+      type="button"
       class="add-to-cart text-base-plus font-primary"
+      aria-live="polite"
       :class="{
         'is-adding': addState === 'adding',
         'is-added': addState === 'added',
@@ -119,6 +140,9 @@ watch(
 )
 
 const addState = ref('idle') // idle | adding | added | failed
+
+const sizesLabelId = useId()
+const quantityLabelId = useId()
 let addedTimer = null
 
 const addLabel = computed(() => {

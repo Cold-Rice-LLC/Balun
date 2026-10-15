@@ -55,9 +55,17 @@
             </svg>
           </span>
 
+          <!-- Name plus the reason it is dimmed: masked from this market, or
+               sold out. -->
           <span class="sr-only">
             {{ colorName(item.doc.title, item.doc.title)
-            }}{{ item.live && !item.live.availableForSale ? ` — ${$t('product.outOfStock')}` : '' }}
+            }}{{
+              !item.live
+                ? ` — ${$t('product.unavailable')}`
+                : !item.live.availableForSale
+                  ? ` — ${$t('product.outOfStock')}`
+                  : ''
+            }}
           </span>
         </component>
       </li>

@@ -86,11 +86,13 @@
                 <QuantityStepper
                   :model-value="line.quantity"
                   :min="0"
+                  :aria-label="$t('quickAdd.quantity')"
                   :disabled="pending"
                   @update:model-value="onUpdate(line.id, $event)"
                 />
 
                 <button
+                  type="button"
                   class="remove"
                   :disabled="pending"
                   @click="onRemove(line.id)"
@@ -120,6 +122,7 @@
            here, full width at the bottom edge. From 768px it stays the
            nav's cart button. -->
       <button
+        type="button"
         class="checkout md:hidden flex-none text-base-plus"
         :disabled="pending"
         @click="checkout"

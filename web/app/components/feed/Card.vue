@@ -14,7 +14,16 @@
 
     <div class="head uppercase leading-none">
       <p>{{ formatFeedDate(post.publishedAt) }}</p>
-      <h2>{{ cardTitle }}</h2>
+      <!-- Stream posts all share the "live stream" title; the date tells
+         them apart in a headings list. -->
+      <h2>
+        {{ cardTitle
+        }}<span
+          v-if="post.category === 'stream'"
+          class="sr-only"
+          >, {{ formatFeedDate(post.publishedAt) }}</span
+        >
+      </h2>
 
       <div class="mt-12 flex items-end gap-base">
         <a
@@ -25,6 +34,7 @@
           rel="noopener"
         >
           {{ $t('feed.rsvp') }}
+          <span class="sr-only"> {{ $t('link.newTab') }}</span>
         </a>
 
         <p
@@ -51,7 +61,7 @@
     <NuxtLink
       class="card-link"
       :to="destination"
-      :aria-label="cardTitle"
+      :aria-label="accessibleTitle"
     />
 
     <!-- In the tab slot so the body's overflow clip can't cut them off: the
@@ -101,6 +111,10 @@ const route = useRoute()
 
 const { t } = useI18n()
 const cardTitle = computed(() => (props.post.category === 'stream' ? t('feed.liveStream') : props.post.title))
+// The card link's name: stream posts add their date, as their heading does.
+const accessibleTitle = computed(() =>
+  props.post.category === 'stream' ? `${cardTitle.value}, ${formatFeedDate(props.post.publishedAt)}` : cardTitle.value,
+)
 
 // The detail link carries the list's ?page=/?filter= so the feed underneath
 // the modal (and the feed the close button returns to) is the one they left.

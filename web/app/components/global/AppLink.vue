@@ -6,6 +6,7 @@
     rel="noopener noreferrer"
   >
     <slot>{{ link.label }}</slot>
+    <span class="sr-only"> {{ $t('link.newTab') }}</span>
   </a>
 
   <NuxtLink

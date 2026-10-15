@@ -6,6 +6,7 @@
     :aria-label="$t('quickAdd.trigger', { title: live.title })"
     aria-haspopup="dialog"
     aria-controls="quick-add-drawer"
+    :aria-expanded="isOpen && active?.live?.id === live.id"
     @click.stop.prevent="open({ doc, live })"
   >
     <slot>+</slot>
@@ -33,7 +34,7 @@ defineProps({
 
 // Destructured so pendingOpen unwraps in the template (a `quickAdd.pendingOpen`
 // member expression yields the Ref itself, which is always truthy).
-const { open, pendingOpen } = useQuickAdd()
+const { open, pendingOpen, isOpen, active } = useQuickAdd()
 </script>
 
 <style scoped>

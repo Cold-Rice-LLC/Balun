@@ -3,15 +3,16 @@
     v-if="texts.length"
     class="marquee-module"
   >
-    <!-- The animated track repeats the texts visually; screen readers get
-         the single real run and skip the duplicates. -->
-    <span class="sr-only">{{ texts.join(', ') }}</span>
-
     <component
       :is="module.link?.linkType ? AppLink : 'div'"
       :link="module.link?.linkType ? module.link : undefined"
       class="band"
     >
+      <!-- The animated track repeats the texts visually; screen readers get
+           the single real run and skip the duplicates. Inside the band so
+           that, when the band is a link, this names it. -->
+      <span class="sr-only">{{ texts.join(', ') }}</span>
+
       <div
         class="track uppercase text-lg"
         aria-hidden="true"

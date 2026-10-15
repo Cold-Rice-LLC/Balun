@@ -1,8 +1,10 @@
 <template>
-  <component
-    :is="live ? NuxtLink : 'div'"
-    :to="live ? localePath(`/products/${live.handle}`) : undefined"
-    class="product-card block"
+  <!-- The title is the link, stretched over the whole card by its ::after,
+       so the quick-add button beside it is a sibling control rather than a
+       button nested inside a link (invalid, and it swallowed the button's
+       name into the link's). -->
+  <div
+    class="product-card relative"
     :class="{ 'is-unavailable': !live }"
   >
     <div class="image-frame">
@@ -15,7 +17,15 @@
     </div>
 
     <div class="card-meta uppercase grid grid-cols-[1fr_auto] items-center gap-x-base">
-      <p class="title">{{ title }}</p>
+      <p class="title">
+        <NuxtLink
+          v-if="live"
+          :to="localePath(`/products/${live.handle}`)"
+          class="card-link"
+          >{{ title }}</NuxtLink
+        >
+        <template v-else>{{ title }}</template>
+      </p>
 
       <!-- Renders only when live and purchasable (the trigger's own v-if);
            otherwise the stock note below says why there's no "+". No prices
@@ -42,7 +52,7 @@
         {{ $t('product.unavailable') }}
       </p>
     </div>
-  </component>
+  </div>
 </template>
 
 <script setup>
@@ -51,9 +61,6 @@
  * `live` the matching Storefront API product — null when Shopify doesn't
  * return it (unpublished, or masked from the visitor's market).
  */
-// String names don't resolve components in dynamic :is at runtime —
-// resolve NuxtLink explicitly.
-const NuxtLink = resolveComponent('NuxtLink')
 const localePath = useLocalePath()
 
 const props = defineProps({
@@ -99,6 +106,14 @@ const cardImage = computed(() => productImage(props.doc, props.live, { w: 900 })
   }
 }
 
+/* The link covers the card; the quick-add trigger stacks above the cover so
+   it stays its own click. */
+.card-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
 .card-meta {
   padding: var(--spacing-sm) 0;
   line-height: var(--leading-snug);
@@ -111,6 +126,8 @@ const cardImage = computed(() => productImage(props.doc, props.live, { w: 900 })
 
 /* Bare "+" in the meta row — strip the trigger's default white pill. */
 .card-meta .quick-add {
+  position: relative;
+  z-index: 1;
   width: auto;
   height: auto;
   background: none;

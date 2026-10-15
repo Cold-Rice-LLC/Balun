@@ -18,9 +18,11 @@
       <h1 class="sr-only">{{ $t('meta.feed') }}</h1>
 
       <!-- Single-select category filter, mirrored into ?filter= so filtered
-           views are shareable URLs. Clicking the active pill clears it. -->
-      <nav
+           views are shareable URLs. Clicking the active pill clears it. A
+           group of toggles, not navigation. -->
+      <div
         class="filters font-tertiary text-xs"
+        role="group"
         :aria-label="$t('feed.filterPosts')"
       >
         <span>{{ $t('feed.filter') }}</span>
@@ -35,13 +37,23 @@
         >
           {{ $t(`feed.categories.${cat}`) }}
         </button>
-      </nav>
+      </div>
+
+      <!-- Result count for screen readers as filters and pages change (a
+         live region says nothing on first render). -->
+      <p
+        class="sr-only"
+        aria-live="polite"
+      >
+        {{ posts.length ? $t('feed.results', posts.length) : $t('feed.empty') }}
+      </p>
 
       <ul
         v-if="posts.length"
         :key="listKey"
         class="posts space-y-base"
         :class="{ 'enter-in-fade-up': listKey > 0 }"
+        :aria-busy="loadingMore"
       >
         <li
           v-for="post in posts"
