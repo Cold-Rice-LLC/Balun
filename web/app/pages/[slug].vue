@@ -46,8 +46,9 @@ useSeo(() => ({ seo: page.value?.seo, title: page.value?.title }))
 </script>
 
 <style scoped>
-/* A quarter more room above each heading than the shared body copy gives. */
+/* Three quarters more room above each heading than the shared body copy
+   gives. */
 .legal-body :deep(h2) {
-  margin-top: calc(var(--spacing-base) * 1.25);
+  margin-top: calc(var(--spacing-base) * 1.75);
 }
 </style>
