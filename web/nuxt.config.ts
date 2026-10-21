@@ -71,6 +71,11 @@ export default defineNuxtConfig({
     // Server-only (NUXT_NOINDEX=true on staging): X-Robots-Tag: noindex on
     // every response, so a staging deploy never gets indexed.
     noindex: false,
+    // Server-only (NUXT_BASIC_AUTH_USER / NUXT_BASIC_AUTH_PASSWORD): a set
+    // password puts the whole site behind HTTP basic auth (pre-launch /
+    // staging). Empty password = no gate.
+    basicAuthUser: 'balun',
+    basicAuthPassword: '',
     // Server-only (NUXT_DISABLE_CACHE=true): the cached Shopify routes
     // (/api/products, /api/product) skip their SWR cache and hit Shopify on
     // every request — for demos where prices/stock must update instantly.
