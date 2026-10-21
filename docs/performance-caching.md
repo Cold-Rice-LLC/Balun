@@ -84,6 +84,18 @@ just saw.
   catch up (TTL is usually simpler than per-change purge for inventory). Pairs with the planned
   product-creation webhook.
 
+## Turning caching off (demos)
+
+For a presentation where Shopify and Studio changes must show up instantly, set these env vars on
+the deployment and restart/redeploy (no rebuild needed — both are read at runtime):
+
+- `NUXT_DISABLE_CACHE=true` — `/api/products` and `/api/product` skip their SWR cache and send
+  `Cache-Control: no-store`, so every request hits Shopify (`server/utils/switchableCache.ts`).
+- `NUXT_PUBLIC_SANITY_USE_CDN=false` — Sanity queries go to the live API instead of the API CDN.
+
+Remove both (or set them back to `false` / `true`) afterwards: with them on, every visitor's request
+reaches Shopify and Sanity directly, which is exactly what the caching exists to prevent under load.
+
 ## Drop-day specifics
 
 - **Pre-warm the cache** before a known launch so the edge is hot at T+0 (avoid a cache-miss
