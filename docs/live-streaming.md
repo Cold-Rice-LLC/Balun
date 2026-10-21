@@ -19,8 +19,8 @@ how to test the whole thing before the client's streamer is involved.
   in place of its note. It holds a "connecting" note until the player can play, then
   cross-fades. Between Live Now flipping and Mux serving the first segments
   the playback ID answers 412; the player's own retries stop after six, so
-  `LivePlayer` remounts it a minute after a miss and polls on about once a
-  minute for as long as Live Now is on, with the "Retrying…" dialog hidden —
+  `LivePlayer` remounts it 10s after a miss and polls on about every 10s
+  for as long as Live Now is on, with the "Retrying…" dialog hidden —
   a stage switched on by hand before the encoder is up keeps waiting rather
   than giving up.
 - **YouTube instead.** Site Settings' **Live Source** switches the page to a
@@ -40,7 +40,10 @@ how to test the whole thing before the client's streamer is involved.
   editorial overlay. Everything already keyed
   off `isLive` (feed stream cards linking to `/live`, the live chip) works
   unchanged, and editors keep the toggle as a manual override. The live page
-  re-fetches every 30s while open.
+  polls `GET /api/live-status` every 5s while open — Live Now and the source,
+  cached server-side for 5s so Sanity sees about one request per 5s however
+  many tabs are watching — so a switch shows within ~10s; the editorial
+  corner re-fetches every 30s.
 - **Recordings.** With `new_asset_settings` on the live stream, every
   session becomes a Mux asset automatically — the raw material for a stream
   post's recap video (today an MP4 upload / YouTube; the official

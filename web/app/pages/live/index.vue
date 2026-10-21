@@ -34,7 +34,7 @@
          featured product below — its panels open in place, pushing the
          text up. Offline: the note and a way to the shop. -->
     <div class="corner enter-in-fade-up">
-      <template v-if="page?.isLive">
+      <template v-if="status?.isLive">
         <div
           v-if="page.location || page.description"
           class="intro font-secondary text-base leading-snug"
@@ -87,14 +87,17 @@ import { liveQuery } from '~/utils/queries'
  * (image + variant picker, opened in place over a backdrop that blurs the
  * stream); offline, the note and a shop link. Live state and the source
  * (Mux or YouTube) come from Site Settings — with Mux, flipped by its
- * webhook — re-checked every 30s while open so someone waiting sees the
- * stream start without reloading. Market-scoped like home: this market's
- * page if it exists, else the default.
+ * webhook — via /api/live-status, re-checked every 5s while open so a
+ * switch shows up within seconds without reloading; the editorial corner
+ * re-checks every 30s. Market-scoped like home: this market's page if it
+ * exists, else the default.
  */
 const { t } = useI18n()
 const localePath = useLocalePath()
 const { data: page, refresh } = await useMarketPage('live', liveQuery)
+const { data: status, refresh: refreshStatus } = await useFetch('/api/live-status')
 useIntervalFn(refresh, 30_000)
+useIntervalFn(refreshStatus, 5_000)
 
 const featuredOpen = ref(false)
 const muted = ref(true)
@@ -103,12 +106,12 @@ const muted = ref(true)
 // Site Settings names — and only once that source is actually filled in, so
 // a half-set-up stream leaves the offline state up rather than a dead frame.
 const stream = computed(() => {
-  if (!page.value?.isLive) return null
-  if (page.value.liveSource === 'youtube') {
-    const videoId = youtubeId(page.value.youtubeUrl)
+  if (!status.value?.isLive) return null
+  if (status.value.liveSource === 'youtube') {
+    const videoId = youtubeId(status.value.youtubeUrl)
     return videoId ? { type: 'youtube', videoId } : null
   }
-  return page.value.muxPlaybackId ? { type: 'mux', playbackId: page.value.muxPlaybackId } : null
+  return status.value.muxPlaybackId ? { type: 'mux', playbackId: status.value.muxPlaybackId } : null
 })
 
 useSeo(() => ({ seo: page.value?.seo, title: t('meta.live'), description: page.value?.description }))

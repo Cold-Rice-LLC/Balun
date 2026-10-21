@@ -75,12 +75,12 @@
  * itself, but only six times (5s, then every 60s) before giving up — and
  * with Live Now set by hand the gap can be as long as it takes the streamer
  * to press Start. So its "Retrying…" dialog is hidden (--dialog) and a
- * fatal error before anything has played remounts the player a minute
- * later: a fresh element starts a fresh retry cycle, so the stage polls
- * for the stream about once a minute for as long as Live Now stays on,
- * reading as connecting rather than broken. (The player flags its retry
- * errors fatal too, so the minute counts from the first miss, not the
- * sixth — which is fine: it's the same poll, without the cap.)
+ * fatal error before anything has played remounts the player 10s later:
+ * a fresh element starts a fresh retry cycle, so the stage polls for the
+ * stream about every 10s for as long as Live Now stays on, reading
+ * as connecting rather than broken. (The player flags its retry errors
+ * fatal too, so the 10s counts from the first miss, not the sixth —
+ * which is fine: it's the same poll, without the cap.)
  */
 defineProps({
   playbackId: { type: String, required: true },
@@ -103,7 +103,7 @@ const onError = (event) => {
   clearTimeout(retryTimer)
   retryTimer = setTimeout(() => {
     attempt.value += 1
-  }, 60_000)
+  }, 10_000)
 }
 
 onMounted(() => import('@mux/mux-player'))

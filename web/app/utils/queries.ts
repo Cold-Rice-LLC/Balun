@@ -273,17 +273,12 @@ export const feedPostQuery = groq`*[_type == "feedPost" && slug.current == $slug
   ${seoProjection}
 }`
 
-// Market-scoped at the document level like home.
+// Market-scoped at the document level like home. Editorial only: the
+// stream's switches (Live Now, source) come from /api/live-status.
 export const liveQuery = groq`${marketDoc('livePage')}{
   ${i18nField('location')},
   ${i18nField('description')},
   "featuredProduct": featuredProduct->{${productProjection}},
-  // The stream is global (one streamer, every market): from Site Settings.
-  // Older settings predate the source picker, so they mean Mux.
-  "liveSource": coalesce(${siteSettings}.liveSource, "mux"),
-  "muxPlaybackId": ${siteSettings}.muxPlaybackId,
-  "youtubeUrl": ${siteSettings}.youtubeUrl,
-  "isLive": ${siteSettings}.isLive == true,
   ${seoProjection}
 }`
 
