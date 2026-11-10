@@ -128,5 +128,9 @@
   },
   "shop": {
     "empty": "Por ahora no hay productos en la tienda."
+  },
+  "preview": {
+    "banner": "Vista previa de cambios sin publicar",
+    "exit": "Salir de la vista previa"
   }
 }

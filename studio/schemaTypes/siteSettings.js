@@ -75,6 +75,14 @@ export default {
       of: [{type: 'navLink'}],
     },
     {
+      name: 'homeRevealShopCart',
+      type: 'boolean',
+      title: 'Home — Reveal Shop & Cart on Scroll',
+      description:
+        'On: the home page opens without the shop and cart buttons at the bottom of the screen; they slide up once the visitor scrolls down, and back out at the top. Off: they always show. Other pages always show them.',
+      initialValue: false,
+    },
+    {
       name: 'liveSource',
       type: 'string',
       title: 'Live Source',

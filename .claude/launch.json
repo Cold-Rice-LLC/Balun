@@ -4,15 +4,34 @@
     {
       "name": "nuxt-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "--prefix", "web", "dev"],
+      "runtimeArgs": [
+        "run",
+        "--prefix",
+        "web",
+        "dev"
+      ],
       "port": 3000,
       "autoPort": true
     },
     {
       "name": "studio-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "--prefix", "studio", "dev"],
+      "runtimeArgs": [
+        "run",
+        "--prefix",
+        "studio",
+        "dev"
+      ],
       "port": 3333
+    },
+    {
+      "name": "nuxt-prod",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "--env-file=web/.env",
+        "web/.output/server/index.mjs"
+      ],
+      "port": 3000
     }
   ]
 }

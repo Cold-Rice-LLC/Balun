@@ -22,9 +22,31 @@ export const altField = (
 })
 
 /**
+ * An optional phone-only image: the site swaps it in under 768px and falls
+ * back to the main image when empty. Hidden unless the module shows an image
+ * (video media has no mobile variant); pass `hidden: false` where the image
+ * always shows (a video poster).
+ */
+export const mobileImageField = ({
+  name = 'mobileImage',
+  title = 'Mobile Image',
+  description = 'Optional image for phones (under 768px wide), e.g. a portrait crop. Falls back to the main image when empty.',
+  hidden = ({parent}) => parent?.mediaType !== 'image',
+} = {}) => ({
+  name,
+  type: 'image',
+  title,
+  description,
+  options: {hotspot: true},
+  fields: [altField()],
+  hidden,
+})
+
+/**
  * Hero-module media: a mediaType radio (image | video) plus the image (with
- * alt) and video fields, each shown and required only for its media type.
- * Spread into `fields`; only the image description varies per module.
+ * alt), an optional mobile image, and video fields, each shown only for its
+ * media type (image and video required for theirs). Spread into `fields`;
+ * only the image description varies per module.
  */
 export const mediaFields = ({imageDescription}) => [
   {
@@ -55,12 +77,12 @@ export const mediaFields = ({imageDescription}) => [
         context.parent?.mediaType === 'image' && !value?.asset ? 'Image is required.' : true,
       ),
   },
+  mobileImageField(),
   {
     name: 'video',
-    type: 'file',
+    type: 'mux.video',
     title: 'Video',
-    description: 'Plays as a silent loop.',
-    options: {accept: 'video/*'},
+    description: 'Plays as a silent loop. Uploads go to Mux.',
     hidden: ({parent}) => parent?.mediaType !== 'video',
     validation: (Rule) =>
       Rule.custom((value, context) =>

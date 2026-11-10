@@ -4,22 +4,22 @@
     class="video-module"
   >
     <div class="media-wrap">
-      <video
-        v-if="module.videoType === 'mp4'"
+      <mux-video
+        v-if="module.videoType === 'mux'"
         ref="videoEl"
         class="player"
-        :src="module.videoUrl"
+        :playback-id="module.playbackId"
         controls
         playsinline
         preload="metadata"
-      ></video>
+      ></mux-video>
 
       <!-- Mounted only once playing: no third-party requests until the
            visitor opts in by clicking the poster. -->
       <iframe
         v-else-if="playing"
         class="player"
-        :src="`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&playsinline=1&rel=0`"
+        :src="embedUrl"
         :title="$t('video.player')"
         allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
         allowfullscreen
@@ -31,12 +31,21 @@
           class="poster"
           @click="play"
         >
-          <img
-            :src="urlFor(module.poster, { w: 2400 })"
-            :loading="isLead ? 'eager' : 'lazy'"
-            :fetchpriority="isLead ? 'high' : undefined"
-            :alt="module.poster.alt || ''"
-          />
+          <!-- contents: the img sizes against the button, as without the
+               picture. Phones download only the mobile poster when set. -->
+          <picture class="contents">
+            <source
+              v-if="mobilePoster"
+              media="(min-width: 768px)"
+              :srcset="urlFor(module.poster, { w: 2400 })"
+            />
+            <img
+              :src="urlFor(mobilePoster || module.poster, { w: mobilePoster ? 1200 : 2400 })"
+              :loading="isLead ? 'eager' : 'lazy'"
+              :fetchpriority="isLead ? 'high' : undefined"
+              :alt="(mobilePoster || module.poster).alt || ''"
+            />
+          </picture>
           <span class="watch uppercase">
             <IconsPlay />
 
@@ -52,7 +61,8 @@
 /**
  * Home + info module: a click-to-play video in the headline-over-image media
  * geometry — centered, rounded, 16:9. The poster (with a "watch" pill) fades
- * out on click, revealing an uploaded MP4 with native controls or a YouTube
+ * out on click, revealing a Mux upload with native controls (Mux's
+ * <mux-video>, a drop-in <video> streaming adaptive HLS) or a Vimeo/YouTube
  * embed that autoplays. Renders nothing without a playable source, so a
  * half-filled draft can't leave a dead poster on the page.
  */
@@ -61,18 +71,29 @@ const props = defineProps({
 })
 
 const urlFor = useSanityImage()
+const mobilePoster = computed(() => (props.module.mobilePoster?.asset ? props.module.mobilePoster : null))
 const isLead = useIsLeadModule(props.module)
 const videoEl = ref(null)
 const playing = ref(false)
 
-const videoId = computed(() => youtubeId(props.module.youtubeUrl))
+const embedUrl = computed(() => {
+  if (props.module.videoType === 'vimeo') return vimeoEmbedUrl(props.module.vimeoUrl)
+  const id = youtubeId(props.module.youtubeUrl)
+  return id && `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&playsinline=1&rel=0`
+})
 
 const playable = computed(() =>
-  props.module.videoType === 'youtube' ? Boolean(videoId.value) : Boolean(props.module.videoUrl),
+  props.module.videoType === 'mux' ? Boolean(props.module.playbackId) : Boolean(embedUrl.value),
 )
 
-// The click satisfies autoplay policy, so the MP4 starts with sound; the
-// YouTube iframe mounts with autoplay=1 for the same effect.
+// <mux-video> registers itself on import, which touches window — so
+// client-only, after mount, and only when this module plays one.
+onMounted(() => {
+  if (props.module.videoType === 'mux') import('@mux/mux-video')
+})
+
+// The click satisfies autoplay policy, so the Mux video starts with sound;
+// the embeds mount with autoplay=1 for the same effect.
 const play = () => {
   playing.value = true
   videoEl.value?.play()
@@ -110,6 +131,8 @@ const play = () => {
   height: 100%;
   border: 0;
   object-fit: cover;
+  /* <mux-video> cover-fits its inner <video> through this. */
+  --media-object-fit: cover;
 }
 
 .poster {

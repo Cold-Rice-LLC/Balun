@@ -1,7 +1,10 @@
 <template>
+  <!-- While zoomed, a tap on a linked slide (home) pans instead of
+       navigating. Capture phase, so it runs before NuxtLink's own handler. -->
   <div
     class="feature-carousel"
     :class="{ 'is-nav-below': mobileNavBelow }"
+    @click.capture="onClickCapture"
   >
     <button
       v-if="slides.length > 1"
@@ -17,8 +20,11 @@
       :slides-per-view="1"
       :loop="slides.length > 1"
       :speed="500"
+      :modules="[Zoom]"
+      :zoom="{ maxRatio: 3, toggle: !to }"
       @swiper="onSwiper"
       @slide-change="(s) => (activeIndex = s.realIndex)"
+      @zoom-change="(s, scale) => (zoomed = scale > 1)"
     >
       <SwiperSlide
         v-for="(slide, i) in slides"
@@ -31,11 +37,15 @@
              the parent leaves. With `to`, the frame itself is the link
              (no extra wrapper); Swiper's preventClicks swallows the click
              that ends a drag, so swiping never navigates. Off-screen slides
-             are inert: only the shown slide is tabbable and read. -->
+             are inert: only the shown slide is tabbable and read.
+             The frame is also Swiper's zoom container: Swiper translates it
+             to pan and scales the img inside to zoom. While zoomed it takes
+             every touch (no page scroll mid-pan). -->
         <component
           :is="to ? NuxtLink : 'figure'"
           :to="to"
-          class="slide-frame"
+          class="slide-frame swiper-zoom-container"
+          :class="{ 'touch-none': zoomed && i === activeIndex }"
           :style="{ aspectRatio: frameRatio(slide) }"
           :inert="i !== activeIndex"
         >
@@ -52,12 +62,14 @@
                line points at (% of the image frame — the frame hugs the
                image, so anchors hold at every viewport size); the text sits
                above the far end of the line, at the frame edge on the chosen
-               side unless textPosition pulls it in toward the anchor. -->
+               side unless textPosition pulls it in toward the anchor.
+               Zoom scales only the img, so the callouts would point at the
+               wrong spots — they fade out until it's back to 1×. -->
           <p
             v-for="(highlight, i) in slide.highlights ?? []"
             :key="i"
-            class="highlight font-secondary uppercase text-xs"
-            :class="highlight.side === 'right' ? 'side-right' : 'side-left'"
+            class="highlight font-secondary uppercase text-xs transition-opacity duration-300"
+            :class="[highlight.side === 'right' ? 'side-right' : 'side-left', { 'opacity-0': zoomed }]"
             :style="highlightStyle(highlight)"
           >
             <span
@@ -115,6 +127,9 @@
  *                           of the arrows at whatever size they are.
  */
 import { Swiper, SwiperSlide } from 'swiper/vue'
+// No 'swiper/css/zoom': its container rules (100% box, object-fit:
+// contain) would undo the frame's aspect-ratio sizing and the mobile crop.
+import { Zoom } from 'swiper/modules'
 import 'swiper/css'
 
 const urlFor = useSanityImage()
@@ -155,6 +170,16 @@ const activeIndex = ref(0)
 const onSwiper = (instance) => {
   swiper.value = instance
   activeIndex.value = instance.realIndex
+}
+
+// Pinch zoom (Swiper's Zoom module). Double-tap zoom is PDP-only: on home
+// the slides are links, and a tap there must keep navigating.
+const zoomed = ref(false)
+const onClickCapture = (event) => {
+  if (zoomed.value) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
 }
 
 // Sanity asset refs embed intrinsic dimensions (image-<id>-1600x900-jpg) —

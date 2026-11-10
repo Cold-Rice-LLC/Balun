@@ -1,12 +1,14 @@
 import {PlayIcon} from '@sanity/icons'
 import {englishIfAny} from '../lib/i18nValidation'
 import {youtubeUrlRule} from '../lib/youtube'
-import {altField} from '../lib/fields'
+import {vimeoUrlRule} from '../lib/vimeo'
+import {altField, mobileImageField} from '../lib/fields'
 
 /**
  * Home page module: a click-to-play video in the headline-over-image media
  * geometry (centered, rounded, 16:9). The poster shows a "watch" pill and
- * fades out on click; the video is an uploaded MP4 or a YouTube embed.
+ * fades out on click; the video is a Mux upload (short pieces) or a Vimeo
+ * or YouTube embed (long-form).
  */
 export default {
   name: 'moduleVideo',
@@ -18,28 +20,36 @@ export default {
       name: 'videoType',
       type: 'string',
       title: 'Video Type',
-      description: 'Upload an MP4 or embed a YouTube video.',
+      description: 'Upload short video to Mux, or embed long-form video from Vimeo or YouTube.',
       options: {
         list: [
-          {title: 'MP4 Upload', value: 'mp4'},
+          {title: 'Upload (Mux)', value: 'mux'},
+          {title: 'Vimeo', value: 'vimeo'},
           {title: 'YouTube', value: 'youtube'},
         ],
         layout: 'radio',
       },
-      initialValue: 'mp4',
+      initialValue: 'mux',
       validation: (Rule) => Rule.required(),
     },
     {
       name: 'video',
-      type: 'file',
+      type: 'mux.video',
       title: 'Video',
-      description: 'Plays with sound and controls once the poster is clicked.',
-      options: {accept: 'video/mp4'},
-      hidden: ({parent}) => parent?.videoType !== 'mp4',
+      description: 'Plays with sound and controls once the poster is clicked. Uploads go to Mux.',
+      hidden: ({parent}) => parent?.videoType !== 'mux',
       validation: (Rule) =>
         Rule.custom((value, context) =>
-          context.parent?.videoType === 'mp4' && !value?.asset ? 'Video is required.' : true,
+          context.parent?.videoType === 'mux' && !value?.asset ? 'Video is required.' : true,
         ),
+    },
+    {
+      name: 'vimeoUrl',
+      type: 'url',
+      title: 'Vimeo URL',
+      description: 'Any Vimeo link — public, unlisted (with its private hash) or player embed.',
+      hidden: ({parent}) => parent?.videoType !== 'vimeo',
+      validation: vimeoUrlRule((context) => context.parent?.videoType === 'vimeo'),
     },
     {
       name: 'youtubeUrl',
@@ -65,15 +75,28 @@ export default {
       fields: [altField()],
       validation: (Rule) => Rule.required(),
     },
+    mobileImageField({
+      name: 'mobilePoster',
+      title: 'Mobile Poster',
+      description:
+        'Optional poster for phones (under 768px wide). Falls back to the main poster when empty.',
+      hidden: false,
+    }),
   ],
   preview: {
-    select: {media: 'poster', videoType: 'videoType', youtubeUrl: 'youtubeUrl'},
-    prepare({media, videoType, youtubeUrl}) {
-      return {
-        title: 'Video',
-        subtitle: videoType === 'youtube' ? youtubeUrl || 'YouTube' : 'MP4 upload',
-        media,
-      }
+    select: {
+      media: 'poster',
+      videoType: 'videoType',
+      vimeoUrl: 'vimeoUrl',
+      youtubeUrl: 'youtubeUrl',
+    },
+    prepare({media, videoType, vimeoUrl, youtubeUrl}) {
+      const subtitle = {
+        mux: 'Mux upload',
+        vimeo: vimeoUrl || 'Vimeo',
+        youtube: youtubeUrl || 'YouTube',
+      }[videoType]
+      return {title: 'Video', subtitle, media}
     },
   },
 }

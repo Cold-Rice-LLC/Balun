@@ -5,7 +5,6 @@
         class="media"
         :media="module"
         :eager="isLead"
-        :mobile-image="module.mobileImage"
       />
 
       <h2

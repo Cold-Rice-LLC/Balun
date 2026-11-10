@@ -10,10 +10,12 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@mux/mux-player": "^3.13.2",
+    "@mux/mux-player": "^3.14.1",
+    "@mux/mux-video": "^0.31.6",
     "@nuxtjs/i18n": "^10.4.0",
     "@nuxtjs/sanity": "^2.3.0",
     "@sanity/client": "^7.22.1",
+    "@sanity/webhook": "^4.0.4",
     "@shopify/storefront-api-client": "^1.0.10",
     "@tailwindcss/vite": "^4.3.1",
     "@vueuse/nuxt": "^14.4.0",

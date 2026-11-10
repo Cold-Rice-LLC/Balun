@@ -33,7 +33,7 @@ function makeModule(type: string) {
   const base = {_type: type, _key: randomKey()}
   switch (type) {
     case 'moduleVideo':
-      return {...base, videoType: 'mp4'}
+      return {...base, videoType: 'mux'}
     case 'moduleFeedLinks':
       return {...base, links: [{_type: 'labeledLink', _key: randomKey(), linkType: 'internal'}]}
     default:

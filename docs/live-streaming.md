@@ -39,15 +39,19 @@ how to test the whole thing before the client's streamer is involved.
   Site Settings singleton; the per-market live pages carry only their
   editorial overlay. Everything already keyed
   off `isLive` (feed stream cards linking to `/live`, the live chip) works
-  unchanged, and editors keep the toggle as a manual override. The live page
-  polls `GET /api/live-status` every 5s while open — Live Now and the source,
-  cached server-side for 5s so Sanity sees about one request per 5s however
-  many tabs are watching — so a switch shows within ~10s; the editorial
-  corner re-fetches every 30s.
+  unchanged, and editors keep the toggle as a manual override. Every tab
+  reads Live Now and the source from `GET /api/live-status?locale=…`
+  (never Sanity directly), cached for 5s and stamped `s-maxage` so Vercel's
+  edge answers the polls: Sanity sees about one request per 5s per locale
+  however many tabs are open. The live page polls it every 15s while waiting
+  for the stream and every 60s once it's on, so a switch shows within ~20s;
+  elsewhere the nav re-checks as visitors move between pages. The editorial corner comes from
+  `GET /api/live-page?locale=…` (60s cache) and re-checks every 60s. Polls
+  stop while the tab is hidden (`usePoll`). See
+  [performance-caching.md](./performance-caching.md#as-built-oct-2026).
 - **Recordings.** With `new_asset_settings` on the live stream, every
   session becomes a Mux asset automatically — the raw material for a stream
-  post's recap video (today an MP4 upload / YouTube; the official
-  `sanity-plugin-mux-input` would let editors pick Mux assets directly).
+  post's recap video (the video module's Mux upload; see [video.md](./video.md)).
 
 ## Config
 

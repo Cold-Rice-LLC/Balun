@@ -59,13 +59,16 @@ const optionalLinkProjection = `"link": select(
 )`
 
 // The click-to-play video module, shared by the home and info page builders.
-// File assets have no ref-encoded URL, so the video dereferences here.
+// Uploads live in Mux: the field references a mux.videoAsset doc, which holds
+// the playback ID the player streams.
 const moduleVideoProjection = `
   videoType,
-  "videoUrl": video.asset->url,
+  "playbackId": video.asset->playbackId,
+  vimeoUrl,
   youtubeUrl,
   ${i18nField('buttonText')},
-  ${i18nImage('poster')}
+  ${i18nImage('poster')},
+  ${i18nImage('mobilePoster')}
 `
 
 // Shared product projection. Product docs are synced by Sanity Connect:
@@ -104,12 +107,13 @@ const featureCarouselProjection = `[]{
 }`
 
 // Hero-module media: images keep the raw ref (useSanityImage builds the CDN
-// URL) with alt resolved; file assets have no ref-encoded URL, so videos
-// dereference here.
+// URL) with alt resolved; videos are Mux uploads, dereferenced to the
+// playback ID.
 const heroMediaProjection = `
   mediaType,
   ${i18nImage('image')},
-  "videoUrl": video.asset->url
+  ${i18nImage('mobileImage')},
+  "playbackId": video.asset->playbackId
 `
 
 // A page's SEO overrides from the Studio (see the `seo` object): each field
@@ -170,7 +174,6 @@ export const homeQuery = groq`${marketDoc('homePage')}{
     },
     _type == "moduleHeadlineOverImage" => {
       ${heroMediaProjection},
-      ${i18nImage('mobileImage')},
       ${i18nField('headline')},
       ${i18nField('linkLabel')},
       ${optionalLinkProjection}
@@ -282,11 +285,18 @@ export const liveQuery = groq`${marketDoc('livePage')}{
   ${seoProjection}
 }`
 
-// Site-wide live status for the nav's live tab: whether the stream is on
-// (Site Settings, flipped by Mux's webhook) and this market's live page
-// location label ("Live from Tokyo"), resolved like liveQuery.
+// The stream's switches, served by the cached /api/live-status (never
+// fetched from the browser): Live Now, the source and what each plays, from
+// Site Settings (Mux's webhook flips Live Now), plus this market's live page
+// location label for the nav's live tab ("Live from Tokyo"), resolved like
+// liveQuery. Older settings predate the source picker, so they mean Mux.
 export const liveStatusQuery = groq`{
-  "isLive": ${siteSettings}.isLive == true,
+  ...${siteSettings}{
+    "isLive": isLive == true,
+    "liveSource": coalesce(liveSource, "mux"),
+    muxPlaybackId,
+    youtubeUrl
+  },
   "location": ${marketDoc('livePage')}{${i18nField('location')}}.location
 }`
 
@@ -341,5 +351,6 @@ export const siteSettingsQuery = groq`${siteSettings}{
   ${i18nField('metaDescription')},
   ogImage,
   footerPrimaryLinks[]{${navLinkProjection}},
-  footerSecondaryLinks[]{${navLinkProjection}}
+  footerSecondaryLinks[]{${navLinkProjection}},
+  homeRevealShopCart
 }`

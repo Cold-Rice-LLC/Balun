@@ -48,22 +48,27 @@
 </template>
 
 <script setup>
-import { liveStatusQuery } from '~/utils/queries'
-
 // Internal links carry the /{lang}-{country} prefix of the active locale.
 const localePath = useLocalePath()
 
-// Live state for the tab: from Site Settings (Mux's webhook flips it), with
-// this market's location label. The shell is cached, so it re-checks every
-// 60s — a stream starting shows up site-wide without a reload.
-const market = useMarket()
-const sanity = useSanity()
-const { data: live, refresh } = await useAsyncData(
-  () => `live-status-${market.value.market}-${market.value.lang}`,
-  () => sanity.fetch(liveStatusQuery, { market: market.value.market, lang: market.value.lang }),
-  { watch: [() => market.value.market, () => market.value.lang] },
-)
-useIntervalFn(refresh, 60_000)
+// Live state for the tab, with this market's location label. The shell is
+// cached for up to 10 minutes, so it re-checks once the page is up, then
+// whenever the visitor moves to another page or comes back to the tab (at
+// most every 30s): a stream starting shows up for anyone browsing, and a
+// tab left open in the background makes no requests at all. The live page
+// polls the same shared status at its own pace, so the nav stands down there.
+const route = useRoute()
+const { data: live, refresh } = await useLiveStatus()
+
+let checkedAt = 0
+const recheck = () => {
+  if (route.path.endsWith('/live') || Date.now() - checkedAt < 30_000) return
+  checkedAt = Date.now()
+  refresh()
+}
+onNuxtReady(recheck)
+watch(() => route.path, recheck)
+watch(useDocumentVisibility(), (state) => state === 'visible' && recheck())
 </script>
 
 <style scoped>

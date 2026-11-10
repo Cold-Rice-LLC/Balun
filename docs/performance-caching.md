@@ -87,10 +87,12 @@ just saw.
 ## Turning caching off (demos)
 
 For a presentation where Shopify and Studio changes must show up instantly, set these env vars on
-the deployment and restart/redeploy (no rebuild needed — both are read at runtime):
+the deployment and redeploy:
 
-- `NUXT_DISABLE_CACHE=true` — `/api/products` and `/api/product` skip their SWR cache and send
-  `Cache-Control: no-store`, so every request hits Shopify (`server/utils/switchableCache.ts`).
+- `NUXT_DISABLE_CACHE=true` — the cached API routes (`/api/products`, `/api/product`,
+  `/api/live-status`, `/api/live-page`) skip their cache and send `Cache-Control: no-store`, so every
+  request hits Shopify/Sanity (`server/utils/switchableCache.ts`). It also turns off page caching
+  (ISR), which is decided at **build** time — hence the redeploy, not just a restart.
 - `NUXT_PUBLIC_SANITY_USE_CDN=false` — Sanity queries go to the live API instead of the API CDN.
 
 Remove both (or set them back to `false` / `true`) afterwards: with them on, every visitor's request
@@ -180,6 +182,72 @@ CDN. Prerender what's static, ISR everything browseable with webhook revalidatio
 inventory into a tiny cached edge endpoint, let Shopify own checkout. Remaining risks are commercial
 (bandwidth/concurrency cost) more than technical — worth an Enterprise conversation with Vercel ahead
 of the first big drop.
+
+## As built (Oct 2026)
+
+What's live in the code now (`web/nuxt.config.ts`, `$production.routeRules`):
+
+| Route | Caching | Why |
+| --- | --- | --- |
+| Every page (`/**`) | Vercel ISR, `allowQuery: []`; **10 min** with the publish webhook set up, 60s without | One render per page per expiry; the edge serves everyone else. Query strings (`?fbclid=`, `?utm_…`, the PDP's `?variant=`, which is client-side) don't split the cache. |
+| Every page's `/_payload.json` | Same ISR rule | Client-side navigation loads the cached page data from Vercel instead of each browser querying Sanity. |
+| `/{locale}/feed`, `/{locale}/feed/**` | No ISR; `Cache-Control: s-maxage=60, stale-while-revalidate=600` | The feed renders by `?filter=`. Vercel's ISR hands the function the **bare path** (Nitro's Vercel runtime drops the query), so ISR would serve the unfiltered page for every filter. The CDN cache keys on the full URL instead. Spelled out per locale from `LOCALES`, because a `/*/feed` wildcard reaches Vercel's header routes as a literal `*`. |
+| `/api/**` | No ISR | Each route sets its own `s-maxage` through `defineSwitchableCachedHandler`. |
+| `/_nuxt/**` | Immutable, plus `Access-Control-Allow-Origin: *` | Hashed build files. CORS so they can be served from another host (below). |
+
+**Publish webhook (on-demand revalidation).** `POST /api/revalidate` (`server/api/revalidate.post.ts`)
+re-renders, in every locale, the pages that show the published document: a product → its page, the
+shop, home and live; a singleton page → that page; a legal page → that page; variants, feed posts
+→ nothing (not in cached pages); anything else (Site Settings, Mux assets) → every page. It sends
+Vercel's ISR bypass token with a `HEAD` to each page and its `_payload.json`. So edits are live in
+seconds, and the 10-minute expiry is only a safety net. Server renders read Sanity's **live API**
+(`runtimeConfig.sanity.useCdn: false`), so a render triggered by a publish can't pick up the CDN's
+older copy; browsers still use the CDN. Needs `NUXT_SANITY_WEBHOOK_SECRET` (runtime) and
+`NUXT_ISR_BYPASS_TOKEN` (must be set at **build** time too, since it's baked into Vercel's ISR
+config), plus the webhook in Sanity:
+
+- URL: `https://<production domain>/api/revalidate`, POST, dataset `production`
+- Trigger on create, update, delete; filter: none (all documents), drafts off
+- Projection: `{_type, "slug": coalesce(slug.current, store.slug.current)}`
+- Secret: the same value as `NUXT_SANITY_WEBHOOK_SECRET`
+
+**Warming the cache before a launch.** The same route with no body re-renders every page:
+`curl -X POST -H "Authorization: Bearer $NUXT_SANITY_WEBHOOK_SECRET" https://<domain>/api/revalidate`.
+Run it after the launch deploy and before the video goes live. Every deploy empties Vercel's page
+cache and changes the build's file names, so returning visitors download the code again. Don't
+deploy during a drop.
+
+**Fewer files per visit.** The browser build is one main script (app + libraries) with one stylesheet,
+plus Mux's player and the intro's physics in their own files (`vite.$client` manualChunks).
+`cssCodeSplit: false` is deliberately not used: Nuxt then links no stylesheet at all. Fonts and the
+intro SVGs live in `app/assets/`, so they're hashed and long-cached like the code. A
+`build:manifest` hook stops Nuxt preloading the SVGs on every page; the intro preloads them only when
+it's about to play. Measured first visit: 11–13 requests (18 on home while the intro plays), down
+from 54–75.
+
+**Serving build files from another host (`NUXT_APP_CDN_URL`).** Set it to a hostname that proxies
+the Vercel site through a CDN that doesn't bill per request (for example a Cloudflare-proxied
+`assets.` subdomain). Nuxt then loads `/_nuxt/*` (code, CSS, fonts, SVGs) and each page's first
+`_payload.json` from there. Cloudflare caches the immutable files and passes the JSON through to
+Vercel. Both get CORS headers (`routeRules` for `/_nuxt/**`, `server/middleware/payloadCors.ts` for
+payloads). Client-side navigation still fetches payloads from the site itself. Runtime only, no
+rebuild needed.
+
+**Polling.** No browser polls Sanity. The nav and the live page read `/api/live-status?locale=…`
+(5s cache) and `/api/live-page?locale=…` (60s cache), both answered by Vercel's edge. The nav
+re-checks after the page loads, on each page change and on returning to the tab, at most every 30s,
+and not at all on the live page. The live page polls every 15s while waiting for the stream and every
+60s once it's on, and its editorial corner every 60s (`usePoll`, which skips hidden tabs). Both
+refresh once after hydration, since cached HTML can be up to 10 minutes old.
+
+**Prefetch.** `NuxtLink` prefetches on hover/focus/touch, not on visibility
+(`experimental.defaults.nuxtLink.prefetchOn`). Otherwise every product card in view would fetch its
+`_payload.json`, each one a billed edge request.
+
+**Off switches (build time).** Page caching is skipped when the build sees `NUXT_BASIC_AUTH_PASSWORD`
+(a page served from the edge never reaches the password middleware, so it would leak past the gate)
+or `NUXT_DISABLE_CACHE=true`. A password-gated staging site therefore renders every request. Vercel's
+own Deployment Protection gates at the platform level and works with ISR, if staging needs caching.
 
 ## Net
 

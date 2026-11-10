@@ -1,5 +1,25 @@
+import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import { LOCALES } from '../locales.mjs'
+
+// Page caching is off for a deploy built behind the password gate: a page
+// served from Vercel's cache never reaches the basicAuth middleware, so after
+// one signed-in visit it would be open to anyone. Also off with
+// NUXT_DISABLE_CACHE=true (demos). Both are read at build time, so changing
+// either takes a redeploy. See docs/performance-caching.md.
+// The site's own source, bundled with its libraries (vite.$client below).
+const appDir = fileURLToPath(new URL('./app/', import.meta.url))
+
+const pageCacheOff =
+  Boolean(process.env.NUXT_BASIC_AUTH_PASSWORD) || process.env.NUXT_DISABLE_CACHE === 'true'
+
+// With the publish webhook set up (its bypass token is in the build), edits
+// re-render their pages the moment they're published, so pages can stay
+// cached for 10 minutes, the expiry only a safety net for a missed webhook.
+// Without it, 60s bounds how stale an edit can be. See
+// server/api/revalidate.post.ts.
+const isrBypassToken = process.env.NUXT_ISR_BYPASS_TOKEN ?? ''
+const isrExpiration = isrBypassToken ? 600 : 60
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -44,8 +64,18 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/global.css'],
 
-  // <mux-player> is a web component (the live page's player), not a Vue
-  // component to resolve.
+  // Links prefetch a page's code and cached data (_payload.json) on hover,
+  // focus or touch rather than as soon as they scroll into view: a product
+  // grid would otherwise fetch a payload per card on every visit, each one a
+  // billed edge request, for pages most visitors never open.
+  experimental: {
+    defaults: {
+      nuxtLink: { prefetchOn: { visibility: false, interaction: true } },
+    },
+  },
+
+  // <mux-player> / <mux-video> are web components (Mux's players), not Vue
+  // components to resolve.
   vue: {
     compilerOptions: {
       isCustomElement: (tag) => tag.startsWith('mux-'),
@@ -54,6 +84,32 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    // The browser build ships as a few large files instead of one per
+    // component: every file is a billed CDN request, and a first visit
+    // otherwise fetched 40+ scripts and a dozen stylesheets. One main script
+    // (and so one stylesheet) for the app and its libraries — together, since
+    // apart they import each other and Rollup can't order a circular pair —
+    // plus Mux's player and the intro's physics in files of their own. (Not
+    // cssCodeSplit: false: Nuxt then links no stylesheet at all.) See
+    // docs/performance-caching.md.
+    $client: {
+      build: {
+        rollupOptions: {
+          output: {
+            manualChunks: (id) => {
+              if (
+                /node_modules\/(hls\.js|@mux|mux-embed|media-chrome|custom-media-element|media-tracks|castable-video)/.test(
+                  id,
+                )
+              )
+                return 'mux'
+              if (id.includes('node_modules/matter-js')) return 'intro'
+              if (id.includes('node_modules') || id.startsWith(appDir)) return 'main'
+            },
+          },
+        },
+      },
+    },
   },
 
   runtimeConfig: {
@@ -83,6 +139,24 @@ export default defineNuxtConfig({
     // Leave off in normal traffic: it removes the drop-day shield. See
     // docs/performance-caching.md.
     disableCache: false,
+    // Server-only: the supported locale codes, for routes that take
+    // ?locale= (server/utils/localeParams.ts). Passed through here because
+    // locales.mjs sits outside web/, where the dev server can't import it.
+    localeCodes: LOCALES.map(({ code }) => code),
+    // Server-only (NUXT_SANITY_WEBHOOK_SECRET / NUXT_ISR_BYPASS_TOKEN): the
+    // publish webhook verifies Sanity's signature with the one and asks
+    // Vercel to re-render pages with the other. Both empty = the route
+    // answers 503. See server/api/revalidate.post.ts.
+    sanityWebhookSecret: '',
+    isrBypassToken,
+    // Server-only (NUXT_SANITY_PREVIEW_TOKEN): a Viewer token that lets
+    // ?preview=true renders read drafts (plugins/preview.server.ts). Set it
+    // only on a cache-off deploy (staging) and in dev. See docs/preview.md.
+    sanityPreviewToken: '',
+    // Server renders read Sanity's live API, not its CDN: with pages cached
+    // they're rare, and a render triggered by a publish must not pick up the
+    // CDN's copy from before it. Browsers keep the CDN (sanity.useCdn below).
+    sanity: { useCdn: false },
     public: {
       // Overridden by NUXT_PUBLIC_SHOPIFY_STORE_DOMAIN / NUXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN.
       // Storefront tokens are public-safe (read-only storefront + cart scope).
@@ -99,10 +173,70 @@ export default defineNuxtConfig({
     dataset: 'production',
     // The CDN serves the last published build, so Studio edits can take a
     // minute to appear — fine (and cheaper) in production, but it makes
-    // authoring feel broken. $development below opts local dev out.
-    // useCdn: true,
-    useCdn: false,
+    // authoring feel broken. $development below opts local dev out; any
+    // deploy (staging included) can too with NUXT_PUBLIC_SANITY_USE_CDN=false.
+    useCdn: true,
     apiVersion: '2024-10-01',
+    // The module defaults to `raw`, which returns drafts alongside published
+    // documents once a token is in play. Only the preview plugin widens it.
+    perspective: 'published',
+  },
+
+  // Production builds only (`nuxt dev` renders every request). Every page is
+  // rendered once and served from Vercel's edge (ISR) for isrExpiration, then
+  // regenerated in the background while the stale copy keeps serving — so a
+  // traffic spike runs a handful of functions, not one per visitor. Pages
+  // also get their data as a cached _payload.json, so moving between pages
+  // reads Vercel's cache instead of each browser querying Sanity.
+  // allowQuery: [] keys the cache on the path alone (Vercel's ISR hands the
+  // function the bare path anyway), so ?fbclid= / ?utm_ links don't each
+  // force a fresh render. The feed is the exception — it renders by
+  // ?filter=, which ISR would drop — so it's cached by Vercel's CDN on the
+  // full URL instead, through s-maxage. API routes set their own caching.
+  $production: {
+    routeRules: {
+      // The build's code, fonts and images may be served from another host
+      // (NUXT_APP_CDN_URL, see docs/performance-caching.md), and module
+      // scripts and fonts load cross-origin only with CORS.
+      '/_nuxt/**': { headers: { 'access-control-allow-origin': '*' } },
+      ...(pageCacheOff
+        ? {}
+        : {
+            '/**': { isr: { expiration: isrExpiration, allowQuery: [] } },
+            // Spelled out per locale: a `/*/feed` wildcard reaches Vercel's
+            // header routes as a literal `*`, and `/feed/**` alone misses the
+            // bare landing.
+            ...Object.fromEntries(
+              LOCALES.flatMap(({ code }) => [`/${code}/feed`, `/${code}/feed/**`]).map((path) => [
+                path,
+                {
+                  isr: false,
+                  headers: {
+                    'cache-control': 'public, s-maxage=60, stale-while-revalidate=600',
+                  },
+                },
+              ]),
+            ),
+            '/api/**': { isr: false },
+          }),
+    },
+  },
+
+  hooks: {
+    // Nuxt preloads every asset that code loaded on each page imports, which
+    // would fetch the intro's artwork on every visit. The intro preloads its
+    // own pieces, only when it's about to play (components/home/Intro.vue).
+    'build:manifest': (manifest) => {
+      for (const chunk of Object.values(manifest)) {
+        chunk.assets = chunk.assets?.filter((asset) => !asset.endsWith('.svg'))
+      }
+    },
+  },
+
+  // Vercel re-renders a cached page on request when this token comes with it
+  // (the publish webhook). Baked into the build's page cache config.
+  nitro: {
+    vercel: { config: { bypassToken: isrBypassToken || undefined } },
   },
 
   // Applied only under `nuxt dev`; production builds keep the values above.

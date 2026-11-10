@@ -67,7 +67,7 @@ useHead({
         `if(reduced||sw||!(${INTRO_ON_EVERY_LOAD}||!seen))return;` +
         'var html=document.documentElement;html.classList.add(\'intro-pending\');' +
         `setTimeout(function(){html.classList.remove('intro-pending')},${INTRO_FAILSAFE_MS});` +
-        `${JSON.stringify([...new Set(INTRO_PIECES.map((piece) => piece.src))])}.forEach(function(src){` +
+        `${JSON.stringify([...new Set(INTRO_PIECES.map((piece) => piece.src).filter((src) => !src.startsWith('data:')))])}.forEach(function(src){` +
         "var link=document.createElement('link');link.rel='preload';link.as='image';link.href=src;document.head.appendChild(link)});" +
         '})()',
     },

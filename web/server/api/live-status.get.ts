@@ -1,15 +1,17 @@
 import { createClient } from '@sanity/client'
+import { liveStatusQuery } from '../../app/utils/queries'
 
 /**
- * The stream's switches: GET /api/live-status
+ * The stream's switches: GET /api/live-status?locale=en-us
  *
  * Live Now, the source (Mux or YouTube) and what each plays, from Site
- * Settings — global, so one cache key for every market. The live page polls
- * this every 5s so a switch shows up within seconds of Studio or the Mux
- * webhook flipping it, without every open tab hitting Sanity: the 5s cache
- * means Sanity sees about one request per 5s however many people are
- * watching. Read from the live API (no CDN) so the cache is the only lag.
- * See docs/live-streaming.md.
+ * Settings, plus the locale's live page location label for the nav's live
+ * tab. Browsers check this (the nav as visitors move around, the live page
+ * on a timer, faster while waiting for the stream), never Sanity directly: the 5s cache, stamped as
+ * s-maxage, lets Vercel's edge answer the polls, so Sanity sees about one
+ * request per 5s per locale however many people are on the site. Read from
+ * the live API (no CDN) so the cache is the only lag. See
+ * docs/live-streaming.md and docs/performance-caching.md.
  */
 
 export interface LiveStatus {
@@ -17,10 +19,12 @@ export interface LiveStatus {
   liveSource: 'mux' | 'youtube'
   muxPlaybackId: string | null
   youtubeUrl: string | null
+  location: string | null
 }
 
 export default defineSwitchableCachedHandler(
   async (event): Promise<LiveStatus> => {
+    const { market, lang } = localeParams(event)
     const { sanity } = useRuntimeConfig(event).public
     const client = createClient({
       projectId: sanity.projectId,
@@ -29,17 +33,11 @@ export default defineSwitchableCachedHandler(
       useCdn: false,
     })
 
-    // Older settings predate the source picker, so they mean Mux.
-    return client.fetch(`*[_type == "siteSettings"][0]{
-      "isLive": isLive == true,
-      "liveSource": coalesce(liveSource, "mux"),
-      muxPlaybackId,
-      youtubeUrl
-    }`)
+    return client.fetch(liveStatusQuery, { market, lang })
   },
   {
     maxAge: 5,
     swr: true,
-    getKey: () => 'live-status',
+    getKey: (event) => `live-status-${getQuery(event).locale}`,
   },
 )

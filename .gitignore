@@ -14,3 +14,6 @@ logs/
 .idea
 .vscode/
 .claude/settings.local.json
+
+# Mux dashboard token downloads (secrets)
+mux-access-token-*.env

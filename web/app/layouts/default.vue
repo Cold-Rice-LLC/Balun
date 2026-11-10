@@ -16,6 +16,8 @@
   </main>
 
   <MainFooter :inert="modalOpen" />
+
+  <PreviewBanner />
 </template>
 
 <script setup>

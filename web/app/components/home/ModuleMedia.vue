@@ -1,17 +1,34 @@
 <template>
-  <!-- Decorative background loop (no sound, no controls, no alt field in
-       the Studio): hidden from assistive tech. -->
   <video
-    v-if="media.mediaType === 'video' && media.videoUrl"
+    v-if="media.mediaType === 'video' && media.playbackId && !streamFallback"
+    ref="mp4"
     class="module-media"
-    :src="media.videoUrl"
+    :src="`https://stream.mux.com/${media.playbackId}/highest.mp4`"
+    :poster="poster"
     autoplay
     muted
     loop
     playsinline
     disablepictureinpicture
     aria-hidden="true"
-  ></video>
+    @error="useStream"
+  >
+    <!-- Decorative background loop (no sound, no controls, no alt field in
+         the Studio): hidden from assistive tech. -->
+  </video>
+
+  <mux-video
+    v-else-if="media.mediaType === 'video' && media.playbackId"
+    class="module-media"
+    :playback-id="media.playbackId"
+    :poster="poster"
+    autoplay
+    muted
+    loop
+    playsinline
+    disablepictureinpicture
+    aria-hidden="true"
+  ></mux-video>
 
   <picture
     v-else-if="media.image"
@@ -34,31 +51,57 @@
       :src="urlFor(mobileImage || media.image, { w: mobileImage ? 1200 : 2400 })"
       :loading="eager ? 'eager' : 'lazy'"
       :fetchpriority="eager ? 'high' : undefined"
-      :alt="mobileImage?.alt || media.image.alt || ''"
+      :alt="(mobileImage || media.image).alt || ''"
     />
   </picture>
 </template>
 
 <script setup>
 /**
- * The media half of the big-image home modules: an image, or an uploaded
- * video playing as a silent loop. Renders nothing when the chosen media
+ * The media half of the big-image home modules: an image, or a Mux video
+ * playing as a silent loop, its first frame as the poster. The loop plays
+ * Mux's plain MP4 of the upload in a native <video>: a few muted seconds
+ * don't need adaptive streaming, and skipping it skips Mux's ~240KB player.
+ * An upload without an MP4 (from before the Studio asked for them, or still
+ * being prepared) errors, and the loop falls back to that player
+ * (<mux-video>, adaptive HLS), imported only then — it touches window on
+ * import, which also keeps it client-only. Renders nothing when the chosen media
  * type's asset is missing, so modules can drop it in unguarded. The parent
  * positions it; cover-fitting is here since every user wants it.
  *
- * `mobileImage` (optional) swaps in a phone image under 768px — image media
- * only, via <picture>, so each viewport downloads exactly one asset. Video
- * media ignores it (the Studio hides the field there): supporting it would
- * mean a second root and losing the parents' scoped styling of the root.
+ * `media.mobileImage` (optional, every hero module) swaps in a phone image
+ * under 768px — image media only, via <picture>, so each viewport downloads
+ * exactly one asset. Video media ignores it (the Studio hides the field
+ * there): supporting it would mean a second root and losing the parents'
+ * scoped styling of the root.
  */
-defineProps({
+const props = defineProps({
   media: { type: Object, required: true },
-  mobileImage: { type: Object, default: null },
   // The page's lead image: load immediately at high priority (still fades).
   eager: { type: Boolean, default: false },
 })
 
 const urlFor = useSanityImage()
+
+// An image field left with only alt text (asset removed) counts as empty.
+const mobileImage = computed(() => (props.media.mobileImage?.asset ? props.media.mobileImage : null))
+
+const poster = computed(
+  () => `https://image.mux.com/${props.media.playbackId}/thumbnail.webp?time=0&width=1920`,
+)
+
+const mp4 = ref(null)
+const streamFallback = ref(false)
+const useStream = () => {
+  import('@mux/mux-video')
+  streamFallback.value = true
+}
+
+// The server-rendered <video> starts loading before hydration, so a missing
+// MP4 can error before @error is listening.
+onMounted(() => {
+  if (mp4.value?.error) useStream()
+})
 </script>
 
 <style scoped>
@@ -75,5 +118,7 @@ const urlFor = useSanityImage()
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* The <mux-video> fallback cover-fits its inner <video> through this. */
+  --media-object-fit: cover;
 }
 </style>

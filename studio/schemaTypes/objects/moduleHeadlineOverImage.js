@@ -1,6 +1,6 @@
 import {ImageIcon} from '@sanity/icons'
 import {requireEnglish, requireEnglishWhen} from '../lib/i18nValidation'
-import {altField, mediaFields} from '../lib/fields'
+import {mediaFields} from '../lib/fields'
 
 // The caption link only renders once the editor has picked where it goes.
 const hasLink = (module) => ['internal', 'external'].includes(module?.link?.linkType)
@@ -22,15 +22,6 @@ export default {
       imageDescription:
         'Shown at about half the window width, centered, with the headline overlapping it. Set the hotspot to choose what stays visible when it is cropped.',
     }),
-    {
-      name: 'mobileImage',
-      type: 'image',
-      title: 'Mobile Image',
-      description: 'Optional portrait image for phones. Falls back to the main image when empty.',
-      options: {hotspot: true},
-      fields: [altField()],
-      hidden: ({parent}) => parent?.mediaType !== 'image',
-    },
     {
       name: 'headline',
       type: 'internationalizedArrayString',

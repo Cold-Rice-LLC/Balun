@@ -14,6 +14,19 @@
  * changes, re-sample it — the shape is what the piece tumbles and stacks on.
  */
 
+// Built assets: hashed, long-cached, and served from the CDN with the
+// code (app.cdnURL); Vite inlines the smallest as data URIs.
+import aSvg from '~/assets/svgs/Vector_A.svg?url'
+import bSvg from '~/assets/svgs/Vector_B.svg?url'
+import lSvg from '~/assets/svgs/Vector_L.svg?url'
+import lavenderShoeSvg from '~/assets/svgs/Vector_LavenderShoe.svg?url'
+import limeShoeSvg from '~/assets/svgs/Vector_LimeShoe.svg?url'
+import nSvg from '~/assets/svgs/Vector_N.svg?url'
+import navyShoeSvg from '~/assets/svgs/Vector_NavyShoe.svg?url'
+import redShoeSvg from '~/assets/svgs/Vector_RedShoe.svg?url'
+import uSvg from '~/assets/svgs/Vector_U.svg?url'
+import characterSvg from '~/assets/svgs/vector_Character.svg?url'
+
 type Hull = [number, number][]
 
 interface Piece {
@@ -44,7 +57,7 @@ const SHOE_RATIO = 968 / 2459
 export const INTRO_PIECES: Piece[] = [
   // BALUN, a centered row just above the top edge
   {
-    src: '/svgs/Vector_B.svg',
+    src: bSvg,
     width: 225,
     ratio: 315 / 258,
     left: -597,
@@ -58,7 +71,7 @@ export const INTRO_PIECES: Piece[] = [
     ],
   },
   {
-    src: '/svgs/Vector_A.svg',
+    src: aSvg,
     width: 248,
     ratio: 256 / 261,
     left: -348,
@@ -74,7 +87,7 @@ export const INTRO_PIECES: Piece[] = [
     ],
   },
   {
-    src: '/svgs/Vector_L.svg',
+    src: lSvg,
     width: 225,
     ratio: 231 / 384,
     left: -76,
@@ -86,7 +99,7 @@ export const INTRO_PIECES: Piece[] = [
     ],
   },
   {
-    src: '/svgs/Vector_U.svg',
+    src: uSvg,
     width: 200,
     ratio: 1,
     left: 173,
@@ -103,7 +116,7 @@ export const INTRO_PIECES: Piece[] = [
     ],
   },
   {
-    src: '/svgs/Vector_N.svg',
+    src: nSvg,
     width: 200,
     ratio: 208 / 207,
     left: 397,
@@ -118,10 +131,10 @@ export const INTRO_PIECES: Piece[] = [
     ],
   },
   // Above the letters, in the order they rain in
-  { src: '/svgs/Vector_RedShoe.svg', width: 500, ratio: SHOE_RATIO, left: -640, stagger: 0, hull: SHOE_HULL },
-  { src: '/svgs/Vector_LavenderShoe.svg', width: 500, ratio: SHOE_RATIO, left: 140, stagger: 1, hull: SHOE_HULL },
+  { src: redShoeSvg, width: 500, ratio: SHOE_RATIO, left: -640, stagger: 0, hull: SHOE_HULL },
+  { src: lavenderShoeSvg, width: 500, ratio: SHOE_RATIO, left: 140, stagger: 1, hull: SHOE_HULL },
   {
-    src: '/svgs/vector_Character.svg',
+    src: characterSvg,
     width: 300,
     ratio: 516 / 531,
     left: -150,
@@ -132,8 +145,8 @@ export const INTRO_PIECES: Piece[] = [
       [0.077, 0.503],
     ],
   },
-  { src: '/svgs/Vector_LimeShoe.svg', width: 500, ratio: SHOE_RATIO, left: -560, stagger: 3, hull: SHOE_HULL },
-  { src: '/svgs/Vector_NavyShoe.svg', width: 500, ratio: SHOE_RATIO, left: 60, stagger: 4, hull: SHOE_HULL },
+  { src: limeShoeSvg, width: 500, ratio: SHOE_RATIO, left: -560, stagger: 3, hull: SHOE_HULL },
+  { src: navyShoeSvg, width: 500, ratio: SHOE_RATIO, left: 60, stagger: 4, hull: SHOE_HULL },
 ]
 
 // Gap above the screen, between the letters and what waits above them, and

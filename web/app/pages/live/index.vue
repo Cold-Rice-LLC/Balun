@@ -79,25 +79,35 @@
 </template>
 
 <script setup>
-import { liveQuery } from '~/utils/queries'
-
 /**
  * The Live page: the stream as a full-page stage, and the corner bottom-left
  * — while live, the location label, description, and the featured product
  * (image + variant picker, opened in place over a backdrop that blurs the
  * stream); offline, the note and a shop link. Live state and the source
  * (Mux or YouTube) come from Site Settings — with Mux, flipped by its
- * webhook — via /api/live-status, re-checked every 5s while open so a
- * switch shows up within seconds without reloading; the editorial corner
- * re-checks every 30s. Market-scoped like home: this market's page if it
+ * webhook — via the edge-cached /api/live-status, re-checked every 15s
+ * while waiting for the stream so it appears within seconds without
+ * reloading, then every 60s once it's on (the player covers the stream
+ * itself). The editorial corner comes through /api/live-page and re-checks
+ * every 60s. Both are fetched once more on arrival: the page shell is
+ * cached for up to 10 minutes and may carry a stale status. Polls only while
+ * the tab is visible. Market-scoped like home: this market's page if it
  * exists, else the default.
  */
 const { t } = useI18n()
 const localePath = useLocalePath()
-const { data: page, refresh } = await useMarketPage('live', liveQuery)
-const { data: status, refresh: refreshStatus } = await useFetch('/api/live-status')
-useIntervalFn(refresh, 30_000)
-useIntervalFn(refreshStatus, 5_000)
+const market = useMarket()
+const { data: page, refresh } = await useFetch('/api/live-page', {
+  query: { locale: computed(() => market.value.locale) },
+})
+const { data: status, refresh: refreshStatus } = await useLiveStatus()
+usePoll(refresh, () => 60_000)
+usePoll(refreshStatus, () => (status.value?.isLive ? 60_000 : 15_000))
+// After hydration: a refresh while hydrating just returns the cached data.
+onNuxtReady(() => {
+  refresh()
+  refreshStatus()
+})
 
 const featuredOpen = ref(false)
 const muted = ref(true)

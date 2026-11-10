@@ -128,5 +128,9 @@
   },
   "shop": {
     "empty": "Nothing in the shop right now."
+  },
+  "preview": {
+    "banner": "Previewing unpublished changes",
+    "exit": "Exit preview"
   }
 }

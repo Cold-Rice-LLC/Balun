@@ -98,6 +98,26 @@ point of item 1.
 
 ---
 
+## 3. Caching and cost setup
+
+**Status:** code is in; each item needs an account setting or secret. Details in
+[performance-caching.md](./performance-caching.md#as-built-oct-2026).
+
+1. **Publish webhook.** Generate two random secrets (`openssl rand -hex 32`). In Vercel, set
+   `NUXT_SANITY_WEBHOOK_SECRET` and `NUXT_ISR_BYPASS_TOKEN` for Production (and Preview if wanted),
+   then redeploy (the bypass token is read at build time). In Sanity → API → Webhooks, add the
+   webhook described in performance-caching.md, with the first secret as its secret.
+   Check: publish an edit and see it live within seconds.
+2. **Assets CDN.** Add a proxied `assets.<domain>` subdomain in Cloudflare pointing at Vercel, and
+   add the same subdomain to the Vercel project. Set `NUXT_APP_CDN_URL=https://assets.<domain>` in
+   Vercel. Check: the browser's network tab shows `/_nuxt/` files coming from the assets host,
+   with no CORS errors.
+3. **Flat Rate CDN.** Vercel → Billing → Flat Rate CDN: on, with the tier matching expected traffic.
+4. **Bot protection.** Vercel → Firewall: turn on the Bot Protection and AI Bots managed rulesets.
+5. **Before each drop.** Deploy at least an hour ahead, then warm the cache with
+   `curl -X POST -H "Authorization: Bearer <webhook secret>" https://<domain>/api/revalidate`.
+   No deploys while the video is live.
+
 ## Not on this list
 
 Things that look launch-shaped but are **not** blocked on the domain, so don't
