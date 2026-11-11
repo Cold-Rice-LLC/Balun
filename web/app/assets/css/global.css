@@ -130,6 +130,9 @@ Root Variables (non tailwind)
   --z-backdrop: 4800;
   --z-drawer: 4900;
   --z-nav: 5000;
+  /* The cookie notice: over the nav, the drawers and the PDP's open buy
+     panel (nav + 1) until answered; under the locale modal and the intro. */
+  --z-consent: 5050;
   --z-modal-backdrop: 5100;
   --z-modal: 5200;
   --z-intro: 9000;
