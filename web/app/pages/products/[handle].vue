@@ -131,6 +131,12 @@
                 <template v-else>&nbsp;</template>
               </p>
 
+              <!-- Sold out: ask Klaviyo to email when any size is back. -->
+              <ProductBackInStock
+                v-if="liveForDoc && !liveForDoc.availableForSale && variants.length"
+                :variant-ids="variants.map((variant) => variant.id)"
+              />
+
               <template #fallback>
                 <p class="price font-secondary">&nbsp;</p>
               </template>

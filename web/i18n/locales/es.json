@@ -53,6 +53,14 @@
     "soldOut": "Agotado",
     "unavailable": "No disponible en tu región"
   },
+  "backInStock": {
+    "notify": "Avísame cuando vuelva a estar disponible",
+    "placeholder": "Correo electrónico",
+    "submit": "Avísame",
+    "invalid": "Introduce un correo electrónico válido.",
+    "success": "Gracias. Te escribiremos cuando vuelva a estar disponible.",
+    "error": "Algo salió mal. Inténtalo de nuevo."
+  },
   "price": {
     "was": "antes"
   },

@@ -14,7 +14,8 @@ private key lives in server-only runtime config and never reaches the browser.
    address once it's clicked. The form's success copy assumes this.
 3. Copy the **List ID** (List → Settings) into `NUXT_KLAVIYO_LIST_ID`.
 4. Create a **private API key** (Settings → API keys) with the `lists:write`,
-   `profiles:write` and `subscriptions:write` scopes, into
+   `profiles:write` and `subscriptions:write` scopes — plus `catalogs:write`
+   for back-in-stock signups (docs/back-in-stock.md) — into
    `NUXT_KLAVIYO_PRIVATE_API_KEY`. Set both in Vercel's environment as well.
 
 With either variable empty the route answers 503 and the form shows its error

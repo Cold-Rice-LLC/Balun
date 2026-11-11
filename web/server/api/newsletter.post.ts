@@ -21,9 +21,6 @@
  * See docs/newsletter.md.
  */
 
-const KLAVIYO_URL = 'https://a.klaviyo.com/api/profile-subscription-bulk-create-jobs'
-const KLAVIYO_REVISION = '2026-07-15'
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 const MIN_FILL_MS = 2000
 const RATE = { limit: 5, windowMs: 10 * 60 * 1000 }
 
@@ -49,34 +46,23 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    await $fetch(KLAVIYO_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Klaviyo-API-Key ${config.klaviyoPrivateApiKey}`,
-        revision: KLAVIYO_REVISION,
-        'Content-Type': 'application/vnd.api+json',
-        Accept: 'application/vnd.api+json',
-      },
-      body: {
-        data: {
-          type: 'profile-subscription-bulk-create-job',
-          attributes: {
-            custom_source: locale ? `Website footer (${locale})` : 'Website footer',
-            profiles: {
-              data: [
-                {
-                  type: 'profile',
-                  attributes: {
-                    email,
-                    subscriptions: { email: { marketing: { consent: 'SUBSCRIBED' } } },
-                  },
-                },
-              ],
+    await klaviyoPost(config.klaviyoPrivateApiKey, 'profile-subscription-bulk-create-jobs', {
+      type: 'profile-subscription-bulk-create-job',
+      attributes: {
+        custom_source: locale ? `Website footer (${locale})` : 'Website footer',
+        profiles: {
+          data: [
+            {
+              type: 'profile',
+              attributes: {
+                email,
+                subscriptions: { email: { marketing: { consent: 'SUBSCRIBED' } } },
+              },
             },
-          },
-          relationships: { list: { data: { type: 'list', id: config.klaviyoListId } } },
+          ],
         },
       },
+      relationships: { list: { data: { type: 'list', id: config.klaviyoListId } } },
     })
   } catch (error) {
     console.error('[newsletter] Klaviyo subscribe failed', (error as { data?: unknown }).data ?? error)

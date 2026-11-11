@@ -53,6 +53,14 @@
     "soldOut": "sold out",
     "unavailable": "Not available in your region"
   },
+  "backInStock": {
+    "notify": "Notify me when back in stock",
+    "placeholder": "Email address",
+    "submit": "Notify me",
+    "invalid": "Enter a valid email address.",
+    "success": "Thanks. We'll email you when it's back in stock.",
+    "error": "Something went wrong. Please try again."
+  },
   "price": {
     "was": "was"
   },
