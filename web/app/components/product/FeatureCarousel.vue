@@ -1,10 +1,11 @@
 <template>
-  <!-- While zoomed, a tap on a linked slide (home) pans instead of
-       navigating. Capture phase, so it runs before NuxtLink's own handler. -->
+  <!-- Touch listeners: the browser's own pinch-zoom (useNativePinchZoom). -->
   <div
     class="feature-carousel"
     :class="{ 'is-nav-below': mobileNavBelow }"
-    @click.capture="onClickCapture"
+    @touchstart.passive="onTouchStart"
+    @touchend.passive="onTouchEnd"
+    @touchcancel.passive="onTouchEnd"
   >
     <button
       v-if="slides.length > 1"
@@ -17,14 +18,12 @@
 
     <Swiper
       class="slides"
+      :class="{ 'is-page-zoomed': pageZoomed }"
       :slides-per-view="1"
       :loop="slides.length > 1"
       :speed="500"
-      :modules="[Zoom]"
-      :zoom="{ maxRatio: 3, toggle: !to }"
       @swiper="onSwiper"
       @slide-change="(s) => (activeIndex = s.realIndex)"
-      @zoom-change="(s, scale) => (zoomed = scale > 1)"
     >
       <SwiperSlide
         v-for="(slide, i) in slides"
@@ -37,15 +36,11 @@
              the parent leaves. With `to`, the frame itself is the link
              (no extra wrapper); Swiper's preventClicks swallows the click
              that ends a drag, so swiping never navigates. Off-screen slides
-             are inert: only the shown slide is tabbable and read.
-             The frame is also Swiper's zoom container: Swiper translates it
-             to pan and scales the img inside to zoom. While zoomed it takes
-             every touch (no page scroll mid-pan). -->
+             are inert: only the shown slide is tabbable and read. -->
         <component
           :is="to ? NuxtLink : 'figure'"
           :to="to"
-          class="slide-frame swiper-zoom-container"
-          :class="{ 'touch-none': zoomed && i === activeIndex }"
+          class="slide-frame"
           :style="{ aspectRatio: frameRatio(slide) }"
           :inert="i !== activeIndex"
         >
@@ -62,14 +57,12 @@
                line points at (% of the image frame — the frame hugs the
                image, so anchors hold at every viewport size); the text sits
                above the far end of the line, at the frame edge on the chosen
-               side unless textPosition pulls it in toward the anchor.
-               Zoom scales only the img, so the callouts would point at the
-               wrong spots — they fade out until it's back to 1×. -->
+               side unless textPosition pulls it in toward the anchor. -->
           <p
             v-for="(highlight, i) in slide.highlights ?? []"
             :key="i"
-            class="highlight font-secondary uppercase text-xs transition-opacity duration-300"
-            :class="[highlight.side === 'right' ? 'side-right' : 'side-left', { 'opacity-0': zoomed }]"
+            class="highlight font-secondary uppercase text-xs"
+            :class="highlight.side === 'right' ? 'side-right' : 'side-left'"
             :style="highlightStyle(highlight)"
           >
             <span
@@ -127,9 +120,6 @@
  *                           of the arrows at whatever size they are.
  */
 import { Swiper, SwiperSlide } from 'swiper/vue'
-// No 'swiper/css/zoom': its container rules (100% box, object-fit:
-// contain) would undo the frame's aspect-ratio sizing and the mobile crop.
-import { Zoom } from 'swiper/modules'
 import 'swiper/css'
 
 const urlFor = useSanityImage()
@@ -172,15 +162,9 @@ const onSwiper = (instance) => {
   activeIndex.value = instance.realIndex
 }
 
-// Pinch zoom (Swiper's Zoom module). Double-tap zoom is PDP-only: on home
-// the slides are links, and a tap there must keep navigating.
-const zoomed = ref(false)
-const onClickCapture = (event) => {
-  if (zoomed.value) {
-    event.preventDefault()
-    event.stopPropagation()
-  }
-}
+// Pinch zooms the page itself (the browser's own zoom), not just the image —
+// one finger still swipes. See useNativePinchZoom.
+const { pageZoomed, onTouchStart, onTouchEnd } = useNativePinchZoom(swiper)
 
 // Sanity asset refs embed intrinsic dimensions (image-<id>-1600x900-jpg) —
 // the frame's CSS aspect-ratio comes from there.
@@ -324,6 +308,14 @@ const highlightTextStyle = (highlight) => {
 .slides {
   width: 100%;
   height: 100%;
+  /* Swiper's own pan-y, plus the browser's pinch-zoom (its stylesheet is
+     unlayered, so this lives here rather than in a utility). Zoomed in, the
+     page pans sideways too. */
+  touch-action: pan-y pinch-zoom;
+
+  &.is-page-zoomed {
+    touch-action: pan-x pan-y pinch-zoom;
+  }
 }
 
 .slide {
