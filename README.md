@@ -58,4 +58,5 @@ npx sanity cors add http://localhost:3000 --no-credentials
 - Geo pricing and drop gating: `docs/geo-and-access-strategy.md`
 - Live streaming: `docs/live-streaming.md`
 - Video (Mux uploads, Vimeo/YouTube embeds): `docs/video.md`
+- High-contrast mode: `docs/high-contrast.md`
 - Launch checklist: `docs/launch-checklist.md`

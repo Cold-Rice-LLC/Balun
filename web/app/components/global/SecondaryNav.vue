@@ -13,6 +13,7 @@
     >
       <li>
         <NuxtLink
+          class="hc-fill"
           :to="localePath('/products')"
           @click="onShopLink"
           >{{ $t('nav.shop') }}</NuxtLink
@@ -25,7 +26,7 @@
              come off. -->
         <button
           type="button"
-          class="cart-button"
+          class="cart-button hc-fill"
           :class="{ 'is-checkout': isCheckout }"
           :aria-expanded="isCheckout ? undefined : isOpen"
           :aria-controls="isCheckout ? undefined : 'cart-drawer'"
@@ -116,6 +117,14 @@ const onCartButton = () => {
 nav {
   z-index: var(--z-nav);
 
+  /* Tucked, only the list slides away — the nav's own box stays put, empty,
+     over the strip the featured CTAs drop into (and above them), so clicks
+     pass through it. Focus pulls the list back up, and with it the clicks.
+     The drawers inside never open tucked (opening one untucks it). */
+  &.is-tucked:not(:focus-within) {
+    pointer-events: none;
+  }
+
   /* The drawer now renders inside this nav, so its z-index competes with the
      button list in the same stacking context. Keep the checkout button (and
      its list) above the drawer and backdrop so it stays visible and clickable. */
@@ -182,5 +191,12 @@ body.template-feed nav li {
     background-color: var(--color-grey-6);
     color: var(--color-white);
   }
+}
+
+/* High contrast: the checkout state keeps its yellow (it's the state, not
+   decoration), with dark text. */
+html.high-contrast .cart-button.is-checkout {
+  background-color: var(--color-yellow) !important;
+  color: var(--hc-ink) !important;
 }
 </style>

@@ -97,7 +97,7 @@
       >
         <div
           :key="doc.gid"
-          class="details"
+          class="details hc-light"
           :class="{ 'no-description': !doc.body?.length }"
         >
           <header class="pdp-header text-center px-gutter">

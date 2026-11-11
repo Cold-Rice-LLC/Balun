@@ -59,7 +59,7 @@
           :inert="!ctasShown"
         >
           <ProductQuickAddTrigger
-            class="cta cta-quick-add text-base"
+            class="cta cta-quick-add hc-fill text-base"
             :doc="product"
             :live="live"
           >
@@ -68,7 +68,7 @@
 
           <NuxtLink
             :to="localePath(`/products/${product.slug}`)"
-            class="cta cta-learn-more text-base"
+            class="cta cta-learn-more hc-fill text-base"
           >
             {{ $t('quickAdd.learnMore') }}
           </NuxtLink>

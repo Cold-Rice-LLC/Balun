@@ -352,5 +352,6 @@ export const siteSettingsQuery = groq`${siteSettings}{
   ogImage,
   footerPrimaryLinks[]{${navLinkProjection}},
   footerSecondaryLinks[]{${navLinkProjection}},
-  homeRevealShopCart
+  homeRevealShopCart,
+  highContrastToggle
 }`

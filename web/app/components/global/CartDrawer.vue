@@ -26,7 +26,7 @@
     <!-- The quick-add drawer's panel mirrored: the close tab hangs off the
          left edge (the drawer hugs the viewport's right side), and sits on
          top, flush left, on mobile. -->
-    <NotchPanel class="cart-panel tab-left tab-top-max-md h-full">
+    <NotchPanel class="cart-panel tab-left tab-top-max-md hc-fill h-full">
       <div
         v-if="lines.length"
         class="cart-body text-green md:pb-base flex-1 flex flex-col"
@@ -421,5 +421,17 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
   padding: var(--spacing-base);
   text-align: center;
   flex: 1;
+}
+
+/* High contrast: the panel turns black (.hc-fill) — the brown text would
+   fall short on it, so the body takes the panel's white. */
+html.high-contrast .cart-body {
+  color: inherit;
+}
+
+/* High contrast: the half-strength secondary lines (variant, taxes note)
+   come up to full. */
+html.high-contrast .cart-panel .opacity-50 {
+  opacity: 1;
 }
 </style>

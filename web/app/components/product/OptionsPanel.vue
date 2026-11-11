@@ -20,7 +20,7 @@
           >
             <button
               type="button"
-              class="size-pill"
+              class="size-pill hc-fill"
               :class="{
                 'is-selected': variant.id === selectedVariant?.id,
                 'is-oos': !variant.availableForSale,
@@ -65,7 +65,7 @@
          is the only feedback the add gives. -->
     <button
       type="button"
-      class="add-to-cart text-base-plus font-primary"
+      class="add-to-cart hc-fill text-base-plus font-primary"
       aria-live="polite"
       :class="{
         'is-adding': addState === 'adding',
@@ -264,6 +264,39 @@ onUnmounted(() => clearTimeout(addedTimer))
 
   @media (min-width: 768px) {
     height: var(--spacing-button-lg-height);
+  }
+}
+
+/* High contrast (.hc-fill): the size pills fill in the context's fill, so
+   selected flips to the other color with a ring in the pill color (it still
+   shows its edge on the panel), and sold out goes hollow — outline and
+   struck-through text at full strength instead of faded. */
+html.high-contrast .size-pill {
+  &.is-selected {
+    background-color: var(--hc-on-fill) !important;
+    color: var(--hc-fill) !important;
+    box-shadow: inset 0 0 0 0.2rem var(--hc-fill);
+  }
+
+  &.is-oos {
+    opacity: 1;
+    background-color: transparent !important;
+    color: var(--hc-fill) !important;
+    box-shadow: inset 0 0 0 0.1rem var(--hc-fill);
+  }
+}
+
+/* The add button's outcome states keep their color (they're the feedback),
+   with dark text. */
+html.high-contrast .add-to-cart {
+  &.is-added {
+    background-color: var(--color-green-bright) !important;
+    color: var(--hc-ink) !important;
+  }
+
+  &.is-failed {
+    background-color: var(--color-orange) !important;
+    color: var(--hc-ink) !important;
   }
 }
 </style>

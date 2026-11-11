@@ -168,4 +168,11 @@ const entries = computed(() =>
     color: var(--color-grey-5);
   }
 }
+
+/* High contrast: every thumb border turns the same color, so the current
+   colorway gets a ring outside its frame. */
+html.high-contrast .colorway-link.is-current .thumb {
+  outline: 0.2rem solid var(--color-grey-7);
+  outline-offset: 0.2rem;
+}
 </style>

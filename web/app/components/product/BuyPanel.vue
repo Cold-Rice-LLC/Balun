@@ -6,7 +6,7 @@
           v-if="expanded"
           id="buy-panel"
           ref="panelEl"
-          class="panel tab-top-max-md text-green"
+          class="panel tab-top-max-md hc-fill text-green"
         >
           <ProductOptionsPanel
             v-if="variants.length"

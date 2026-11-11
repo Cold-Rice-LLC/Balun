@@ -11,7 +11,7 @@
     <button
       v-if="!open"
       ref="triggerEl"
-      class="pill-button featured-button text-base-plus"
+      class="pill-button featured-button hc-fill text-base-plus"
       :class="{ 'is-pending': pending }"
       aria-haspopup="dialog"
       :aria-expanded="open"

@@ -318,4 +318,21 @@ const accentStyle = computed(() => {
   border-radius: var(--radius-def);
   padding: 0.2rem var(--spacing-sm);
 }
+
+/* High contrast: a grey-category card over a cover photo stays dark — the
+   white panel color (global.css) would wash the photo's corner out under
+   the white headline — with white chips and text. */
+html.high-contrast .feed-card.has-cover.cat-blog,
+html.high-contrast .feed-card.has-cover.cat-products {
+  --notch-bg: var(--hc-ink);
+  --color-grey-1: var(--color-white);
+  --color-grey-2: var(--color-white);
+  --color-grey-3: var(--color-white);
+  --color-grey-4: var(--color-white);
+  --color-grey-5: var(--color-white);
+  --color-grey-6: var(--color-white);
+  --color-grey-7: var(--color-white);
+
+  color: var(--color-white);
+}
 </style>

@@ -430,4 +430,11 @@ const highlightTextStyle = (highlight) => {
 .nav-next :deep(.icon-pixel-arrow) {
   transform: scaleX(-1);
 }
+
+/* High contrast: both dot greys turn the text color, so the inactive ones
+   go hollow — a ring in it — and only the current slide stays filled. */
+html.high-contrast .dot:not(.is-active) {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 0.1rem var(--color-grey-5);
+}
 </style>

@@ -7,6 +7,7 @@
   >
     <button
       type="button"
+      class="hc-fill"
       :aria-label="$t('stepper.decrease')"
       :disabled="disabled"
       @click="step(-1)"
@@ -20,6 +21,7 @@
     >
     <button
       type="button"
+      class="hc-fill"
       :aria-label="$t('stepper.increase')"
       :disabled="disabled"
       @click="step(1)"

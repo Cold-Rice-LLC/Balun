@@ -141,4 +141,10 @@ const submit = async () => {
     }
   }
 }
+
+/* High contrast: the underline's focus brightening is gone (both greys turn
+   the text color), so focus gets the site's ring back. */
+html.high-contrast .email-signup input:focus-visible {
+  outline: 0.2rem solid currentColor;
+}
 </style>

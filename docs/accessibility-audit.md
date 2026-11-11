@@ -125,5 +125,8 @@ under "Not covered by this pass" below.
 ## Not covered by this pass
 
 Color contrast was not measured (dimmed `opacity-*` states, grey-on-grey pill
-buttons and accent-on-black pairs are the likely failures). Nothing replaces a
+buttons and accent-on-black pairs are the likely failures). A visitor-facing
+high-contrast mode (2026-11-11) passes AA across the site when switched on —
+see [high-contrast.md](./high-contrast.md); the default colors are still
+unmeasured. Nothing replaces a
 real VoiceOver tab-through and a 400% zoom check.

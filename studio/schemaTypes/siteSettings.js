@@ -83,6 +83,14 @@ export default {
       initialValue: false,
     },
     {
+      name: 'highContrastToggle',
+      type: 'boolean',
+      title: 'Accessibility — High-Contrast Toggle',
+      description:
+        'On: a contrast button sits in the top-left corner of every page. Visitors can switch to high contrast (grey text and buttons turn black, with white text on the buttons), and the site remembers their choice. Visitors whose device asks for more contrast start in it. Off: no button, and nobody sees high contrast.',
+      initialValue: false,
+    },
+    {
       name: 'liveSource',
       type: 'string',
       title: 'Live Source',

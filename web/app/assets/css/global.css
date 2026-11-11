@@ -392,6 +392,118 @@ NotchPanel's --notch-bg (body + tab) and the text color that rides along
 }
 
 /*
+High contrast — html.high-contrast (ContrastToggle, useHighContrast).
+On a light surface every grey resolves to one dark grey (--hc-ink), so
+grey text and grey fills both turn it. --hc-fill / --hc-on-fill say what a filled control
+(.hc-fill, below) becomes there and the color of the text on it. Dark
+surfaces — the dark-page templates, or anything marked .hc-dark — swap
+them, and their greys turn white; .hc-light restores the light set on a
+light panel inside a dark page (the PDP's details column).
+*/
+
+/* The one dark the mode uses, softer than black: 12.6:1 on white. */
+html.high-contrast {
+  --hc-ink: #333333;
+}
+
+html.high-contrast,
+html.high-contrast .hc-light {
+  --hc-fill: var(--hc-ink);
+  --hc-on-fill: var(--color-white);
+  --color-grey-1: var(--hc-ink);
+  --color-grey-2: var(--hc-ink);
+  --color-grey-3: var(--hc-ink);
+  --color-grey-4: var(--hc-ink);
+  --color-grey-5: var(--hc-ink);
+  --color-grey-6: var(--hc-ink);
+  --color-grey-7: var(--hc-ink);
+}
+
+html.high-contrast body.template-pdp,
+html.high-contrast body.template-info,
+html.high-contrast body.template-feed,
+html.high-contrast body.template-live,
+html.high-contrast .hc-dark {
+  --hc-fill: var(--color-white);
+  --hc-on-fill: var(--hc-ink);
+  --color-grey-1: var(--color-white);
+  --color-grey-2: var(--color-white);
+  --color-grey-3: var(--color-white);
+  --color-grey-4: var(--color-white);
+  --color-grey-5: var(--color-white);
+  --color-grey-6: var(--color-white);
+  --color-grey-7: var(--color-white);
+}
+
+/* The PDP's grey page goes dark; info, feed and live keep their own
+   black. */
+html.high-contrast body.template-pdp {
+  background-color: var(--hc-ink);
+}
+
+html.high-contrast body.template-pdp,
+html.high-contrast body.template-info,
+html.high-contrast body.template-feed,
+html.high-contrast body.template-live {
+  color: var(--color-white);
+}
+
+/* Text on the yellow and black pills (the nav's feed link, the feed's RSVP
+   and watch buttons) keeps its contrast whatever surface the pill sits on
+   — a context's greys would match it to the pill on some of them. */
+html.high-contrast .bg-yellow {
+  color: var(--hc-ink);
+}
+
+html.high-contrast .bg-black {
+  color: var(--color-white);
+}
+
+/* A grey-filled control or panel: the context's fill, with its text — and
+   every grey inside it — in the opposite color. Inside, the context flips,
+   so a fill nested in a black panel (the cart's steppers) comes out white.
+   The swap values resolve here, where the outer context is still in
+   scope, and the children pick them up. !important: the components' own
+   fill and text rules (hover states included) are often more specific, and
+   their greys now resolve to the text color here — a state that must keep
+   its color (the cart's checkout) re-asserts it the same way. */
+html.high-contrast .hc-fill {
+  --hc-swap-fill: var(--hc-on-fill);
+  --hc-swap-on: var(--hc-fill);
+  --color-grey-1: var(--hc-on-fill);
+  --color-grey-2: var(--hc-on-fill);
+  --color-grey-3: var(--hc-on-fill);
+  --color-grey-4: var(--hc-on-fill);
+  --color-grey-5: var(--hc-on-fill);
+  --color-grey-6: var(--hc-on-fill);
+  --color-grey-7: var(--hc-on-fill);
+
+  background-color: var(--hc-fill) !important;
+  color: var(--hc-on-fill) !important;
+
+  & > * {
+    --hc-fill: var(--hc-swap-fill);
+    --hc-on-fill: var(--hc-swap-on);
+  }
+}
+
+/* High contrast: the two grey categories become filled panels in the
+   context's fill (white on the feed's black page), text opposite. */
+html.high-contrast .cat-blog,
+html.high-contrast .cat-products {
+  --notch-bg: var(--hc-fill);
+  --color-grey-1: var(--hc-on-fill);
+  --color-grey-2: var(--hc-on-fill);
+  --color-grey-3: var(--hc-on-fill);
+  --color-grey-4: var(--hc-on-fill);
+  --color-grey-5: var(--hc-on-fill);
+  --color-grey-6: var(--hc-on-fill);
+  --color-grey-7: var(--hc-on-fill);
+
+  color: var(--hc-on-fill);
+}
+
+/*
 Rich Text
 */
 

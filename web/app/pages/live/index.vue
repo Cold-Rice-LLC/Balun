@@ -55,7 +55,7 @@
 
         <NuxtLink
           :to="localePath('/products')"
-          class="pill-button text-base-plus"
+          class="pill-button hc-fill text-base-plus"
         >
           {{ $t('nav.shop') }}
         </NuxtLink>

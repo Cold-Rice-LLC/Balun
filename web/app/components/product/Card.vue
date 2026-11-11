@@ -140,4 +140,14 @@ const cardImage = computed(() => productImage(props.doc, props.live, { w: 900 })
     color: var(--color-grey-7);
   }
 }
+
+/* High contrast: an unavailable card keeps its text at full strength; only
+   the image stays faded to mark it. */
+html.high-contrast .product-card.is-unavailable {
+  opacity: 1;
+
+  .image-frame {
+    opacity: 0.45;
+  }
+}
 </style>

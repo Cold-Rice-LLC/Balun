@@ -132,5 +132,8 @@
   "preview": {
     "banner": "Vista previa de cambios sin publicar",
     "exit": "Salir de la vista previa"
+  },
+  "contrast": {
+    "label": "Alto contraste"
   }
 }

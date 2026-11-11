@@ -22,7 +22,7 @@
     :aria-label="$t('quickAdd.label')"
     :inert="!(isOpen && revealed)"
   >
-    <NotchPanel class="quick-add-body tab-top-max-md text-green">
+    <NotchPanel class="quick-add-body tab-top-max-md hc-fill text-green">
       <div class="p-base space-y-base">
         <!-- Mobile: title over price on the left, an underlined learn-more
              link top-right. Desktop: the original title-left / price-right
@@ -88,7 +88,7 @@
       <NuxtLink
         v-if="pdpPath"
         :to="pdpPath"
-        class="pill-button text-base-plus"
+        class="pill-button hc-fill text-base-plus"
         @click="close"
       >
         {{ $t('quickAdd.learnMore') }}

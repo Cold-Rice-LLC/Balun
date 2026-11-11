@@ -1,5 +1,8 @@
 <template>
   <header class="fixed top-0 left-0 w-full grid grid-cols-3 py-base px-gutter">
+    <!-- High-contrast switch, top left (only while Site Settings has it on). -->
+    <ContrastToggle class="self-start lg:self-center" />
+
     <div class="col-start-2 flex justify-center items-center">
       <NuxtLink
         :to="localePath('/')"
@@ -39,7 +42,7 @@
     <NuxtLink
       v-if="live?.isLive"
       :to="localePath('/live')"
-      class="live-link"
+      class="live-link hc-fill"
     >
       <IconsRing />
       <span>{{ live.location || $t('feed.live') }}</span>
@@ -149,5 +152,12 @@ nav {
   50% {
     opacity: 0.15;
   }
+}
+
+/* High contrast (.hc-fill): the label takes the fill's text color — red
+   fell short on the white fill of the dark pages — and the light keeps
+   its red. */
+html.high-contrast .live-link :deep(.icon-ring) {
+  color: var(--color-red);
 }
 </style>

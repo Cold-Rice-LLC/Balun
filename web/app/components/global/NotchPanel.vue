@@ -216,4 +216,13 @@
     );
   }
 }
+
+/* High contrast (global.css): a grey panel marked .hc-fill takes the
+   context's fill through its own paint — body, tab and fillet. The root box
+   stays unpainted, or its square corners would show past the rounded body. */
+html.high-contrast .notch-panel.hc-fill {
+  --notch-bg-resolved: var(--hc-fill);
+
+  background-color: transparent !important;
+}
 </style>

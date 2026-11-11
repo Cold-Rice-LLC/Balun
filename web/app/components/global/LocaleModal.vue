@@ -49,7 +49,7 @@
 
     <div
       ref="modalEl"
-      class="locale-modal uppercase"
+      class="locale-modal hc-fill uppercase"
       :class="{ active: open }"
       role="dialog"
       aria-modal="true"
