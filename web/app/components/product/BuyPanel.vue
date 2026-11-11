@@ -264,6 +264,7 @@ watch(
 .panel :deep(.options) {
   padding-top: var(--spacing-base);
   overflow-y: auto;
+  scrollbar-width: none;
   /* Mobile: up from the panel's measured bottom (falling back to the sticky
      spot), clearing the add button, the tab-top close button (5rem) and the
      fixed top nav, so the close button is never under the nav. */

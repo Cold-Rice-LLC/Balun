@@ -322,6 +322,7 @@ watch(cartOpen, (open) => {
 
 .quick-add-body :deep(.options) {
   overflow-y: auto;
+  scrollbar-width: none;
 }
 
 .state-note {

@@ -3,7 +3,14 @@
     class="pdp lg:px-base flex-1 flex flex-col"
     :class="{ 'is-switching': switching }"
   >
-    <div class="pdp-content flex flex-col-reverse md:flex-row md:gap-0 flex-1 enter-in-fade-up">
+    <!-- The fade-in's held last frame (translateY(0)) would make this a
+         stacking context for good, trapping the open buy panel under the
+         fixed header — drop the class once it has played. -->
+    <div
+      class="pdp-content flex flex-col-reverse md:flex-row md:gap-0 flex-1"
+      :class="{ 'enter-in-fade-up': !entered }"
+      @animationend.self="entered = true"
+    >
       <div class="media-col">
         <!-- Draggable lifestyle gallery (no arrows — dots only), pinned
              while the details column scrolls. Keyed by product so a colorway
@@ -216,6 +223,9 @@ const { data: doc, status: docStatus } = await useAsyncData(
 // busy cursor meanwhile. Never pending on first paint: setup awaits the
 // initial fetch before rendering.
 const switching = computed(() => docStatus.value === 'pending')
+
+// See .pdp-content in the template.
+const entered = ref(false)
 
 useNotFound(doc, 'Product not found')
 
@@ -485,7 +495,6 @@ useHead({
 }
 
 .buy-row {
-  z-index: 10;
   /* Grow, not margin-top:auto — the leftover height (the details column is
      stretched to the 100svh media at minimum) becomes the grid row's, so the
      sticky buy-col always has room to pin in view even with no description.
@@ -540,8 +549,16 @@ useHead({
    Desktop: sticky on the inner within the tall grid area instead — the buy
    panel expands upward from here either way. */
 .buy-col {
+  z-index: 10;
   order: 1;
   position: sticky;
+
+  /* Open, the buy panel rises over the fixed header — its close tab
+     shouldn't hide behind the nav's live tab. The cart opening collapses
+     the panel, so this never covers the cart drawer. */
+  &:has(#buy-panel) {
+    z-index: calc(var(--z-nav) + 1);
+  }
   bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
 
   @media (min-width: 768px) {
