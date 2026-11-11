@@ -1,11 +1,13 @@
 <template>
   <!-- Floats over the cart button's column (full width on phones), a gutter
        above the bottom nav. Below the drawer layer, so an open cart or
-       quick add covers it. Either button records the choice and closes it
-       (useCookieConsent). -->
+       quick add covers it. While home tucks the shop/cart buttons away, it
+       drops into their slot and rises with them. Either button records the
+       choice and closes it (useCookieConsent). -->
   <section
     v-if="noticeOpen"
-    class="fixed z-(--z-floating) left-gutter right-gutter md:left-[calc(50%+var(--spacing-gutter)/2)] bottom-[calc(var(--spacing-button-md-height)+var(--spacing-gutter))] md:bottom-[calc(var(--spacing-button-lg-height)+var(--spacing-gutter))] grid grid-cols-2 rounded-t-def overflow-hidden bg-grey-1 text-grey-6 hc-fill"
+    class="fixed z-(--z-floating) left-gutter right-gutter md:left-[calc(50%+var(--spacing-gutter)/2)] bottom-[calc(var(--spacing-button-md-height)+var(--spacing-gutter))] md:bottom-[calc(var(--spacing-button-lg-height)+var(--spacing-gutter))] grid grid-cols-2 rounded-t-def overflow-hidden bg-grey-1 text-grey-6 hc-fill transition-transform duration-300 ease-out motion-reduce:transition-none"
+    :class="{ 'translate-y-(--spacing-button-md-height) md:translate-y-(--spacing-button-lg-height)': tucked }"
     :aria-label="$t('cookies.label')"
   >
     <div class="col-span-2 p-base space-y-[1.2em] font-secondary text-base leading-snug">
@@ -47,4 +49,5 @@
 <script setup>
 const localePath = useLocalePath()
 const { noticeOpen, accept } = useCookieConsent()
+const { tucked } = useShopCartTucked()
 </script>
