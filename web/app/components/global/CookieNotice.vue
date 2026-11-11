@@ -6,7 +6,7 @@
        choice and closes it (useCookieConsent). -->
   <section
     v-if="noticeOpen"
-    class="fixed z-(--z-floating) left-gutter right-gutter md:left-[calc(50%+var(--spacing-gutter)/2)] bottom-[calc(var(--spacing-button-md-height)+var(--spacing-gutter))] md:bottom-[calc(var(--spacing-button-lg-height)+var(--spacing-gutter))] grid grid-cols-2 rounded-t-def overflow-hidden bg-grey-1 text-grey-6 hc-fill transition-transform duration-300 ease-out motion-reduce:transition-none"
+    class="fixed z-(--z-floating) left-gutter right-gutter md:left-[calc(50%+var(--spacing-gutter)/2)] bottom-[calc(var(--spacing-button-md-height)+var(--spacing-gutter))] md:bottom-[calc(var(--spacing-button-lg-height)+var(--spacing-gutter))] grid grid-cols-2 rounded-def overflow-hidden bg-grey-1 text-grey-6 hc-fill transition-transform duration-300 ease-out motion-reduce:transition-none"
     :class="{ 'translate-y-(--spacing-button-md-height) md:translate-y-(--spacing-button-lg-height)': tucked }"
     :aria-label="$t('cookies.label')"
   >
