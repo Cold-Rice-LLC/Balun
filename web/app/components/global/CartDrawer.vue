@@ -246,6 +246,26 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
   }
 }
 
+/* Home's reveal-on-scroll (SecondaryNav's tuck classes): closed, the drawer's
+   top strip would show where the tucked cart button left, so it drops fully
+   with the buttons — and rises on their 0.3s ease-out so it never gets ahead
+   of the button that covers it. Mobile already parks it fully off-screen. */
+.tuck-armed .cart-drawer:not(.active) {
+  @media (min-width: 768px) {
+    transition: transform 0.3s var(--ease-out);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.is-tucked .cart-drawer:not(.active) {
+  @media (min-width: 768px) {
+    transform: translateY(100%);
+  }
+}
+
 .cart-panel {
   --notch-tab-radius: 3rem;
 

@@ -1,13 +1,14 @@
 <template>
   <nav
     class="fixed bottom-0 left-0 w-full px-gutter"
+    :class="{ 'tuck-armed': armed, 'is-tucked': tucked }"
     :aria-label="$t('nav.shopCart')"
   >
     <!-- Tucked below the screen edge on the home page's top when Site
          Settings asks; keyboard focus inside pulls it back up. The list
          moves, not the nav, so the drawers inside the nav never shift. -->
     <ul
-      class="grid grid-cols-2 gap-gutter text-base-plus lg:text-lg transition-transform duration-500 ease-out motion-reduce:transition-none"
+      class="grid grid-cols-2 gap-gutter text-base-plus lg:text-lg transition-transform duration-300 ease-out motion-reduce:transition-none"
       :class="{ 'not-focus-within:translate-y-full': tucked }"
     >
       <li>
@@ -61,24 +62,14 @@ const localePath = useLocalePath()
 const route = useRoute()
 const { t } = useI18n()
 const { isOpen, lineCount, open, close, checkout, init } = useCart()
-const { close: closeQuickAdd, isOpen: quickAddOpen } = useQuickAdd()
-const { data: settings } = await useSiteSettings()
+const { close: closeQuickAdd } = useQuickAdd()
+await useSiteSettings()
 
-// Home + the Site Settings switch: the buttons stay out of view until the
-// visitor scrolls past REVEAL_AT, and leave again back at the top. Never
-// while a drawer is open (the cart button is its checkout). y is 0 on the
-// server, so the cached shell already renders them tucked — no pop on load.
-const REVEAL_AT = 40
-const { y: scrollY } = useWindowScroll()
+// Home + Site Settings: tucked below the screen edge until the visitor
+// scrolls (see useShopCartTucked). The classes let the closed cart drawer,
+// which peeks under the cart button from 768px, tuck with it in step.
+const { armed, tucked } = useShopCartTucked()
 const strip = (p) => p.replace(/\/+$/, '')
-const tucked = computed(
-  () =>
-    Boolean(settings.value?.homeRevealShopCart) &&
-    strip(route.path) === strip(localePath('/')) &&
-    scrollY.value < REVEAL_AT &&
-    !isOpen.value &&
-    !quickAddOpen.value,
-)
 
 // The shop button should clear both overlays on the way to the Shop page.
 // Already there, the NuxtLink is a no-op — scroll to the top instead (instantly

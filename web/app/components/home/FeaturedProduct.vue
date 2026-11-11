@@ -55,7 +55,7 @@
           v-if="product"
           ref="ctasEl"
           class="ctas"
-          :class="{ 'is-visible': ctasShown }"
+          :class="{ 'is-visible': ctasShown, 'is-lowered': tucked }"
           :inert="!ctasShown"
         >
           <ProductQuickAddTrigger
@@ -136,6 +136,10 @@ const focusElsewhere = computed(() => {
   const el = activeEl.value
   return !!el && el !== document.body && !moduleFocused.value && !ctasFocused.value && el.matches(':focus-visible')
 })
+// With the shop/cart buttons tucked (home's reveal-on-scroll), the slot
+// they hold above is empty — drop into it, and rise with them.
+const { tucked } = useShopCartTucked()
+
 const ctasShown = computed(
   () =>
     ((ctasVisible.value && !focusElsewhere.value) || moduleFocused.value || ctasFocused.value || revealing.value) &&
@@ -252,10 +256,25 @@ useTeleportTabOrder(moduleEl, ctasEl, {
   gap: var(--spacing-base);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s;
+  /* transform: the nav's own reveal timing (SecondaryNav). */
+  transition:
+    opacity 0.3s,
+    transform 0.3s var(--ease-out);
 
   @media (min-width: 768px) {
     bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: opacity 0.3s;
+  }
+
+  &.is-lowered {
+    transform: translateY(var(--spacing-button-md-height));
+
+    @media (min-width: 768px) {
+      transform: translateY(var(--spacing-button-lg-height));
+    }
   }
 
   &.is-visible {
