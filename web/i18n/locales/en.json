@@ -135,5 +135,14 @@
   },
   "contrast": {
     "label": "High contrast"
+  },
+  "cookies": {
+    "label": "Cookie notice",
+    "uses": "In addition to the cookies that are strictly necessary for the operation of this website, Balun uses cookies and other tracking tools to remember your preference and propose additional services, to measure our website performance, to improve our understanding of your interests, and to send you cart notifications. Our partners use trackers to deliver personalized advertising based on your browsing habits and your profile, including by using profiling.",
+    "choices": "You can click on \"Accept all cookies\" to consent to the above mentioned uses, click on \"Cookie Settings\" to configure your choices, or click on the \"Accept only technical cookies\" button to accept only necessary technical cookies. You may change your preferences, and in particular withdraw your consent, on our website at any moment.",
+    "more": "For more information about these technologies and their use on this website, please consult our {policy}",
+    "policy": "Cookie Policy",
+    "acceptTechnical": "accept only technical",
+    "acceptAll": "accept all cookies"
   }
 }

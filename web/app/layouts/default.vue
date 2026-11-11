@@ -17,6 +17,8 @@
 
   <MainFooter :inert="modalOpen" />
 
+  <CookieNotice :inert="modalOpen" />
+
   <PreviewBanner />
 </template>
 

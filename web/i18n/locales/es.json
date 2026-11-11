@@ -135,5 +135,14 @@
   },
   "contrast": {
     "label": "Alto contraste"
+  },
+  "cookies": {
+    "label": "Aviso de cookies",
+    "uses": "Además de las cookies estrictamente necesarias para el funcionamiento de este sitio web, Balun utiliza cookies y otras herramientas de seguimiento para recordar tus preferencias y proponerte servicios adicionales, medir el rendimiento de nuestro sitio, entender mejor tus intereses y enviarte notificaciones sobre tu carrito. Nuestros socios utilizan rastreadores para ofrecer publicidad personalizada basada en tus hábitos de navegación y tu perfil, incluida la elaboración de perfiles.",
+    "choices": "Puedes hacer clic en \"Aceptar todas las cookies\" para consentir los usos mencionados, en \"Configuración de cookies\" para configurar tus opciones, o en el botón \"Aceptar solo técnicas\" para aceptar únicamente las cookies técnicas necesarias. Puedes cambiar tus preferencias y, en particular, retirar tu consentimiento en nuestro sitio web en cualquier momento.",
+    "more": "Para más información sobre estas tecnologías y su uso en este sitio web, consulta nuestra {policy}",
+    "policy": "Política de cookies",
+    "acceptTechnical": "aceptar solo técnicas",
+    "acceptAll": "aceptar todas las cookies"
   }
 }
