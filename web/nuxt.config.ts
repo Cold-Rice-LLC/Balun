@@ -164,6 +164,10 @@ export default defineNuxtConfig({
       shopifyStoreDomain: '',
       shopifyStorefrontAccessToken: '',
       shopifyApiVersion: '2026-04',
+      // NUXT_PUBLIC_GEO_OVERRIDE=true (beta/staging only): ?geo=de stands in
+      // for the edge's geo cookie, so the market prompt can be tested on a
+      // deploy. Always on in dev. See docs/market-prompt.md.
+      geoOverride: false,
     },
   },
 

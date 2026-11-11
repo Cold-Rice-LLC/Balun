@@ -40,7 +40,9 @@ If the edge would rather send a response header than a cookie, only
 
 ## Testing
 
-- Dev only: add `?geo=de` to any URL in place of the cookie.
+- Add `?geo=de` to any URL in place of the cookie. This works in dev, and on a deploy whose
+  Vercel environment sets `NUXT_PUBLIC_GEO_OVERRIDE=true` (beta). Redeploy after setting it.
+  Never set it in production.
 - Anywhere: run `document.cookie = 'balun-geo-country=DE; path=/'` and reload. Clear
   `balun-market-confirmed` to see it again.
 

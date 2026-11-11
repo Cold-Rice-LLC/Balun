@@ -10,7 +10,8 @@
  * geo-agnostic (docs/geo-and-access-strategy.md §3) and never varies by
  * country.
  *
- * In dev, `?geo=de` stands in for the cookie.
+ * `?geo=de` stands in for the cookie in dev, and on a deploy with
+ * NUXT_PUBLIC_GEO_OVERRIDE=true (beta, never production).
  */
 export const GEO_COOKIE = 'balun-geo-country'
 const CONFIRMED_COOKIE = 'balun-market-confirmed'
@@ -18,6 +19,7 @@ const CONFIRMED_COOKIE = 'balun-market-confirmed'
 export const useMarketPrompt = () => {
   const market = useMarket()
   const route = useRoute()
+  const allowOverride = import.meta.dev || useRuntimeConfig().public.geoOverride
   const geoCookie = useCookie<string | null>(GEO_COOKIE, { readonly: true })
   // Set by either answer, so switching from US to GB while in Germany doesn't
   // prompt again on the new market's page. Lasts a month, so a returning
@@ -34,7 +36,7 @@ export const useMarketPrompt = () => {
   })
 
   const detected = computed(() => {
-    const override = import.meta.dev ? route.query.geo : null
+    const override = allowOverride ? route.query.geo : null
     const value = (typeof override === 'string' ? override : geoCookie.value) ?? ''
     return /^[a-z]{2}$/i.test(value) ? value.toUpperCase() : null
   })
