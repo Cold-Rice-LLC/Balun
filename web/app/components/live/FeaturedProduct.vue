@@ -17,7 +17,7 @@
       :aria-expanded="open"
       @click="show"
     >
-      {{ $t('live.featuredProduct') }}
+      {{ label || $t('live.featuredProduct') }}
     </button>
 
     <template v-else>
@@ -73,9 +73,9 @@
 
 <script setup>
 /**
- * The live page's featured product: a "featured product" pill that opens,
- * in place, the product's image in a NotchPanel (close in the tab) over the
- * shared variant picker (ProductOptionsPanel) — the quick-add drawer's
+ * The live page's featured product: a pill (its text set on the Live Page,
+ * "featured product" by default) that opens, in place, the product's image
+ * in a NotchPanel (close in the tab) over the shared variant picker (ProductOptionsPanel) — the quick-add drawer's
  * content in the page's dark palette. Like the drawer, this owns the live
  * fetch (full variants via the cached /api/product route, on first open,
  * refreshed per open), the title/price header, and the chrome; the panel
@@ -84,6 +84,8 @@
 const props = defineProps({
   // The Sanity product (productProjection): title, slug, featuredImage…
   product: { type: Object, required: true },
+  // Editor-set button text; the translated default when empty.
+  label: { type: String, default: '' },
 })
 
 const open = defineModel('open', { type: Boolean, default: false })

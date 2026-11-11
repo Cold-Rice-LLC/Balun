@@ -282,6 +282,7 @@ export const liveQuery = groq`${marketDoc('livePage')}{
   ${i18nField('location')},
   ${i18nField('description')},
   "featuredProduct": featuredProduct->{${productProjection}},
+  ${i18nField('featuredProductLabel')},
   ${seoProjection}
 }`
 

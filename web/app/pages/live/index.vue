@@ -47,6 +47,7 @@
           v-if="page.featuredProduct?.slug"
           v-model:open="featuredOpen"
           :product="page.featuredProduct"
+          :label="page.featuredProductLabel"
         />
       </template>
 
