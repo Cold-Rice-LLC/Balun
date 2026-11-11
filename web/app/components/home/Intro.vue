@@ -23,13 +23,15 @@
 
 <script setup>
 /**
- * Home-page intro: the BALUN letters, shoes and character fall into a
- * matter.js world, settle, then pop outward while a hole tears open in the
+ * Home-page intro: the BALUN letters float in the middle of the screen until
+ * the shoes and character rain down and knock them into a matter.js pile,
+ * which settles, then pops outward while a hole tears open in the
  * white sheet, revealing the live page underneath. Animation ported from
  * channelstudio/balun.
  *
- * This component only renders the first frame — the white sheet, with every
- * piece waiting just above the screen (intro/pieces.ts). The play itself is
+ * This component only renders the first frame — the white sheet, the letters
+ * across its middle and everything else waiting just above the screen
+ * (intro/pieces.ts). The play itself is
  * intro/runIntro.ts, started by plugins/intro.client.ts as soon as the app's
  * script runs, before hydration; it reports back through the
  * `home-intro-done` state.
@@ -41,8 +43,9 @@
  * class stays on for the whole play and comes off at the end. Lazy pieces in
  * a hidden overlay never download, so visitors who skip it don't pay for it.
  *
- * Seen-state is a 15-minute cookie set at play start, so the intro returns
- * 15 minutes after it last played.
+ * Seen-state is a cookie renewed on every page view (plugins/intro.client.ts),
+ * so the intro plays on a visit's first load and returns only after 30
+ * minutes without a page view.
  *
  * A market/language switch is a hard reload of the same page (see
  * LocaleModal) — it stamps sessionStorage, and a fresh stamp skips the play
@@ -52,7 +55,7 @@ import { INTRO_COOKIE, INTRO_FAILSAFE_MS, INTRO_ON_EVERY_LOAD } from '~/intro/co
 import { INTRO_PIECES, introStartStyle } from '~/intro/pieces'
 
 // Decides before first paint whether the intro plays: skipped for reduced
-// motion, and for anyone who saw it in the last 15 minutes. When it will
+// motion, and for anyone already mid-visit (the seen cookie). When it will
 // play, also preloads the SVGs so the first frame paints them at once, and
 // arms the failsafe that uncovers the page if the app never boots the play.
 useHead({

@@ -14,6 +14,15 @@ export default defineNuxtPlugin({
   name: 'home-intro',
   parallel: true,
   setup() {
+    // Every page view, on any page, starts or extends the visit — so the
+    // intro shows on a visit's first load only, and returns once the visitor
+    // has been gone INTRO_COOKIE_MAX_AGE.
+    const markSeen = () => {
+      document.cookie = `${INTRO_COOKIE}=1; max-age=${INTRO_COOKIE_MAX_AGE}; path=/; samesite=lax`
+    }
+    markSeen()
+    useRouter().afterEach(markSeen)
+
     const html = document.documentElement
     // Only the home page's head gate sets this, and only when the intro plays.
     if (!html.classList.contains('intro-pending')) return
@@ -26,9 +35,6 @@ export default defineNuxtPlugin({
 
     const root = document.querySelector<HTMLElement>('.home-intro')
     if (!root) return finish()
-
-    // Marked seen at play start, so the 15 minutes count from the last play.
-    document.cookie = `${INTRO_COOKIE}=1; max-age=${INTRO_COOKIE_MAX_AGE}; path=/; samesite=lax`
 
     import('~/intro/runIntro')
       .then(({ runIntro }) => runIntro(root, finish))

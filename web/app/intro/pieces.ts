@@ -3,11 +3,15 @@
  * frame, and their collision shapes.
  *
  * Sizes and offsets are in px against a 1440px-wide design and scale down
- * with the viewport below that (never up). Everything starts just above the
- * screen — the BALUN letters in a row right above the edge, so they fall in
- * first, then the shoes and character stacked above them. The start layout
- * is plain CSS in the server-rendered overlay; runIntro reads the rendered
- * boxes and drops them from exactly there.
+ * with the viewport below that (never up). The BALUN letters start floating
+ * in a row across the middle of the screen, like balloons; the shoes and
+ * character wait stacked just above the top edge, then rain down onto them
+ * and knock them down. The start layout is plain CSS in the server-rendered
+ * overlay; runIntro reads the rendered boxes and plays from exactly there.
+ *
+ * The letters are the footer wordmark (components/icons/Wordmark.vue) split
+ * into one SVG each, in the animation's colours; their sizes and positions
+ * keep the wordmark's own proportions and spacing.
  *
  * Hulls are each SVG's convex outline as fractions of its box, sampled every
  * ~10 design px along its paths (the four shoes share one artwork). If an SVG
@@ -36,8 +40,11 @@ interface Piece {
   ratio: number
   // Left edge, from the viewport's center.
   left: number
-  // Letters wait in a row just above the edge; the rest above the letters,
-  // `stagger` rows further up each so they rain in one after another.
+  // Letters float in the middle of the screen, laid out as in the footer
+  // wordmark: `top` is the box's top edge from the viewport's middle. The
+  // rest wait above the top edge, `stagger` rows further up each so they
+  // rain in one after another.
+  top?: number
   letter?: boolean
   stagger?: number
   hull: Hull
@@ -55,82 +62,75 @@ const SHOE_HULL: Hull = [
 const SHOE_RATIO = 968 / 2459
 
 export const INTRO_PIECES: Piece[] = [
-  // BALUN, a centered row just above the top edge
+  // BALUN, the footer wordmark's letters, across the middle of the screen
   {
     src: bSvg,
-    width: 225,
-    ratio: 315 / 258,
-    left: -597,
+    width: 256,
+    ratio: 577.56 / 468.52,
+    left: -525,
+    top: -160,
     letter: true,
     hull: [
-      [0, 0.012], [0.029, 0], [0.295, 0], [0.892, 0.471], [0.921, 0.498], [0.946, 0.528], [0.967, 0.56],
-      [0.982, 0.594], [0.993, 0.629], [0.999, 0.665], [1, 0.701], [0.995, 0.737], [0.986, 0.772],
-      [0.971, 0.807], [0.952, 0.839], [0.928, 0.87], [0.9, 0.898], [0.869, 0.923], [0.834, 0.945],
-      [0.796, 0.964], [0.755, 0.979], [0.713, 0.99], [0.67, 0.997], [0.626, 1], [0.297, 1], [0.032, 1],
-      [0, 0.99], [0, 0.954], [0, 0.555], [0, 0.302],
+      [0, 0], [0.307, 0], [0.888, 0.467], [0.926, 0.504], [0.957, 0.544], [0.98, 0.589],
+      [0.995, 0.637], [1, 0.688], [0.995, 0.738], [0.98, 0.786], [0.957, 0.831], [0.926, 0.872],
+      [0.888, 0.908], [0.843, 0.94], [0.792, 0.965], [0.737, 0.984], [0.678, 0.996], [0.615, 1],
+      [0, 1],
     ],
   },
   {
     src: aSvg,
-    width: 248,
-    ratio: 256 / 261,
-    left: -348,
+    width: 256,
+    ratio: 360.46 / 468.65,
+    left: -261,
+    top: -42,
     letter: true,
     hull: [
-      [0, 0.36], [0.002, 0.319], [0.009, 0.279], [0.02, 0.24], [0.035, 0.203], [0.054, 0.167],
-      [0.078, 0.134], [0.104, 0.104], [0.134, 0.077], [0.167, 0.053], [0.202, 0.034], [0.239, 0.019],
-      [0.277, 0.008], [0.317, 0.002], [0.357, 0], [0.396, 0.003], [0.436, 0.01], [0.474, 0.022],
-      [0.51, 0.039], [0.545, 0.059], [0.573, 0.08], [0.991, 0.446], [0.979, 0.476], [0.954, 0.508],
-      [0.853, 0.634], [0.678, 0.856], [0.602, 0.951], [0.577, 0.983], [0.549, 0.983], [0.518, 0.957],
-      [0.394, 0.855], [0.363, 0.829], [0.136, 0.642], [0.106, 0.616], [0.079, 0.586], [0.056, 0.553],
-      [0.036, 0.517], [0.021, 0.48], [0.009, 0.441], [0.002, 0.401],
+      [0, 0.499], [0.005, 0.417], [0.02, 0.34], [0.043, 0.268], [0.075, 0.203], [0.114, 0.145],
+      [0.159, 0.095], [0.209, 0.055], [0.265, 0.025], [0.324, 0.006], [0.387, 0], [1, 0.023],
+      [1, 1], [0.387, 1], [0.324, 0.993], [0.265, 0.975], [0.209, 0.944], [0.159, 0.904],
+      [0.114, 0.854], [0.075, 0.796], [0.043, 0.73], [0.02, 0.658], [0.005, 0.581],
     ],
   },
   {
     src: lSvg,
-    width: 225,
-    ratio: 231 / 384,
-    left: -76,
+    width: 80,
+    ratio: 560.7 / 145.45,
+    left: 18,
+    top: -151,
     letter: true,
     hull: [
-      [0, 0.388], [0.016, 0.321], [0.033, 0.253], [0.082, 0.051], [0.105, 0.007], [0.186, 0.062],
-      [0.959, 0.582], [0.999, 0.609], [0.933, 0.88], [0.917, 0.947], [0.894, 0.991], [0.772, 0.909],
-      [0.691, 0.854], [0.447, 0.69],
+      [0, 0], [1, 0], [1, 1], [0, 1],
     ],
   },
   {
     src: uSvg,
-    width: 200,
-    ratio: 1,
-    left: 173,
+    width: 195,
+    ratio: 360.44 / 356.93,
+    left: 119,
+    top: -37,
     letter: true,
     hull: [
-      [0, 0.526], [0.003, 0.476], [0.008, 0.427], [0.013, 0.378], [0.046, 0.082], [0.051, 0.033],
-      [0.071, 0.002], [0.64, 0.064], [0.837, 0.085], [0.985, 0.102], [0.996, 0.138], [0.974, 0.335],
-      [0.958, 0.482], [0.953, 0.532], [0.948, 0.581], [0.939, 0.63], [0.926, 0.677], [0.908, 0.723],
-      [0.885, 0.767], [0.858, 0.809], [0.826, 0.847], [0.791, 0.881], [0.752, 0.912], [0.71, 0.939],
-      [0.666, 0.961], [0.619, 0.978], [0.571, 0.99], [0.522, 0.998], [0.473, 1], [0.424, 0.997],
-      [0.375, 0.989], [0.327, 0.976], [0.281, 0.958], [0.237, 0.935], [0.195, 0.908], [0.157, 0.877],
-      [0.122, 0.842], [0.091, 0.804], [0.064, 0.762], [0.041, 0.718], [0.023, 0.672], [0.01, 0.624],
-      [0.003, 0.575],
+      [0, 0], [1, 0], [1, 0.501], [0.993, 0.582], [0.975, 0.659], [0.944, 0.731], [0.904, 0.796],
+      [0.854, 0.854], [0.796, 0.904], [0.731, 0.945], [0.659, 0.975], [0.582, 0.994], [0.501, 1],
+      [0.42, 0.994], [0.343, 0.975], [0.271, 0.945], [0.205, 0.904], [0.147, 0.854], [0.097, 0.796],
+      [0.056, 0.731], [0.026, 0.659], [0.007, 0.582], [0, 0.501],
     ],
   },
   {
     src: nSvg,
-    width: 200,
-    ratio: 208 / 207,
-    left: 397,
+    width: 195,
+    ratio: 360.44 / 356.94,
+    left: 329,
+    top: -42,
     letter: true,
     hull: [
-      [0.004, 0.546], [0.024, 0.506], [0.079, 0.423], [0.106, 0.381], [0.216, 0.215], [0.244, 0.174],
-      [0.275, 0.135], [0.311, 0.101], [0.351, 0.071], [0.394, 0.046], [0.439, 0.026], [0.487, 0.011],
-      [0.536, 0.003], [0.586, 0], [0.636, 0.003], [0.685, 0.012], [0.732, 0.027], [0.777, 0.048],
-      [0.82, 0.074], [0.859, 0.105], [0.895, 0.14], [0.926, 0.178], [0.951, 0.221], [0.972, 0.266],
-      [0.987, 0.313], [0.996, 0.362], [1, 0.412], [0.997, 0.461], [0.989, 0.51], [0.975, 0.558],
-      [0.955, 0.603], [0.93, 0.646], [0.821, 0.812], [0.711, 0.978], [0.676, 0.984],
+      [0, 0.499], [0.007, 0.418], [0.025, 0.341], [0.056, 0.269], [0.096, 0.204], [0.146, 0.146],
+      [0.204, 0.096], [0.269, 0.055], [0.341, 0.025], [0.418, 0.006], [0.499, 0], [0.581, 0.006],
+      [0.658, 0.025], [0.73, 0.055], [0.796, 0.096], [0.854, 0.146], [0.904, 0.204], [0.944, 0.269],
+      [0.975, 0.341], [0.993, 0.418], [1, 0.499], [1, 1], [0, 1],
     ],
   },
-  // Above the letters, in the order they rain in
+  // Above the screen, in the order they rain in
   { src: redShoeSvg, width: 500, ratio: SHOE_RATIO, left: -640, stagger: 0, hull: SHOE_HULL },
   { src: lavenderShoeSvg, width: 500, ratio: SHOE_RATIO, left: 140, stagger: 1, hull: SHOE_HULL },
   {
@@ -149,10 +149,8 @@ export const INTRO_PIECES: Piece[] = [
   { src: navyShoeSvg, width: 500, ratio: SHOE_RATIO, left: 60, stagger: 4, hull: SHOE_HULL },
 ]
 
-// Gap above the screen, between the letters and what waits above them, and
-// between each of those.
+// Gap above the screen, and between the pieces waiting there.
 const WAIT_GAP = 60
-const ROW_GAP = 40
 const STAGGER_GAP = 130
 const DESIGN_WIDTH = 1440
 
@@ -163,21 +161,17 @@ const scaled = (px: number) => {
   return px >= 0 ? `min(${rounded}px, ${vw})` : `max(${rounded}px, ${vw})`
 }
 
-// The pieces above the letters start clear of the tallest one, so nothing
-// begins overlapping (matter.js would fling overlapping bodies apart).
-const LETTER_ROW_HEIGHT = Math.max(
-  ...INTRO_PIECES.filter((piece) => piece.letter).map((piece) => piece.width * piece.ratio),
-)
-
 /** The piece's first-frame box, as inline CSS. */
 export const introStartStyle = (piece: Piece) => {
   const height = piece.width * piece.ratio
+  // Staggered pieces are spaced a fixed step apart, so nothing begins
+  // overlapping (matter.js would fling overlapping bodies apart).
   const top = piece.letter
-    ? -(height + WAIT_GAP)
-    : -(height + WAIT_GAP + LETTER_ROW_HEIGHT + ROW_GAP + (piece.stagger ?? 0) * STAGGER_GAP)
+    ? `calc(50% + ${scaled(piece.top ?? -height / 2)})`
+    : scaled(-(height + WAIT_GAP + (piece.stagger ?? 0) * STAGGER_GAP))
   return {
     left: `calc(50% + ${scaled(piece.left)})`,
-    top: scaled(top),
+    top,
     width: scaled(piece.width),
     aspectRatio: `${+(1 / piece.ratio).toFixed(4)}`,
   }

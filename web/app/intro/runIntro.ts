@@ -6,53 +6,68 @@ import { INTRO_PIECES } from './pieces'
  * Intro.vue) as plain DOM — started by plugins/intro.client.ts before the app
  * hydrates, so the drop doesn't wait on the page's data or components.
  *
- * The pieces fall from where the first frame drew them into a matter.js
- * world, settle on the floor, then pop: a beat of anticipation, a hard,
- * uneven blast with a shockwave and a shake, the pieces growing toward the
- * viewer and fading as they fly clear, and a hole tearing open in the white
- * sheet to reveal the page. Pieces move by transform only — no layout per frame.
+ * The BALUN letters float in the middle of the screen like balloons while the
+ * shoes and character rain down from above; each letter drops when something
+ * lands on it (any still floating go once everything has landed). The pile
+ * settles on the floor, then pops: a beat of anticipation, an uneven burst
+ * with a shockwave and a light shake, the pieces drifting toward the viewer
+ * and fading as they clear, and a hole opening in the white sheet to reveal
+ * the page. Pieces move by transform only — no layout per frame.
  */
 
 // World
-const STEP_MS = 1000 / 60
+// Fixed physics step, two per 60fps frame so 120Hz screens stay smooth. Fixed
+// matters: a sliver of a step (a frame's leftover fraction) during a contact
+// makes matter.js divide by a near-zero time and fling the pieces.
+const STEP_MS = 1000 / 120
 const GRAVITY = 1.6
 const RESTITUTION = 0.45
 const FRICTION = 0.05
 const FRICTION_AIR = 0.01
 
-// Settling: the pop fires once everything is on screen and nearly still for
-// SETTLE_HOLD_MS, but never before MIN_DROP_MS (let the pile land) nor after
-// MAX_DROP_MS (a piece that keeps rocking can't hold up the page).
-const MIN_DROP_MS = 1300
-const MAX_DROP_MS = 2300
+// Floating letters: held to their spot (a share of the gap closed per step)
+// with a gentle bob, weightless, until struck. Once every falling piece has
+// hit something, the letters it missed follow RELEASE_STRAGGLERS_MS later;
+// RELEASE_ALL_MS drops them regardless.
+const FLOAT_HOLD = 0.12
+const FLOAT_BOB_PX = 5
+const FLOAT_BOB_MS = 1600
+const RELEASE_STRAGGLERS_MS = 120
+const RELEASE_ALL_MS = 2000
+
+// Settling: the pop fires once everything is down, on screen and nearly still
+// for SETTLE_HOLD_MS, but never before MIN_DROP_MS (let the pile land) nor
+// after MAX_DROP_MS (a piece that keeps rocking can't hold up the page).
+const MIN_DROP_MS = 1800
+const MAX_DROP_MS = 3000
 const SETTLE_HOLD_MS = 250
 const SETTLED_SPEED = 3
 
 // The pop. Speeds are matter.js velocities (px per 60fps frame).
-const ANTICIPATION_MS = 140
-const ANTICIPATION_SCALE = 0.9
-// A hard burst that drags to a drift (air resistance), weightless, so the
+const ANTICIPATION_MS = 160
+const ANTICIPATION_SCALE = 0.95
+// A soft burst that drags to a drift (air resistance), weightless, so the
 // flight reads instead of blinking off screen. A piece that wouldn't clear
 // the screen at its jittered speed before the drag stops it gets just enough
 // more (times POP_EXIT_MARGIN), up to POP_MAX_SPEED.
-const POP_SPEED = 75
-const POP_SPEED_JITTER = 0.3
-const POP_DRAG = 0.06
-const POP_EXIT_MARGIN = 1.3
-const POP_MAX_SPEED = 220
-const POP_LIFT = 20
-const POP_SPIN = 0.5
-const POP_GROWTH = 0.7
-const POP_GROWTH_MS = 650
+const POP_SPEED = 32
+const POP_SPEED_JITTER = 0.25
+const POP_DRAG = 0.03
+const POP_EXIT_MARGIN = 1.2
+const POP_MAX_SPEED = 90
+const POP_LIFT = 8
+const POP_SPIN = 0.18
+const POP_GROWTH = 0.3
+const POP_GROWTH_MS = 900
 // Pieces fade once clear of the blast, a steady fade the overlay waits for.
-const FADE_DELAY_MS = 200
-const FADE_MS = 450
-const REVEAL_MS = 700
+const FADE_DELAY_MS = 250
+const FADE_MS = 550
+const REVEAL_MS = 900
 // The hole is fully clear inside this share of its radius, feathered beyond.
 const REVEAL_CLEAR = 0.8
-const SHAKE_MS = 180
-const SHAKE_PX = 14
-const RING_MS = 550
+const SHAKE_MS = 140
+const SHAKE_PX = 5
+const RING_MS = 700
 const RING_COLOR = 'var(--color-purple)'
 // A last beat once the reveal and fade are both done.
 const FINISH_MS = 100
@@ -70,6 +85,14 @@ interface Piece {
   originY: number
   // Half the box's diagonal: how far past an edge it must be to be gone.
   reach: number
+  letter: boolean
+  // Letters: still floating at their start spot (anchor), bobbing on `phase`.
+  floating: boolean
+  anchorX: number
+  anchorY: number
+  phase: number
+  // Falling pieces: has hit something yet.
+  landed: boolean
 }
 
 export const runIntro = (root: HTMLElement, onDone: () => void) => {
@@ -82,6 +105,8 @@ export const runIntro = (root: HTMLElement, onDone: () => void) => {
   let pieces: Piece[] = []
   let frameId = 0
   let lastFrame = 0
+  // Frame time not yet stepped, carried into the next frame.
+  let unstepped = 0
   let startedAt = 0
   let settledSince: number | null = null
   let scale = 1
@@ -112,8 +137,11 @@ export const runIntro = (root: HTMLElement, onDone: () => void) => {
         friction: FRICTION,
         frictionAir: FRICTION_AIR,
       })
-      Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 3, y: 0 })
-      Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.05)
+      const letter = !!INTRO_PIECES[i]!.letter
+      if (!letter) {
+        Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 3, y: 0 })
+        Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.05)
+      }
       Matter.Composite.add(engine.world, body)
 
       // From here on the body places it: pin the box to the corner and move
@@ -127,8 +155,55 @@ export const runIntro = (root: HTMLElement, onDone: () => void) => {
         originX: centre.x,
         originY: centre.y,
         reach: Math.hypot(box.width, box.height) / 2,
+        letter,
+        floating: letter,
+        anchorX: body.position.x,
+        anchorY: body.position.y,
+        phase: Math.random() * Math.PI * 2,
+        landed: false,
       }
     })
+
+  // Floating letters: gravity cancelled, eased back to their bobbing spot
+  // and upright each step. Moved by velocity, not position, so a piece that
+  // lands on one still collides with it properly.
+  Matter.Events.on(engine, 'beforeUpdate', () => {
+    const t = (engine.timing.timestamp / FLOAT_BOB_MS) * Math.PI * 2
+    for (const piece of pieces) {
+      if (!piece.floating) continue
+      const { body } = piece
+      body.force.y -= body.mass * engine.gravity.y * engine.gravity.scale
+      const targetY = piece.anchorY + Math.sin(t + piece.phase) * FLOAT_BOB_PX
+      Matter.Body.setVelocity(body, {
+        x: (piece.anchorX - body.position.x) * FLOAT_HOLD,
+        y: (targetY - body.position.y) * FLOAT_HOLD,
+      })
+      Matter.Body.setAngularVelocity(body, -body.angle * FLOAT_HOLD)
+    }
+  })
+
+  const pieceOf = (body: Matter.Body) => pieces.find((piece) => piece.body === body.parent)
+  let releaseTimer = 0
+  const releaseAll = () => {
+    for (const piece of pieces) piece.floating = false
+  }
+
+  // A letter drops the moment anything that isn't floating touches it.
+  Matter.Events.on(engine, 'collisionStart', ({ pairs }) => {
+    for (const { bodyA, bodyB } of pairs) {
+      const a = pieceOf(bodyA)
+      const b = pieceOf(bodyB)
+      for (const [piece, other] of [[a, b], [b, a]] as const) {
+        if (!piece) continue
+        if (!piece.letter) piece.landed = true
+        if (piece.floating && !other?.floating) piece.floating = false
+      }
+    }
+    const allLanded = pieces.every((piece) => piece.letter || piece.landed)
+    if (allLanded && !releaseTimer && pieces.some((piece) => piece.floating)) {
+      releaseTimer = window.setTimeout(releaseAll, RELEASE_STRAGGLERS_MS)
+    }
+  })
 
   const render = (now: number) => {
     const shakeLeft = Math.max(0, shakeUntil - now) / SHAKE_MS
@@ -142,22 +217,26 @@ export const runIntro = (root: HTMLElement, onDone: () => void) => {
   }
 
   const isSettled = () =>
-    pieces.every(({ body }) => body.bounds.min.y > 0 && body.speed < SETTLED_SPEED)
+    pieces.every(
+      ({ body, floating, letter, landed }) =>
+        !floating && (letter || landed) && body.bounds.min.y > 0 && body.speed < SETTLED_SPEED,
+    )
 
   const frame = (now: number) => {
     if (!root.isConnected) return
     // Real elapsed time, so the fall runs at the same speed on any refresh rate.
-    // Stepped in ≤60fps slices, the most matter.js is stable at.
-    let delta = lastFrame ? Math.min(now - lastFrame, 50) : STEP_MS
+    unstepped += lastFrame ? Math.min(now - lastFrame, 50) : STEP_MS
     lastFrame = now
-    while (!paused && delta > 0) {
-      Matter.Engine.update(engine, Math.min(delta, STEP_MS))
-      delta -= STEP_MS
+    if (paused) unstepped = 0
+    while (unstepped >= STEP_MS) {
+      Matter.Engine.update(engine, STEP_MS)
+      unstepped -= STEP_MS
     }
     render(now)
 
     if (!popping) {
       const elapsed = now - startedAt
+      if (elapsed >= RELEASE_ALL_MS) releaseAll()
       settledSince = isSettled() ? (settledSince ?? now) : null
       const held = settledSince !== null && now - settledSince >= SETTLE_HOLD_MS
       if ((elapsed >= MIN_DROP_MS && held) || elapsed >= MAX_DROP_MS) pop()
@@ -213,6 +292,8 @@ export const runIntro = (root: HTMLElement, onDone: () => void) => {
 
   const pop = async () => {
     popping = true
+    clearTimeout(releaseTimer)
+    releaseAll()
 
     // Anticipation: the pile holds still and draws in.
     paused = true
