@@ -1,5 +1,9 @@
 <template>
-  <div class="buy-panel">
+  <div
+    ref="rootEl"
+    class="buy-panel"
+    :style="{ '--panel-bottom': panelBottom === null ? null : `${panelBottom}px` }"
+  >
     <ClientOnly>
       <Transition name="panel-pop">
         <NotchPanel
@@ -126,6 +130,18 @@ useOverlayFocus(expanded, {
   trap: true,
 })
 
+// Where the panel's bottom edge sits in the viewport when it opens, for the
+// options cap (see .options below). Pinned, that's the sticky spot above the
+// bottom nav; on a short page at load it's the in-flow spot, higher up —
+// a viewport-only cap would push the close tab up under the top nav there.
+const rootEl = ref(null)
+const panelBottom = ref(null)
+const measure = () => {
+  panelBottom.value = rootEl.value?.getBoundingClientRect().bottom ?? null
+}
+watch(expanded, (open) => open && measure())
+useEventListener('resize', () => expanded.value && measure())
+
 const variants = computed(() => props.live?.variants.nodes ?? [])
 
 // Another colorway the rail actually links (sold in this market, not the
@@ -248,8 +264,13 @@ watch(
 .panel :deep(.options) {
   padding-top: var(--spacing-base);
   overflow-y: auto;
-  /* Mobile also clears the tab-top close button (5rem) hanging above. */
-  max-height: calc(100svh - var(--spacing-button-md-height) * 2 - var(--spacing-base) * 2 - 5rem);
+  /* Mobile: up from the panel's measured bottom (falling back to the sticky
+     spot), clearing the add button, the tab-top close button (5rem) and the
+     fixed top nav, so the close button is never under the nav. */
+  max-height: calc(
+    var(--panel-bottom, 100svh - var(--spacing-button-md-height) - var(--spacing-base)) -
+      var(--spacing-button-md-height) - 5rem - var(--spacing-page-top)
+  );
 
   @media (min-width: 768px) {
     max-height: calc(100svh - var(--spacing-button-lg-height) * 2 - var(--spacing-base) * 2);

@@ -20,10 +20,31 @@ const onTrapKeydown = (e: KeyboardEvent) => {
   els[next]!.focus()
 }
 
+// Whether the last input was a key press rather than a pointer. Tracked from
+// module load (the always-mounted cart drawer imports this), so it's known
+// before the first overlay opens.
+let keyboardModality = false
+if (import.meta.client) {
+  document.addEventListener('keydown', () => (keyboardModality = true), true)
+  document.addEventListener('pointerdown', () => (keyboardModality = false), true)
+}
+
+/**
+ * Script focus that shows the ring only after keyboard input. A tap or click
+ * that opens (or closes) an overlay still moves focus — screen readers need
+ * it — but without the ring: iOS never focuses a tapped button (and an add
+ * button disables itself), so focus() comes from <body>, which WebKit
+ * otherwise counts as :focus-visible.
+ */
+export const focusByInput = (el: HTMLElement | null | undefined, options: FocusOptions = {}) =>
+  // focusVisible isn't in TS's FocusOptions yet.
+  el?.focus({ ...options, focusVisible: keyboardModality } as FocusOptions)
+
 /**
  * Keyboard focus for an overlay or in-place panel. On open it remembers the
  * element that had focus and moves focus to `initial` once the overlay can
- * take it (after nextTick, so a lifted `inert` or a v-if has rendered). On
+ * take it (after nextTick, so a lifted `inert` or a v-if has rendered) —
+ * showing the focus ring only when the overlay was opened from the keyboard. On
  * close — by any path: close button, backdrop, Escape, navigation — it hands
  * focus back to that opener, or to `fallback` when the opener is gone
  * (unmounted, inert, off the page).
@@ -91,7 +112,7 @@ export const useOverlayFocus = (
       opener = active instanceof HTMLElement && active !== document.body ? active : null
       await nextTick()
       rootEl = root() ?? null
-      initial()?.focus({ preventScroll: true })
+      focusByInput(initial(), { preventScroll: true })
       if (trap && rootEl && isOpen.value && !entry) {
         entry = { root: rootEl, include }
         if (!traps.length) document.addEventListener('keydown', onTrapKeydown)
@@ -105,6 +126,6 @@ export const useOverlayFocus = (
     const inside = active === document.body || (active instanceof Node && !!rootEl?.contains(active))
     if (!inside) return
     const target = returnTo ? returnTo() : canFocus(opener) ? opener : fallback?.()
-    if (canFocus(target)) target.focus({ preventScroll: true })
+    if (canFocus(target)) focusByInput(target, { preventScroll: true })
   })
 }

@@ -154,9 +154,9 @@ const open = ref(import.meta.server || useNuxtApp().isHydrating)
 
 // Focus lands on the close button so keyboard users start inside the
 // dialog — once it exists: right away when hydrating open, after the enter
-// on a client navigation.
+// on a client navigation. Ring only after keyboard input (focusByInput).
 const closeButton = ref(null)
-const focusClose = () => closeButton.value?.focus()
+const focusClose = () => focusByInput(closeButton.value)
 onMounted(() => {
   if (open.value) focusClose()
   else open.value = true
@@ -179,7 +179,7 @@ onUnmounted(async () => {
   await nextTick()
   const card = document.querySelector(`a[href="${postPath}"], a[href^="${postPath}?"]`)
   const target = card ?? document.querySelector('.feed-page .filter-pill')
-  target?.focus()
+  focusByInput(target)
 })
 
 // Closing holds the route change until the leave animation ends.
