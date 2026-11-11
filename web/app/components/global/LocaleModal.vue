@@ -104,17 +104,9 @@ const props = defineProps({
 const switchLocalePath = useSwitchLocalePath()
 const open = ref(false)
 
-// A locale switch is a hard reload that lands back on the same page — the
-// home intro shouldn't replay over it. Timestamped so it can only suppress
-// the load it belongs to (the intro's gate script consumes it, and ignores
-// anything stale — e.g. a switch made from another page).
 const onSelect = () => {
   open.value = false
-  try {
-    sessionStorage.setItem('balun-intro-skip', String(Date.now()))
-  } catch {
-    // Storage unavailable (privacy mode) — the intro just plays.
-  }
+  skipNextIntro()
 }
 
 const currentName = computed(() => props.items.find((i) => i.active)?.name ?? props.items[0]?.name ?? '')

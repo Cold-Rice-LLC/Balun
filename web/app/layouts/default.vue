@@ -17,6 +17,7 @@
 
   <MainFooter :inert="modalOpen" />
 
+  <MarketPrompt :inert="modalOpen" />
   <CookieNotice :inert="modalOpen" />
 
   <PreviewBanner />

@@ -69,6 +69,13 @@
     "language": "Language",
     "closePicker": "Close {label} picker"
   },
+  "marketPrompt": {
+    "title": "Please confirm your market.",
+    "detected": "It looks like you're in {country}.",
+    "question": "Does this look correct?",
+    "confirm": "yes, continue",
+    "change": "change market"
+  },
   "newsletter": {
     "heading": "Sign up for emails",
     "placeholder": "Email Address",
