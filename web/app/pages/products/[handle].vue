@@ -105,6 +105,7 @@
         <div
           :key="doc.gid"
           class="details hc-light"
+          data-nav-light
           :class="{ 'no-description': !doc.body?.length }"
         >
           <header class="pdp-header text-center px-gutter">

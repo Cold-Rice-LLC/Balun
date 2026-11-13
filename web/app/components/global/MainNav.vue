@@ -25,8 +25,10 @@
              is a thumb away. -->
         <li class="hidden md:block mr-xs">
           <button
+            ref="bag"
             type="button"
-            class="cart-toggle block text-[#777] cursor-pointer"
+            class="cart-toggle block text-[#777] cursor-pointer transition-colors"
+            :class="{ 'on-light': onLight }"
             :aria-expanded="cartOpen"
             aria-controls="cart-drawer"
             @click="toggleCart"
@@ -84,6 +86,34 @@ const { data: live, refresh } = await useLiveStatus()
 const { isOpen: cartOpen, open: openCart, close: closeCart } = useCart()
 const toggleCart = () => (cartOpen.value ? closeCart() : openCart())
 
+// Whether the bag is over a light surface on a dark page (an element marked
+// data-nav-light — the PDP's white details column), so it can turn dark
+// there. Checked against the bag's own center as the page scrolls or
+// resizes, and on arrival; a colorway switch swaps the column through an
+// out-in transition, so that check runs again once it has landed.
+const bag = ref(null)
+const onLight = ref(false)
+const checkSurface = () => {
+  const box = bag.value?.getBoundingClientRect()
+  if (!box?.width) return (onLight.value = false)
+  const x = box.left + box.width / 2
+  const y = box.top + box.height / 2
+  onLight.value = [...document.querySelectorAll('[data-nav-light]')].some((el) => {
+    const r = el.getBoundingClientRect()
+    return r.top <= y && r.bottom >= y && r.left <= x && r.right >= x
+  })
+}
+onMounted(checkSurface)
+useEventListener('scroll', checkSurface, { passive: true })
+useEventListener('resize', checkSurface)
+watch(
+  () => route.path,
+  () => {
+    nextTick(checkSurface)
+    setTimeout(checkSurface, 600)
+  },
+)
+
 let checkedAt = 0
 const recheck = () => {
   if (route.path.endsWith('/live') || Date.now() - checkedAt < 30_000) return
@@ -131,13 +161,18 @@ nav {
   }
 }
 
-/* The bag has no fill behind it, so on the grey and black page templates
-   it takes the feed pill's yellow to stand out. */
+/* The bag has no fill behind it, so it turns white on the grey and black
+   page templates — and dark grey again where it passes over the PDP's
+   white details column. */
 body.template-pdp .cart-toggle,
 body.template-info .cart-toggle,
 body.template-feed .cart-toggle,
 body.template-live .cart-toggle {
-  color: var(--color-yellow);
+  color: var(--color-white);
+}
+
+body.template-pdp .cart-toggle.on-light {
+  color: var(--color-grey-6);
 }
 
 .live-link {
