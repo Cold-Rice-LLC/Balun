@@ -171,8 +171,8 @@ useScrollLock(isOpen)
 // Keyboard: Escape closes; Tab cycles inside; focus moves to the close
 // button on open and back to whatever opened it on close (the nav button keeps it
 // when it did the closing). Opened by an add to cart, the opener is the add button inside
-// the quick-add drawer or buy panel, inert or gone by then — the nav's cart
-// button is the fallback.
+// the quick-add drawer or buy panel, inert or gone by then — the bottom nav's
+// cart button is the fallback.
 onKeyStroke('Escape', () => {
   if (isOpen.value) close()
 })
@@ -181,7 +181,7 @@ const closeButton = ref(null)
 useOverlayFocus(isOpen, {
   root: () => drawerEl.value,
   initial: () => closeButton.value,
-  fallback: () => document.querySelector('[aria-controls="cart-drawer"]'),
+  fallback: () => drawerEl.value?.closest('nav')?.querySelector('.cart-button'),
   // From 768px the nav's cart button is the drawer's checkout, so it joins
   // the cycle; below that the drawer covers it and carries its own.
   trap: true,

@@ -18,7 +18,25 @@
       class="flex justify-end items-start lg:items-center"
       :aria-label="$t('nav.primary')"
     >
-      <ul class="text-sm md:text-base lg:text-xs flex gap-x-xs">
+      <ul class="text-sm md:text-base lg:text-xs flex items-center gap-x-xs">
+        <!-- The bag opens and closes the cart drawer, same as the bottom
+             nav's cart button, but never turns into its checkout. From
+             768px: on phones the pills fill the column and the cart button
+             is a thumb away. -->
+        <li class="hidden md:block mr-xs">
+          <button
+            type="button"
+            class="block text-[#777] cursor-pointer"
+            :aria-expanded="cartOpen"
+            aria-controls="cart-drawer"
+            @click="toggleCart"
+          >
+            <span class="sr-only">{{ $t('cart.label') }}</span>
+
+            <IconsBag class="w-[1.9rem]" />
+          </button>
+        </li>
+
         <li>
           <NuxtLink
             :to="localePath('/feed')"
@@ -62,6 +80,9 @@ const localePath = useLocalePath()
 // polls the same shared status at its own pace, so the nav stands down there.
 const route = useRoute()
 const { data: live, refresh } = await useLiveStatus()
+
+const { isOpen: cartOpen, open: openCart, close: closeCart } = useCart()
+const toggleCart = () => (cartOpen.value ? closeCart() : openCart())
 
 let checkedAt = 0
 const recheck = () => {
