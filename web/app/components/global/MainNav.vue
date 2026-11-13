@@ -4,13 +4,20 @@
     <ContrastToggle class="self-start lg:self-center" />
 
     <div class="col-start-2 flex justify-center items-center">
+      <!-- Home only: the "balun" wordmark stands in for the logo at the top
+           of the page, and the two swap — one fading out, then the other in
+           — once the visitor scrolls. The wordmark hangs from the logo's top
+           edge rather than taking space, so the header keeps its height. -->
       <NuxtLink
         :to="localePath('/')"
-        class="home-link text-grey-3"
+        class="home-link relative block text-grey-3"
+        :class="{ 'show-wordmark': showWordmark }"
       >
         <span class="sr-only">Balun</span>
 
         <IconsLogo />
+
+        <IconsWordmark v-if="isHome" />
       </NuxtLink>
     </div>
 
@@ -83,6 +90,13 @@ const localePath = useLocalePath()
 const route = useRoute()
 const { data: live, refresh } = await useLiveStatus()
 
+// The wordmark shows on the home page until the visitor scrolls past the
+// first few pixels. y is 0 on the server, so the cached shell renders it.
+const strip = (p) => p.replace(/\/+$/, '')
+const isHome = computed(() => strip(route.path) === strip(localePath('/')))
+const { y: scrollY } = useWindowScroll()
+const showWordmark = computed(() => isHome.value && scrollY.value < 40)
+
 const { isOpen: cartOpen, open: openCart, close: closeCart } = useCart()
 const toggleCart = () => (cartOpen.value ? closeCart() : openCart())
 
@@ -130,9 +144,50 @@ header {
   z-index: var(--z-nav);
 }
 
+/* Out: the wordmark fades straight away, the logo after it (the delay);
+   back at the top it runs the other way round. */
 .home-link {
-  svg {
+  .icon-logo {
     width: 5.5rem;
+    transition: opacity 0.3s 0.3s;
+  }
+
+  .icon-wordmark {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 11rem;
+    transform: translateX(-50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+
+    @media (min-width: 768px) {
+      width: 16rem;
+    }
+
+    @media (min-width: 1024px) {
+      width: 22.7rem;
+    }
+  }
+
+  &.show-wordmark {
+    .icon-logo {
+      opacity: 0;
+      transition-delay: 0s;
+    }
+
+    .icon-wordmark {
+      opacity: 1;
+      pointer-events: auto;
+      transition-delay: 0.3s;
+    }
+  }
+
+  svg {
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
   }
 }
 
