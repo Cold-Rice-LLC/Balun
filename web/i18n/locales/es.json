@@ -120,7 +120,8 @@
     "Color": "Color"
   },
   "live": {
-    "offline": "No estamos en vivo ahora",
+    "offline": "La transmisión ha terminado",
+    "goHome": "Ir al inicio",
     "connecting": "Conectando…",
     "unmute": "activar sonido",
     "mute": "silenciar",

@@ -41,7 +41,7 @@
 
     <!-- Bottom-left. Live: the location label + description, with the
          featured product below — its panels open in place, pushing the
-         text up. Offline: the note and a way to the shop. -->
+         text up. Offline: the same two columns, the note and a way home. -->
     <div class="corner enter-in-fade-up">
       <template v-if="status?.isLive">
         <div
@@ -60,16 +60,18 @@
         />
       </template>
 
-      <template v-else>
-        <p class="font-secondary text-base uppercase leading-snug">{{ $t('live.offline') }}</p>
+      <div
+        v-else
+        class="intro font-secondary text-base leading-snug"
+      >
+        <p class="uppercase">{{ $t('live.offline') }}</p>
 
         <NuxtLink
-          :to="localePath('/products')"
-          class="pill-button hc-fill text-base-plus"
+          :to="localePath('/')"
+          class="justify-self-start underline"
+          >{{ $t('live.goHome') }}</NuxtLink
         >
-          {{ $t('nav.shop') }}
-        </NuxtLink>
-      </template>
+      </div>
     </div>
 
     <!-- Bottom-right, level with the corner: the Mux player has no controls
@@ -93,7 +95,7 @@
  * The Live page: the stream as a full-page stage, and the corner bottom-left
  * — while live, the location label, description, and the featured product
  * (image + variant picker, opened in place over a backdrop that blurs the
- * stream); offline, the note and a shop link. Live state and the source
+ * stream); offline, the note and a link home. Live state and the source
  * (Mux or YouTube) come from Site Settings — with Mux, flipped by its
  * webhook — via the edge-cached /api/live-status, re-checked every 15s
  * while waiting for the stream so it appears within seconds without
