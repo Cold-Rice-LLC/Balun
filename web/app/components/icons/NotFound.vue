@@ -1,10 +1,10 @@
 <template>
-  <!-- "404 / PAGE NOT FOUND": the error page's big graphic, cropped at the
-       bottom edge as in the mockup (the shop/cart buttons cover the cut). -->
+  <!-- "404 / PAGE NOT FOUND": the error page's big graphic, cropped to the
+       letters, whose feet stand on the shop/cart buttons as in the mockup. -->
   <svg
     class="icon-not-found"
     aria-hidden="true"
-    viewBox="0 399 1920 681"
+    viewBox="0 410 1920 599"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path

@@ -2,11 +2,11 @@
   <NuxtLayout>
     <!-- 404: the editable message and home link (Site Settings → 404 Page),
          then the big "404 / PAGE NOT FOUND" graphic, the whole stack sitting
-         on the bottom edge as in the mockup. The graphic says "page not
-         found" to sighted visitors; the h1 says it to everyone else. -->
+         on the shop/cart buttons as in the mockup. The graphic says "page
+         not found" to sighted visitors; the h1 says it to everyone else. -->
     <div
       v-if="isNotFound"
-      class="h-svh flex flex-col justify-end items-center gap-y-sm overflow-hidden text-center"
+      class="h-svh pb-(--spacing-button-md-height) md:pb-(--spacing-button-lg-height) flex flex-col justify-end items-center gap-y-sm overflow-hidden text-center"
     >
       <h1 class="sr-only">{{ $t('error.notFound') }}</h1>
 
