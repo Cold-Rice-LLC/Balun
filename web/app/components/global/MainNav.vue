@@ -131,13 +131,13 @@ nav {
   }
 }
 
-/* Like the contrast toggle opposite, the bag has no fill behind it, so it
-   takes a light grey on the grey and black page templates. */
+/* The bag has no fill behind it, so on the grey and black page templates
+   it takes the feed pill's yellow to stand out. */
 body.template-pdp .cart-toggle,
 body.template-info .cart-toggle,
 body.template-feed .cart-toggle,
 body.template-live .cart-toggle {
-  color: var(--color-grey-1);
+  color: var(--color-yellow);
 }
 
 .live-link {
