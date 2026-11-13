@@ -26,7 +26,7 @@
         <li class="hidden md:block mr-xs">
           <button
             type="button"
-            class="block text-[#777] cursor-pointer"
+            class="cart-toggle block text-[#777] cursor-pointer"
             :aria-expanded="cartOpen"
             aria-controls="cart-drawer"
             @click="toggleCart"
@@ -129,6 +129,15 @@ nav {
   .info-link:focus-visible {
     outline-color: var(--color-yellow);
   }
+}
+
+/* Like the contrast toggle opposite, the bag has no fill behind it, so it
+   takes a light grey on the grey and black page templates. */
+body.template-pdp .cart-toggle,
+body.template-info .cart-toggle,
+body.template-feed .cart-toggle,
+body.template-live .cart-toggle {
+  color: var(--color-grey-1);
 }
 
 .live-link {
