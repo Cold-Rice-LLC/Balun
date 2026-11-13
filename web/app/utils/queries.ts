@@ -354,5 +354,7 @@ export const siteSettingsQuery = groq`${siteSettings}{
   footerPrimaryLinks[]{${navLinkProjection}},
   footerSecondaryLinks[]{${navLinkProjection}},
   homeRevealShopCart,
-  highContrastToggle
+  highContrastToggle,
+  ${i18nField('notFoundMessage')},
+  ${i18nField('notFoundLinkLabel')}
 }`

@@ -1,4 +1,4 @@
-import {englishIfAnyMaxLength} from './lib/i18nValidation'
+import {englishIfAny, englishIfAnyMaxLength} from './lib/i18nValidation'
 import {youtubeUrlRule} from './lib/youtube'
 
 /**
@@ -19,6 +19,13 @@ export default {
       description:
         'What search results and shared links show for any page that doesn’t set its own (each page’s SEO section overrides these).',
       options: {collapsible: true, collapsed: false},
+    },
+    {
+      name: 'notFound',
+      title: '404 Page',
+      description:
+        'The words above the big “404” when a visitor lands on a page that doesn’t exist. Left empty, the site’s built-in wording shows.',
+      options: {collapsible: true, collapsed: true},
     },
     {
       name: 'liveStream',
@@ -89,6 +96,22 @@ export default {
       description:
         'On: a contrast button sits in the top-left corner of every page. Visitors can switch to high contrast (grey text and buttons turn black, with white text on the buttons), and the site remembers their choice. Visitors whose device asks for more contrast start in it. Off: no button, and nobody sees high contrast.',
       initialValue: false,
+    },
+    {
+      name: 'notFoundMessage',
+      type: 'internationalizedArrayString',
+      title: 'Message',
+      description: 'E.g. “Oops, let’s get you back on the path.”',
+      validation: englishIfAny,
+      fieldset: 'notFound',
+    },
+    {
+      name: 'notFoundLinkLabel',
+      type: 'internationalizedArrayString',
+      title: 'Home Link Text',
+      description: 'The link back to the home page below the message, e.g. “Go to home”.',
+      validation: englishIfAny,
+      fieldset: 'notFound',
     },
     {
       name: 'liveSource',

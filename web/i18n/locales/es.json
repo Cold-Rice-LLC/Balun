@@ -132,7 +132,9 @@
   "error": {
     "notFound": "Página no encontrada",
     "generic": "Algo salió mal",
-    "backHome": "Volver al inicio"
+    "backHome": "Volver al inicio",
+    "notFoundMessage": "Uy, volvamos al camino.",
+    "goHome": "Ir al inicio"
   },
   "meta": {
     "feed": "Novedades",
