@@ -90,6 +90,13 @@ useHead({
 <style scoped>
 .home-page {
   padding-top: var(--spacing-page-top);
+
+  /* From 1024px the nav opens with the taller "balun" wordmark here
+     (MainNav), so every module that clears the header — through this
+     padding or its own page-top maths — gets extra headroom. */
+  @media (min-width: 1024px) {
+    --spacing-page-top: 10.5rem;
+  }
   padding-bottom: var(--spacing-base);
 
   &.hero-first {

@@ -163,11 +163,13 @@ header {
     transition: opacity 0.3s;
 
     @media (min-width: 768px) {
-      width: 16rem;
+      width: 15rem;
     }
 
+    /* A touch under the mockup's 22.7rem, for the modules below it; the
+       home page's headroom makes up the rest (pages/index.vue). */
     @media (min-width: 1024px) {
-      width: 22.7rem;
+      width: 20rem;
     }
   }
 
