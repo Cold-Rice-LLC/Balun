@@ -16,7 +16,7 @@
           class="hc-fill"
           :to="localePath('/products')"
           @click="onShopLink"
-          >{{ $t('nav.shop') }}</NuxtLink
+          >{{ $t('nav.allProducts') }}</NuxtLink
         >
       </li>
 

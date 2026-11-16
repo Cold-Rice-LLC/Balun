@@ -165,7 +165,7 @@ useTeleportTabOrder(moduleEl, ctasEl, {
   padding-bottom: 7.6rem;
 
   @media (min-width: 768px) {
-    height: calc(92svh - var(--spacing-page-top));
+    height: calc(82svh - var(--spacing-page-top));
     min-height: 60rem;
   }
 }

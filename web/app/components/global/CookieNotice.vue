@@ -31,7 +31,7 @@
 
     <button
       type="button"
-      class="h-[5.4rem] px-sm bg-grey-6 text-white text-base-plus leading-none lowercase hc-fill focus-visible:outline-offset-[-0.2rem]"
+      class="h-(--spacing-button-md-height) md:h-(--spacing-button-lg-height) px-sm bg-grey-6 text-white text-base-plus leading-none lowercase hc-fill focus-visible:outline-offset-[-0.2rem]"
       @click="accept('technical')"
     >
       {{ $t('cookies.acceptTechnical') }}
@@ -39,7 +39,7 @@
 
     <button
       type="button"
-      class="h-[5.4rem] px-sm bg-yellow text-grey-6 text-base-plus leading-none lowercase focus-visible:outline-offset-[-0.2rem]"
+      class="h-(--spacing-button-md-height) md:h-(--spacing-button-lg-height) px-sm bg-yellow text-grey-6 text-base-plus leading-none lowercase focus-visible:outline-offset-[-0.2rem]"
       @click="accept('all')"
     >
       {{ $t('cookies.acceptAll') }}
@@ -49,7 +49,15 @@
 
 <script setup>
 const localePath = useLocalePath()
-const { noticeOpen, accept } = useCookieConsent()
+const { noticeOpen, accept, renew } = useCookieConsent()
+// Lives in the layout, so it sees every page view.
+const router = useRouter()
+let stopRenewing
+onMounted(() => {
+  renew()
+  stopRenewing = router.afterEach(renew)
+})
+onBeforeUnmount(() => stopRenewing?.())
 const { promptOpen } = useMarketPrompt()
 const { tucked } = useShopCartTucked()
 </script>

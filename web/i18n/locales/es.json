@@ -1,6 +1,6 @@
 {
   "nav": {
-    "shop": "tienda",
+    "allProducts": "ver todo",
     "feed": "novedades",
     "info": "información",
     "cart": "carrito ({n})",

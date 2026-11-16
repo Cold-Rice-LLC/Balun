@@ -45,13 +45,20 @@
                 />
               </div>
 
+              <!-- Drag to swipe, or click a half: left goes back, right goes
+                   forward, with a matching arrow cursor (the Desert X
+                   slideshow pattern). Swiper's click event skips the
+                   pointerup that ends a drag. Mouse-only shortcut — the dots
+                   below are the keyboard route. -->
               <Swiper
                 class="media-slides"
+                :class="{ 'has-nav': doc.gallery.length > 1, 'is-prev-half': onPrevHalf }"
                 :slides-per-view="1"
                 :loop="true"
-                :grab-cursor="true"
                 @swiper="onGallerySwiper"
                 @slide-change="(s) => (activeIndex = s.realIndex)"
+                @click="onGalleryClick"
+                @pointermove="onGalleryPointer"
               >
                 <!-- Off-screen slides are inert so only the shown image is read. -->
                 <SwiperSlide
@@ -181,7 +188,7 @@
                  row; a longer one just grows the row from the top. -->
             <div
               v-if="doc.body?.length"
-              class="description text-sm rich-text md:self-end"
+              class="description text-sm leading-snug rich-text md:self-end"
             >
               <RichText :value="doc.body" />
             </div>
@@ -338,6 +345,22 @@ const onGallerySwiper = (swiper) => {
   activeIndex.value = swiper.realIndex
 }
 
+// Which half of the gallery the pointer is over, for the click target and
+// its cursor.
+const onPrevHalf = ref(false)
+const isPrevHalf = (event) => {
+  const { left, width } = gallerySwiper.value.el.getBoundingClientRect()
+  return event.clientX < left + width / 2
+}
+const onGalleryPointer = (event) => {
+  if (gallerySwiper.value) onPrevHalf.value = isPrevHalf(event)
+}
+const onGalleryClick = (swiper, event) => {
+  if (doc.value.gallery.length < 2) return
+  if (isPrevHalf(event)) swiper.slidePrev()
+  else swiper.slideNext()
+}
+
 useSeo(() => ({
   seo: doc.value?.seo,
   title: doc.value?.title ?? t('meta.product'),
@@ -425,6 +448,14 @@ useHead({
 .media-slides {
   width: 100%;
   height: 100%;
+
+  &.has-nav {
+    cursor: e-resize;
+  }
+
+  &.has-nav.is-prev-half {
+    cursor: w-resize;
+  }
 }
 
 .media-slide img {
@@ -466,6 +497,13 @@ useHead({
 .pdp-header {
   padding-top: 4.5rem;
   padding-bottom: var(--spacing-base);
+
+  /* Desktop: grows with the buy row, splitting the column's leftover so the
+     carousel (and tagline) sit centered between the header and the buy row.
+     See .details::after for why the split is even on screen. */
+  @media (min-width: 768px) {
+    flex-grow: 1;
+  }
 }
 
 .price {
@@ -546,6 +584,29 @@ useHead({
 .details.no-description .carousel-region {
   @media (min-width: 768px) {
     min-height: 0;
+  }
+}
+
+/* The column stretches to the 100svh media, so its bottom sits page-top +
+   the fixed bar below the line the buy row pins to — leftover split evenly
+   in layout would leave the carousel low on screen. This takes that
+   overhang off the top of the leftover first (the high grow factor), so the
+   header and buy row split only what's visible. Zero basis: with a long
+   description there's no leftover and it adds nothing, rather than a blank
+   tail. The negative margin cancels the column gap before it. The
+   no-description layout already reserves the overhang with a margin. */
+.details::after {
+  @media (min-width: 768px) {
+    content: '';
+    flex: 100 0 0;
+    max-height: calc(var(--spacing-page-top) + var(--spacing-button-lg-height));
+    margin-top: calc(var(--spacing-base) * -1);
+  }
+}
+
+.details.no-description::after {
+  @media (min-width: 768px) {
+    content: none;
   }
 }
 
