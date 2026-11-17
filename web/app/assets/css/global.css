@@ -100,7 +100,10 @@ Tailwind Config
   --spacing-xl: 15rem;
   --spacing-2xl: 20rem;
   --spacing-button-md-height: 4.4rem;
-  --spacing-button-lg-height: 6.8rem;
+  /* 6.8rem on any screen 567px tall or more; shorter ones (phones in
+     landscape, which get the 768px+ layout) ease down toward the md
+     height, or the header and bottom bar took a third of a 390px screen. */
+  --spacing-button-lg-height: clamp(4.4rem, 12svh, 6.8rem);
   --spacing-page-top: 8.5rem;
   /* Page-edge gutter: half the base on phones; :root restores it from 768px. */
   --spacing-gutter: 1rem;
