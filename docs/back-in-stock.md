@@ -2,13 +2,20 @@
 
 A sold-out product page shows **Notify me when back in stock** under the
 price and the "sold out" label, in the price's style
-(`app/components/product/BackInStock.vue`). It opens an email field in place;
-submitting posts to `/api/back-in-stock` (`server/api/back-in-stock.post.ts`),
-which creates a Klaviyo back-in-stock subscription for every size (variant) of
-the product with Klaviyo's server-side API
+(`app/components/product/BackInStock.vue`). In the product grids (home and
+all products), a sold-out card shows **Notify** where the quick-add "+" would
+be (`app/components/product/Card.vue`). Both open the same popup
+(`app/components/global/BackInStockModal.vue`, state in
+`useBackInStock`): the market prompt's panel holding the footer signup's row
+(`SignupRow.vue`). Submitting posts the product's handle and the visitor's
+market to `/api/back-in-stock` (`server/api/back-in-stock.post.ts`), which
+looks up the product's sizes (variants) from Shopify and creates a Klaviyo
+back-in-stock subscription for each, with Klaviyo's server-side API
 ([Create Back In Stock Subscription](https://developers.klaviyo.com/en/reference/create_back_in_stock_subscription)).
-The private key stays server-side, shared with the newsletter
-(`server/utils/klaviyo.ts`).
+The variants are looked up server-side so a grid card, which has none
+loaded, works the same as the PDP, and the browser never picks which variant
+ids are subscribed. The private key stays server-side, shared with the
+newsletter (`server/utils/klaviyo.ts`).
 
 Klaviyo does the rest: it watches inventory through its Shopify integration,
 and when a subscribed variant comes back it triggers the account's Back in

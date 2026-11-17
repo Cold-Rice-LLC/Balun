@@ -28,13 +28,26 @@
       </p>
 
       <!-- Renders only when live and purchasable (the trigger's own v-if);
-           otherwise the stock note below says why there's no "+". No prices
+           otherwise "Notify" or the stock note below stands in. No prices
            here — the grid is editorial, price lives on the PDP/quick add. -->
       <ProductQuickAddTrigger
         class="quick-add col-start-2 row-start-1"
         :doc="doc"
         :live="live"
       />
+
+      <!-- Sold out: "Notify" takes the "+"'s place and opens the
+           back-in-stock popup. Above the card link's cover, like the "+". -->
+      <button
+        v-if="live && !live.availableForSale"
+        type="button"
+        class="col-start-2 row-start-1 relative z-1 text-grey-5 hover:text-grey-7 transition-colors duration-300"
+        aria-haspopup="dialog"
+        :aria-label="$t('backInStock.cardLabel', { title: live.title })"
+        @click="openBackInStock({ handle: live.handle, title: live.title })"
+      >
+        {{ $t('backInStock.card') }}
+      </button>
 
       <!-- col-start pins the note under the title (auto-placement would
            fill the trigger's empty slot beside it instead). -->
@@ -62,6 +75,7 @@
  * return it (unpublished, or masked from the visitor's market).
  */
 const localePath = useLocalePath()
+const { open: openBackInStock } = useBackInStock()
 
 const props = defineProps({
   doc: {

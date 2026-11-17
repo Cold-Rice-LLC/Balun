@@ -141,8 +141,9 @@
 
               <!-- Sold out: ask Klaviyo to email when any size is back. -->
               <ProductBackInStock
-                v-if="liveForDoc && !liveForDoc.availableForSale && variants.length"
-                :variant-ids="variants.map((variant) => variant.id)"
+                v-if="liveForDoc && !liveForDoc.availableForSale"
+                :handle="liveForDoc.handle"
+                :title="liveForDoc.title"
               />
 
               <template #fallback>

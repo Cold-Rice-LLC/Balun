@@ -59,7 +59,11 @@
     "submit": "Notify me",
     "invalid": "Enter a valid email address.",
     "success": "Thanks. We'll email you when it's back in stock.",
-    "error": "Something went wrong. Please try again."
+    "error": "Something went wrong. Please try again.",
+    "heading": "Notify me when {title} is back in stock.",
+    "close": "close",
+    "card": "Notify",
+    "cardLabel": "Notify me when {title} is back in stock"
   },
   "price": {
     "was": "was"

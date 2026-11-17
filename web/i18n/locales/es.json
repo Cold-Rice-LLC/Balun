@@ -59,7 +59,11 @@
     "submit": "Avísame",
     "invalid": "Introduce un correo electrónico válido.",
     "success": "Gracias. Te escribiremos cuando vuelva a estar disponible.",
-    "error": "Algo salió mal. Inténtalo de nuevo."
+    "error": "Algo salió mal. Inténtalo de nuevo.",
+    "heading": "Avísame cuando {title} vuelva a estar disponible.",
+    "close": "cerrar",
+    "card": "Avisar",
+    "cardLabel": "Avísame cuando {title} vuelva a estar disponible"
   },
   "price": {
     "was": "antes"
