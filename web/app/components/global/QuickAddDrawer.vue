@@ -22,13 +22,14 @@
     :aria-label="$t('quickAdd.label')"
     :inert="!(isOpen && revealed)"
   >
-    <NotchPanel class="quick-add-body tab-top-max-md hc-fill text-green">
+    <NotchPanel class="quick-add-body tab-top-max-xl hc-fill text-green">
       <div class="p-base space-y-base">
-        <!-- Mobile: title over price on the left, an underlined learn-more
-             link top-right. Desktop: the original title-left / price-right
-             row — learn more lives in the pill beside the panel instead. -->
+        <!-- Phones and tablets: title over price on the left, an underlined
+             learn-more link top-right. From 1280px: the original title-left /
+             price-right row — learn more lives in the pill beside the panel
+             instead. -->
         <header class="flex items-start justify-between gap-base font-secondary">
-          <div class="md:flex md:flex-1 md:items-start md:justify-between md:gap-base">
+          <div class="xl:flex xl:flex-1 xl:items-start xl:justify-between xl:gap-base">
             <p class="title text-base uppercase leading-snug">{{ title }}</p>
 
             <p
@@ -42,7 +43,7 @@
           <NuxtLink
             v-if="pdpPath"
             :to="pdpPath"
-            class="learn-more text-base uppercase leading-snug md:hidden"
+            class="learn-more text-base uppercase leading-snug xl:hidden"
             @click="close"
           >
             {{ $t('quickAdd.learnMore') }}
@@ -72,7 +73,7 @@
       <template #tab>
         <button
           ref="closeButton"
-          class="notch-close notch-close-tall text-grey-6"
+          class="notch-close notch-close-tall-xl text-grey-6"
           :aria-label="$t('quickAdd.close')"
           @click="close"
         >
@@ -82,9 +83,9 @@
       </template>
     </NotchPanel>
 
-    <!-- Desktop only: learn more as its own pill beside the panel (mobile
-         carries it as the header link instead). -->
-    <div class="learn-more-container hidden w-1/2 md:block">
+    <!-- From 1280px: learn more as its own pill beside the panel (below
+         that the header carries it as a link instead). -->
+    <div class="learn-more-container hidden w-1/2 xl:block">
       <NuxtLink
         v-if="pdpPath"
         :to="pdpPath"
@@ -228,7 +229,11 @@ watch(cartOpen, (open) => {
 <style scoped>
 .quick-add-drawer {
   position: fixed;
-  z-index: var(--z-drawer);
+  /* Short screens (phones in landscape): the drawer rises over the fixed
+     header, like the PDP's open buy panel, or the size list scrolled in a
+     26px strip under the header's reserve. From 500px tall it sits under
+     the nav and clears it. */
+  z-index: calc(var(--z-nav) + 1);
   bottom: var(--spacing-button-md-height);
   /* Full width on mobile regardless of anchor — half a phone screen fits
      nothing (the cart drawer goes full width the same way). Column-sized
@@ -240,7 +245,12 @@ watch(cartOpen, (open) => {
      parent's max-height), or tall content grows the bottom-anchored body up
      over the tab headroom. The drawer is transparent, so the unused region
      above short content shows nothing. */
-  height: calc(100svh - var(--spacing-button-lg-height) - var(--spacing-base) * 4);
+  height: calc(100svh - var(--spacing-button-lg-height) - var(--spacing-gutter));
+
+  @media (height >= 500px) {
+    z-index: var(--z-drawer);
+    height: calc(100svh - var(--spacing-button-lg-height) - var(--spacing-base) * 4);
+  }
   display: flex;
   align-items: flex-end;
   overflow: hidden;
@@ -248,13 +258,16 @@ watch(cartOpen, (open) => {
   gap: var(--spacing-base);
   pointer-events: none;
   padding-bottom: var(--spacing-base);
-  /* Headroom for the mobile tab-top close button — it hangs above the body,
-     and the drawer's overflow: hidden would clip it flush with the panel.
-     The desktop tab is back on the side and needs none. */
+  /* Headroom for the tab-top close button (phones and tablets) — it hangs
+     above the body, and the drawer's overflow: hidden would clip it flush
+     with the panel. From 1280px the tab is back on the side and needs none. */
   padding-top: 5rem;
 
   @media (min-width: 768px) {
     bottom: var(--spacing-button-lg-height);
+  }
+
+  @media (width >= 1280px) {
     padding-top: 0;
   }
 
@@ -275,7 +288,10 @@ watch(cartOpen, (open) => {
       opacity 0.3s;
     opacity: 0;
 
-    @media (min-width: 768px) {
+    /* The whole column until 1280px: at half of it (177px at 768) the size
+       pills wrapped to three lines and the price clipped. From there the
+       learn-more pill takes the other half. */
+    @media (width >= 1280px) {
       width: 50%;
     }
   }

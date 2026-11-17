@@ -189,7 +189,7 @@
                  row; a longer one just grows the row from the top. -->
             <div
               v-if="doc.body?.length"
-              class="description text-sm leading-snug rich-text md:self-end"
+              class="description text-sm leading-snug rich-text xl:self-end"
             >
               <RichText :value="doc.body" />
             </div>
@@ -544,7 +544,10 @@ useHead({
   /* Grow, not margin-top:auto — the leftover height (the details column is
      stretched to the 100svh media at minimum) becomes the grid row's, so the
      sticky buy-col always has room to pin in view even with no description.
-     Mobile is a flex column instead: description first, buy panel under it. */
+     Mobile is a flex column instead: description first, buy panel under it.
+     Tablets keep that order in a one-column grid packed to the bottom: side
+     by side, the buy panel got a quarter of the screen (170px at 768) and
+     its size pills wrapped to three lines. */
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -553,8 +556,13 @@ useHead({
 
   @media (min-width: 768px) {
     display: grid;
-    grid-template-columns: 1fr 1fr;
     align-items: start;
+    align-content: end;
+  }
+
+  @media (width >= 1280px) {
+    grid-template-columns: 1fr 1fr;
+    align-content: normal;
   }
 }
 
@@ -631,12 +639,16 @@ useHead({
   bottom: calc(var(--spacing-button-md-height) + var(--spacing-base));
 
   @media (min-width: 768px) {
-    order: 0;
     position: static;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+  }
+
+  /* Tablets keep it under the description (the mobile order). */
+  @media (width >= 1280px) {
+    order: 0;
   }
 
   .buy-col-inner {
@@ -647,13 +659,14 @@ useHead({
   }
 }
 
-/* Desktop: pinned to the same line as the sticky buy button, so a short
-   description sits level with it rather than at the row's real bottom
-   (below the fold). A long one fills the row and has no room to shift. */
+/* From 1280px (side by side): pinned to the same line as the sticky buy
+   button, so a short description sits level with it rather than at the
+   row's real bottom (below the fold). A long one fills the row and has no
+   room to shift. */
 .description {
   color: var(--color-grey-6);
 
-  @media (min-width: 768px) {
+  @media (width >= 1280px) {
     position: sticky;
     bottom: calc(var(--spacing-button-lg-height) + var(--spacing-base));
   }

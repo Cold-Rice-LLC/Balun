@@ -351,7 +351,8 @@ overlays (and the live page's in-stage one). Full-window and hidden until
 /*
 Notch close — the X button in a NotchPanel's tab (the panel supplies the
 tab's shape and background). .notch-close-tall is the side-tab size the
-quick-add drawer and PDP buy panel grow to from 768px up.
+cart drawer grows to from 768px up; .notch-close-tall-xl is the same for the
+quick-add drawer and PDP buy panel, whose tab sits on top until 1280px.
 */
 
 .notch-close {
@@ -374,6 +375,16 @@ quick-add drawer and PDP buy panel grow to from 768px up.
 
 .notch-close-tall {
   @media (min-width: 768px) {
+    height: 6.2rem;
+
+    & .icon-x {
+      transform: translateX(-0.5rem);
+    }
+  }
+}
+
+.notch-close-tall-xl {
+  @media (width >= 1280px) {
     height: 6.2rem;
 
     & .icon-x {

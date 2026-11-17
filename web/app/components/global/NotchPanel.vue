@@ -22,7 +22,8 @@
  * fillet illusion; only the page behind the panel shows through the carve.
  * `tab-left` (consumer class) mirrors it onto the top-LEFT edge — the cart
  * drawer, which hugs the viewport's right side. With `tab-top-max-md` too,
- * the mobile tab sits above the body flush left.
+ * the mobile tab sits above the body flush left. `tab-top-max-xl` keeps the
+ * top tab through tablets (under 1280px).
  * `no-tab-max-md` drops the nipple under 768px instead (feed cards).
  *
  * Size the tab by sizing the slot content; theme with CSS vars:
@@ -113,6 +114,46 @@
     right: 100%;
     background: radial-gradient(
       circle at 0 0,
+      transparent calc(var(--fillet) - 0.5px),
+      var(--notch-bg-resolved) var(--fillet)
+    );
+  }
+}
+
+/* Tablet-wide variant (`tab-top-max-xl`): the tab-top-max-md geometry held
+   until 1280px. The quick-add drawer and PDP buy panel run full column width
+   on tablets, where a side tab would hang off the column (or the screen);
+   from 1280px they're narrow enough again for the default side tab. */
+.notch-panel.tab-top-max-xl .panel-tab {
+  transform: translateY(calc(-100% + 1px));
+  border-top-left-radius: var(--notch-tab-radius, var(--notch-radius-resolved));
+  border-bottom-right-radius: 0;
+
+  @media (width >= 1280px) {
+    transform: translateX(calc(100% - 1px));
+    border-top-left-radius: 0;
+    border-bottom-right-radius: var(--notch-tab-radius, var(--notch-radius-resolved));
+  }
+}
+
+.notch-panel.tab-top-max-xl .panel-tab::after {
+  top: auto;
+  left: auto;
+  bottom: 0;
+  right: 100%;
+  background: radial-gradient(
+    circle at 0 0,
+    transparent calc(var(--fillet) - 0.5px),
+    var(--notch-bg-resolved) var(--fillet)
+  );
+
+  @media (width >= 1280px) {
+    top: 100%;
+    left: 0;
+    bottom: auto;
+    right: auto;
+    background: radial-gradient(
+      circle at 100% 100%,
       transparent calc(var(--fillet) - 0.5px),
       var(--notch-bg-resolved) var(--fillet)
     );

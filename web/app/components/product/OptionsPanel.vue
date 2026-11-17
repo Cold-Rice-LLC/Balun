@@ -227,9 +227,12 @@ onUnmounted(() => clearTimeout(addedTimer))
 
 .add-to-cart {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   width: 100%;
+  /* Fixed: in a capped panel (quick add, buy panel) only the options above
+     scroll — on short screens the button was squashed to 27px. */
   height: var(--spacing-button-md-height);
   background-color: var(--color-grey-7);
   color: var(--color-white);

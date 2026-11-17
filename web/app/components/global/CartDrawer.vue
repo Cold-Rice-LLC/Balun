@@ -348,12 +348,15 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
   display: grid;
   /* Smaller thumb on mobile so price + stepper + remove fit beside the
      title instead of wrapping below it. */
-  grid-template-columns: 5.5rem 1fr;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
   gap: var(--spacing-base);
   align-items: start;
 
-  @media (min-width: 768px) {
-    grid-template-columns: 8rem 1fr;
+  /* From 1024px: the drawer (half the screen) only fits the bigger thumb
+     and the one-row controls below from here — at 768 they pushed the
+     price and remove link past the screen edge. */
+  @media (width >= 1024px) {
+    grid-template-columns: 8rem minmax(0, 1fr);
   }
 }
 
@@ -371,7 +374,8 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
 }
 
 .line-controls {
-  /* Mobile: remove sits under the stepper to keep the column narrow. */
+  /* Phones and tablets: remove sits under the stepper to keep the column
+     narrow. */
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -379,7 +383,7 @@ const pdpPath = (line) => localePath(`/products/${line.merchandise.product.handl
   margin-top: var(--spacing-xs);
   color: var(--color-grey-6);
 
-  @media (min-width: 768px) {
+  @media (width >= 1024px) {
     flex-direction: row;
     align-items: center;
     gap: var(--spacing-base);

@@ -10,7 +10,7 @@
           v-if="expanded"
           id="buy-panel"
           ref="panelEl"
-          class="panel tab-top-max-md hc-fill text-green"
+          class="panel tab-top-max-xl hc-fill text-green"
         >
           <ProductOptionsPanel
             v-if="variants.length"
@@ -35,7 +35,7 @@
           <template #tab>
             <button
               ref="closeButton"
-              class="notch-close notch-close-tall text-grey-6"
+              class="notch-close notch-close-tall-xl text-grey-6"
               :aria-label="$t('quickAdd.close')"
               @click="expanded = false"
             >
@@ -221,9 +221,10 @@ watch(
   position: absolute;
   bottom: 0;
   left: 0;
-  /* Full width like the quick add: the mobile tab sits above the body
-     (tab-top-max-md); from 768px it hangs into the column gap, like the
-     quick-add drawer's does. */
+  /* Full width like the quick add: under 1280px the tab sits above the body
+     (tab-top-max-xl), as the buy column is the whole details column there;
+     from 1280px it hangs into the column gap, like the quick-add drawer's
+     does. */
   width: 100%;
 
   --notch-tab-radius: 3rem;
@@ -273,7 +274,16 @@ watch(
       var(--spacing-button-md-height) - 5rem - var(--spacing-page-top)
   );
 
+  /* Tablets: the tab-top close button (5rem) still rides above the panel,
+     and clears the fixed top nav as on mobile — it sits on the right, over
+     the feed/info pills. */
   @media (min-width: 768px) {
+    max-height: calc(
+      100svh - var(--spacing-button-lg-height) * 2 - var(--spacing-base) * 2 - 5rem - var(--spacing-page-top)
+    );
+  }
+
+  @media (width >= 1280px) {
     max-height: calc(100svh - var(--spacing-button-lg-height) * 2 - var(--spacing-base) * 2);
   }
 }
