@@ -5,7 +5,7 @@
   >
     <header
       v-if="module.heading || module.subheading"
-      class="flex flex-col items-center gap-sm text-center"
+      class="flex flex-col items-center gap-sm px-gutter text-center"
     >
       <h2
         v-if="module.heading"
