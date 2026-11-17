@@ -45,10 +45,12 @@
     />
     <!-- Named by its visible word at every width: word + arrow below lg,
          the arrow alone from lg with the word kept as sr-only text. -->
+    <!-- py + matching -my: a 2.4rem target (WCAG 2.5.8) around the 1.6rem
+         line without growing the row. -->
     <button
       type="submit"
       :disabled="sending"
-      class="text-base md:text-lg uppercase leading-none flex-none flex items-center gap-x-xs"
+      class="py-[0.4rem] -my-[0.4rem] text-base md:text-lg uppercase leading-none flex-none flex items-center gap-x-xs"
     >
       <span class="lg:sr-only">{{ submitLabel }}</span>
       <span aria-hidden="true">→</span>

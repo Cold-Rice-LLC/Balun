@@ -15,7 +15,7 @@
       </p>
 
       <button
-        class="font-tertiary uppercase text-base md:text-lg leading-none text-grey-5 mt-sm cursor-pointer hover:underline"
+        class="font-tertiary uppercase text-base md:text-lg leading-none text-grey-5 mt-xs py-[0.4rem] -mb-[0.4rem] cursor-pointer hover:underline"
         @click="handleClearError"
       >
         {{ settings?.notFoundLinkLabel || $t('error.goHome') }}

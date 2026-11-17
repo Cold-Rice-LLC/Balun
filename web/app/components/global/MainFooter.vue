@@ -15,7 +15,10 @@
           class="text-base md:text-lg text-left uppercase leading-none"
           :aria-label="$t('footer.links')"
         >
-          <ul>
+          <!-- 0.8rem apart on phones: on 1.6rem (leading-none) lines that puts
+               link centers 2.4rem apart (WCAG 2.5.8 spacing); text-lg links
+               clear it from 768px. -->
+          <ul class="space-y-xs md:space-y-0">
             <li
               v-for="(link, i) in primaryLinks"
               :key="i"
@@ -26,7 +29,7 @@
         </nav>
 
         <div class="flex items-end flex-col gap-y-sm">
-          <div class="flex items-end flex-col">
+          <div class="flex items-end flex-col gap-y-xs md:gap-y-0">
             <MarketSwitcher />
             <LanguageSwitcher />
           </div>
@@ -35,7 +38,9 @@
             class="text-right uppercase leading-none"
             :aria-label="$t('footer.legal')"
           >
-            <ul>
+            <!-- Spaced like the primary links, at every width: the legal
+                 links stay text-base. -->
+            <ul class="space-y-xs">
               <li
                 v-for="(link, i) in secondaryLinks"
                 :key="i"

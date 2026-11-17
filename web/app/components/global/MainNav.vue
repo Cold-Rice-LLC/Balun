@@ -39,7 +39,7 @@
           <button
             ref="bag"
             type="button"
-            class="cart-toggle block text-[#777] cursor-pointer transition-colors"
+            class="cart-toggle block p-[0.4rem] -m-[0.4rem] text-[#777] cursor-pointer transition-colors"
             :class="{ 'on-light': onLight }"
             :aria-expanded="cartOpen"
             aria-controls="cart-drawer"

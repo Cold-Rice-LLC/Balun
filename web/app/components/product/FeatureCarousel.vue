@@ -286,21 +286,30 @@ const highlightTextStyle = (highlight) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
 
   @media (min-width: 768px) {
     display: none;
   }
 }
 
+/* A 24px target (WCAG 2.5.8) around the 1rem dot it draws; the buttons sit
+   flush, so the dots land 2.4rem apart. */
 .dot {
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-  background-color: var(--color-grey-2);
-  transition: background-color 0.2s;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
 
-  &.is-active {
+  &::before {
+    content: '';
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background-color: var(--color-grey-2);
+    transition: background-color 0.2s;
+  }
+
+  &.is-active::before {
     background-color: var(--color-grey-5);
   }
 }
@@ -433,7 +442,7 @@ const highlightTextStyle = (highlight) => {
 
 /* High contrast: both dot greys turn the text color, so the inactive ones
    go hollow — a ring in it — and only the current slide stays filled. */
-html.high-contrast .dot:not(.is-active) {
+html.high-contrast .dot:not(.is-active)::before {
   background-color: transparent;
   box-shadow: inset 0 0 0 0.1rem var(--color-grey-5);
 }

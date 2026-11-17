@@ -197,6 +197,7 @@ const toggleFilter = (cat) => {
 }
 
 .filter-pill {
+  position: relative;
   border: 1px solid currentColor;
   border-radius: var(--radius-def);
   padding: 0.2rem var(--spacing-sm);
@@ -205,6 +206,14 @@ const toggleFilter = (cat) => {
   transition:
     background-color 0.3s,
     color 0.3s;
+
+  /* The drawn pill is 2.2rem tall; an invisible layer makes the target
+     2.6rem (WCAG 2.5.8) without growing it. */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -0.2rem 0;
+  }
 
   &.active {
     background-color: var(--color-grey-1);

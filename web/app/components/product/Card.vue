@@ -41,7 +41,7 @@
       <button
         v-if="live && !live.availableForSale"
         type="button"
-        class="col-start-2 row-start-1 relative z-1 uppercase font-secondary text-grey-5 hover:text-grey-7 transition-colors duration-300"
+        class="notify col-start-2 row-start-1 relative z-1 uppercase font-secondary text-grey-5 hover:text-grey-7 transition-colors duration-300"
         aria-haspopup="dialog"
         :aria-label="$t('backInStock.cardLabel', { title: live.title })"
         @click="openBackInStock({ handle: live.handle, title: live.title })"
@@ -153,6 +153,16 @@ const cardImage = computed(() => productImage(props.doc, props.live, { w: 900 })
     background: none;
     color: var(--color-grey-7);
   }
+}
+
+/* The "+" (17×28) and "Notify" (55×19) were too small to hit (WCAG 2.5.8):
+   an invisible layer pads each one's target, over the card link's cover,
+   without moving the glyphs. */
+.card-meta .quick-add::before,
+.card-meta .notify::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--spacing-xs) * -1);
 }
 
 /* High contrast: an unavailable card keeps its text at full strength; only
