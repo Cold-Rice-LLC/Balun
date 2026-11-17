@@ -81,8 +81,7 @@
     "title": "Confirma tu mercado.",
     "detected": "Parece que estás en {country}.",
     "question": "¿Es correcto?",
-    "confirm": "sí, continuar",
-    "change": "cambiar mercado"
+    "confirm": "sí, continuar"
   },
   "newsletter": {
     "heading": "Suscríbete",

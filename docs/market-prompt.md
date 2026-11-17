@@ -30,8 +30,9 @@ If the edge would rather send a response header than a cookie, only
 - Opens when `balun-geo-country` is set, differs from the URL's country, and the visitor hasn't
   answered yet. It looks like the footer's market switcher: a "Market" panel centered over a
   blurred backdrop. It fades in, locks page scroll, and keeps focus inside the panel.
-- **yes, continue** closes it, and so do a click on the backdrop and Escape. **change market**
-  swaps in the market list (the same hard-navigation links as the footer's MarketSwitcher).
+- The panel lists the markets under the copy, the current one marked with the globe (the same
+  hard-navigation links as the footer's MarketSwitcher), so switching is one click.
+  **yes, continue** closes it, and so do a click on the backdrop and Escape.
 - Every answer sets `balun-market-confirmed` for 30 days, so it doesn't come back after a switch
   (someone in Germany who picks UK) or on return visits.
 - The cookie notice waits until the prompt is answered, so it never shows under the backdrop.
