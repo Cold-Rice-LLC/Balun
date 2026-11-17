@@ -16,7 +16,10 @@ export const useCart = () => {
   const language = () => market.value.language
 
   const cart = shopify.Cart
-  const lines = computed(() => cart.value?.lines?.nodes ?? [])
+  // Quantity-0 lines are Shopify's leftovers from a sold-out add (AddToCart
+  // now removes them, but carts from before that may still hold one): there's
+  // nothing in them to buy, so the drawer never lists them.
+  const lines = computed(() => (cart.value?.lines?.nodes ?? []).filter((line) => line.quantity > 0))
   const lineCount = computed(() => lines.value.reduce((total, line) => total + line.quantity, 0))
   const subtotal = computed(() => cart.value?.cost?.subtotalAmount ?? null)
   const checkoutUrl = computed(() => cart.value?.checkoutUrl ?? null)

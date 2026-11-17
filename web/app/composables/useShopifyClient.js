@@ -104,13 +104,40 @@ export const useShopifyClient = () => {
     }
 
 
+    // How many of a variant a cart holds (0 for no cart / no line).
+    const variantQuantity = (cart, variantId) =>
+        (cart?.lines?.nodes ?? [])
+            .filter((line) => line.merchandise?.id === variantId)
+            .reduce((total, line) => total + line.quantity, 0)
+
+    // A sold-out variant doesn't come back as a userError: Shopify accepts
+    // the add, sets the line to quantity 0 and attaches a cart *warning*
+    // (MERCHANDISE_OUT_OF_STOCK) — even while the product data still says
+    // availableForSale. So success is "the variant's quantity went up", not
+    // "no userErrors". When nothing was added, the empty line Shopify left
+    // is removed and the add reports failure (null), which shows "couldn't
+    // add" and refetches availability. A capped add (NOT_ENOUGH_STOCK, some
+    // but not all added) still counts as added.
     async function AddToCart(variantId, quantity, countryCode = null, language = null) {
+        const cartId = localStorage.getItem('balunCartId') || Cart.value?.id
+        const before = Cart.value?.id === cartId ? variantQuantity(Cart.value, variantId) : 0
+        const result = await addToCartRaw(cartId, variantId, quantity, countryCode, language)
+        if (!result) return null
+        // A fresh cart (the dead-cart retry) starts from nothing.
+        const after = variantQuantity(result, variantId)
+        if (after > (result.id === cartId ? before : 0)) return result
 
-        // check if cart Id exists
-        const cartId = localStorage.getItem('balunCartId')
+        console.error('AddToCart: Shopify added none (sold out?)', variantId)
+        const empty = result.lines.nodes
+            .filter((line) => line.merchandise?.id === variantId && line.quantity === 0)
+            .map((line) => line.id)
+        if (empty.length) await RemoveLineItems(result.id, empty, language)
+        return null
+    }
 
-        if(cartId || Cart.value?.id){
-            const id = cartId || Cart.value?.id;
+    async function addToCartRaw(cartId, variantId, quantity, countryCode = null, language = null) {
+        if(cartId){
+            const id = cartId;
             const result = await AddLineItems(id, [{ merchandiseId: variantId, quantity: quantity }], language)
             if (result) return result
             // The add failed — find out whether the cart itself is gone
