@@ -91,7 +91,13 @@
     "subscribe": "Suscríbete",
     "invalid": "Introduce un correo electrónico válido.",
     "success": "Gracias. Revisa tu correo para confirmar.",
-    "error": "Algo salió mal. Inténtalo de nuevo."
+    "error": "Algo salió mal. Inténtalo de nuevo.",
+    "smsHeading": "Recibe también SMS",
+    "smsPlaceholder": "Número de móvil",
+    "smsInvalid": "Introduce un número de móvil válido.",
+    "smsSkip": "No, gracias",
+    "smsError": "No pudimos añadir tu número, pero ya estás suscrito a los correos.",
+    "smsTerms": "Al suscribirte, aceptas recibir mensajes de texto de marketing automatizados y recurrentes de Balun en este número. El consentimiento no es condición de compra. Pueden aplicarse tarifas de mensajes y datos. La frecuencia de los mensajes varía. Responde HELP para obtener ayuda o STOP para cancelar."
   },
   "video": {
     "watch": "ver",

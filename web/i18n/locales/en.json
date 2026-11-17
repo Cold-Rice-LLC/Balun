@@ -91,7 +91,13 @@
     "subscribe": "Subscribe",
     "invalid": "Enter a valid email address.",
     "success": "Thanks. Check your inbox to confirm.",
-    "error": "Something went wrong. Please try again."
+    "error": "Something went wrong. Please try again.",
+    "smsHeading": "Get texts too",
+    "smsPlaceholder": "Mobile number",
+    "smsInvalid": "Enter a valid mobile number.",
+    "smsSkip": "No thanks",
+    "smsError": "We couldn't add your number, but you're signed up for emails.",
+    "smsTerms": "By subscribing, you agree to receive recurring automated marketing texts from Balun at this number. Consent isn't a condition of purchase. Msg & data rates may apply. Msg frequency varies. Reply HELP for help, STOP to cancel."
   },
   "video": {
     "watch": "watch",

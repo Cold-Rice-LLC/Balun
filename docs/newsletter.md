@@ -46,3 +46,49 @@ The subscribe job takes no profile properties, so the visitor's locale
 ("Website footer (es-us)"). Segment on it in Klaviyo if Spanish-language
 sends are ever wanted. Klaviyo's confirmation email itself is one template per
 list, so it's English unless the list is split per language.
+
+## SMS step
+
+In a market with SMS set up, a successful email signup doesn't go straight
+to the thank-you: the row turns into a phone field ("Get texts too"), with
+the SMS consent disclosure under it and a "No thanks" that skips to the
+thank-you. A number goes to `/api/newsletter-sms`
+(`server/api/newsletter-sms.post.ts`), which adds it to the same profile with
+SMS marketing consent, on the same list.
+
+- **Which markets** — `NUXT_KLAVIYO_SMS_COUNTRIES`, a comma list of market
+  ids (`us`, `gb`). Empty (the default) = no SMS step anywhere, so the step
+  stays off until Klaviyo can actually send.
+- **Abuse guard** — the email route returns a signed token (HMAC of the email
+  and an expiry, 30 minutes, keyed by the private API key) and the SMS route
+  requires it, so nobody can attach a number to someone else's email by
+  posting it. A tripped spam guard gets no token, so bots never see the step.
+  See `server/utils/smsSignup.ts`.
+- **Number format** — read in the visitor's market ("(212) 555-0123" in
+  /en-us, "07700 900123" in /en-gb) or with a leading +, and sent as E.164.
+  Only US numbers and UK mobiles are recognised, and only for markets in the
+  setting; anything else is a 400 and the form asks again. A new market needs
+  an entry in `NUMBERING` there.
+- **Consent** — the disclosure is `newsletter.smsTerms` (en/es) and sits next
+  to the field as its description. Klaviyo records the consent with
+  `custom_source` "Website footer SMS ({locale})". The wording is a standard
+  TCPA-style template, not legal advice: have it checked, and add Terms/Privacy
+  links if counsel wants them next to the field.
+- **Failure** — anything but a bad number (expired token, Klaviyo down) tells
+  the visitor their number wasn't added but the email was, and moves on.
+
+### Klaviyo setup for SMS
+
+1. Settings → SMS: turn SMS on and get a sending number for each market (US:
+   a toll-free number, which needs carrier verification and can take days to
+   weeks; UK: an alphanumeric sender or a number). Fill in the compliance
+   details (company name, terms and privacy URLs).
+2. Double opt-in: the list's opt-in setting governs the subscribe job for SMS
+   too, so with it on Klaviyo texts a "reply Y to confirm" first. Check it
+   behaves as wanted on a real phone before launch.
+3. If the account uses SMS age gating, the API needs a date of birth with every
+   SMS consent and returns 400 without one; this form doesn't collect it, so
+   leave age gating off.
+4. The existing private key's scopes (`profiles:write`,
+   `subscriptions:write`, `lists:write`) cover SMS.
+5. Set `NUXT_KLAVIYO_SMS_COUNTRIES` (e.g. `us`) in Vercel and redeploy.

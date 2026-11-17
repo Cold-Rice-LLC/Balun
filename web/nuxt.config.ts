@@ -124,6 +124,10 @@ export default defineNuxtConfig({
     // See docs/newsletter.md.
     klaviyoPrivateApiKey: '',
     klaviyoListId: '',
+    // Server-only (NUXT_KLAVIYO_SMS_COUNTRIES, e.g. "us,gb"): the markets with
+    // SMS set up in Klaviyo, where the form offers a phone number after the
+    // email. Empty = email only everywhere.
+    klaviyoSmsCountries: '',
     // Server-only (NUXT_NOINDEX=true on staging): X-Robots-Tag: noindex on
     // every response, so a staging deploy never gets indexed.
     noindex: false,

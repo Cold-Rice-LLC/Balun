@@ -9,6 +9,11 @@
  * it's clicked. The visitor's locale goes into the consent record's
  * `custom_source` — the subscribe job doesn't take profile properties.
  *
+ * In a market with SMS set up (NUXT_KLAVIYO_SMS_COUNTRIES) the response also
+ * carries `smsToken`, which lets the form offer its second step: adding a
+ * phone number through /api/newsletter-sms (see server/utils/smsSignup.ts).
+ * A tripped spam guard never gets one, so a bot never reaches that step.
+ *
  * Spam guards. A tripped guard returns the same {ok: true} as a real signup,
  * so a bot can't tell what caught it:
  * - Honeypot: `website` is hidden from people; anything in it came from a bot
@@ -30,6 +35,7 @@ export default defineEventHandler(async (event) => {
   const honeypot = typeof body?.website === 'string' && body.website !== ''
   const tooFast = !(typeof body?.elapsed === 'number' && body.elapsed >= MIN_FILL_MS)
   const locale = typeof body?.locale === 'string' ? body.locale.slice(0, 10) : ''
+  const market = locale.split('-')[1] ?? ''
 
   if (honeypot || tooFast) return { ok: true }
   if (!EMAIL_RE.test(email) || email.length > 254) {
@@ -69,5 +75,6 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 502, statusMessage: 'Newsletter signup failed' })
   }
 
-  return { ok: true }
+  const offerSms = smsCountries(config.klaviyoSmsCountries).includes(market)
+  return offerSms ? { ok: true, smsToken: signSmsToken(config.klaviyoPrivateApiKey, email) } : { ok: true }
 })
