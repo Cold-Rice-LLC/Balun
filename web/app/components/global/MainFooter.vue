@@ -77,8 +77,10 @@ body.template-home footer {
 }
 
 /* The yellow newsletter page: dark grey text (the wordmark and the signup
-   follow it), as on the yellow notch panels. */
+   follow it), as on the yellow notch panels, and the signup's focused
+   underline goes black rather than light. */
 body.template-newsletter footer {
+  --signup-focus: var(--color-black);
   color: var(--color-grey-7);
 }
 
