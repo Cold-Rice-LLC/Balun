@@ -107,7 +107,8 @@ body.template-live footer {
 }
 
 .newsletter :deep(p),
-.newsletter :deep(input) {
+.newsletter :deep(input),
+.newsletter :deep(button) {
   pointer-events: auto;
 }
 
