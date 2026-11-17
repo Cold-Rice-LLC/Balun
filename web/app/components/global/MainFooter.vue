@@ -158,6 +158,17 @@ body.template-newsletter .footer-links :deep(a:hover) {
   }
 }
 
+/* The trigger's own grey-4 washed out on the yellow page; it takes the
+   footer's dark grey there and darkens to black like the links. */
+body.template-newsletter .footer-links :deep(.trigger) {
+  color: inherit;
+}
+
+body.template-newsletter .footer-links :deep(.trigger:hover),
+body.template-newsletter .footer-links :deep(.trigger[aria-expanded='true']) {
+  color: var(--color-black);
+}
+
 .links-container {
   pointer-events: none;
 }

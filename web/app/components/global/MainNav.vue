@@ -54,7 +54,7 @@
         <li>
           <NuxtLink
             :to="localePath('/feed')"
-            class="bg-yellow text-grey-6"
+            class="feed-link bg-yellow text-grey-6"
             >{{ $t('nav.feed') }}</NuxtLink
           >
         </li>
@@ -221,6 +221,17 @@ nav {
   /* A white ring inside the purple reads as a border, not focus — the
      accent instead. */
   .info-link:focus-visible {
+    outline-color: var(--color-yellow);
+  }
+}
+
+/* The yellow newsletter page: the yellow feed pill vanished into it, so it
+   inverts (same two colors). Unlayered, so it beats the bg/text utilities. */
+body.template-newsletter .feed-link {
+  background-color: var(--color-grey-6);
+  color: var(--color-yellow);
+
+  &:focus-visible {
     outline-color: var(--color-yellow);
   }
 }
