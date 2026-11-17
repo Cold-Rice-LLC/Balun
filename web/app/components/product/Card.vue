@@ -41,7 +41,7 @@
       <button
         v-if="live && !live.availableForSale"
         type="button"
-        class="col-start-2 row-start-1 relative z-1 text-grey-5 hover:text-grey-7 transition-colors duration-300"
+        class="col-start-2 row-start-1 relative z-1 uppercase font-secondary text-grey-5 hover:text-grey-7 transition-colors duration-300"
         aria-haspopup="dialog"
         :aria-label="$t('backInStock.cardLabel', { title: live.title })"
         @click="openBackInStock({ handle: live.handle, title: live.title })"
