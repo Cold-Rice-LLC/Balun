@@ -157,7 +157,8 @@ const toggleFilter = (cat) => {
 }
 
 /* 12-col grid like the info page; the filter row and post list sit in the
-   center 6 columns. relative anchors the absolute shoe overlay. */
+   center columns (8 on tablets, 6 from 1024px). relative anchors the
+   absolute shoe overlay. */
 .feed-page {
   position: relative;
   /* Clips the fixed-scale shoe overlay on views shorter than the drawing. */
@@ -173,7 +174,8 @@ const toggleFilter = (cat) => {
 }
 
 /* Filters, posts, and the empty note share the column: full width on
-   mobile, the center 6 from 768px up. */
+   mobile, the center 8 from 768px, the center 6 from 1024px (at 768 the
+   center 6 was narrower than a phone screen). */
 .filters {
   grid-column: 1 / -1;
   display: flex;
@@ -186,6 +188,10 @@ const toggleFilter = (cat) => {
   color: var(--color-grey-1);
 
   @media (min-width: 768px) {
+    grid-column: 3 / span 8;
+  }
+
+  @media (width >= 1024px) {
     grid-column: 4 / span 6;
   }
 }
@@ -211,8 +217,8 @@ const toggleFilter = (cat) => {
   }
 }
 
-/* Same column as the filter row: full width on mobile, the center 6 from
-   768px up. */
+/* Same column as the filter row: full width on mobile, the center 8
+   from 768px, the center 6 from 1024px. */
 .posts {
   grid-column: 1 / -1;
   /* Above the shoe-outline overlay (z 20) — the outlines are page
@@ -221,6 +227,10 @@ const toggleFilter = (cat) => {
   z-index: 30;
 
   @media (min-width: 768px) {
+    grid-column: 3 / span 8;
+  }
+
+  @media (width >= 1024px) {
     grid-column: 4 / span 6;
   }
 }
@@ -231,6 +241,10 @@ const toggleFilter = (cat) => {
   padding-block: var(--spacing-base);
 
   @media (min-width: 768px) {
+    grid-column: 3 / span 8;
+  }
+
+  @media (width >= 1024px) {
     grid-column: 4 / span 6;
   }
 }
@@ -249,6 +263,10 @@ const toggleFilter = (cat) => {
   }
 
   @media (min-width: 768px) {
+    grid-column: 3 / span 8;
+  }
+
+  @media (width >= 1024px) {
     grid-column: 4 / span 6;
   }
 }
