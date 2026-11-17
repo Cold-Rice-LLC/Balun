@@ -1,9 +1,11 @@
 <template>
   <footer class="relative">
-    <!-- Mobile stacks in DOM order: newsletter, the links row, wordmark at
-         the very bottom. From 768px the links-container overlays the
-         wordmark absolutely, so the order change is invisible there. -->
-    <div class="links-container md:absolute md:inset-0 grid md:grid-cols-2 gap-y-base md:gap-y-0 px-gutter">
+    <!-- Stacked in DOM order up to 1440px: newsletter, the links row,
+         wordmark at the very bottom. From 1440px the links-container
+         overlays the wordmark absolutely, so the order change is invisible
+         there. Narrower, the overlay's text-lg links ran into the letters
+         (and off the screen at 768); the links half needs ~670px. -->
+    <div class="links-container min-[1440px]:absolute min-[1440px]:inset-0 grid min-[1440px]:grid-cols-2 gap-y-base min-[1440px]:gap-y-0 px-gutter">
       <div class="newsletter">
         <EmailSignup />
       </div>
@@ -91,9 +93,9 @@ body.template-live footer {
   margin-top: var(--spacing-lg);
 }
 
-/* Mobile: gutters + clearance above the bottom-of-stack wordmark. Desktop's
-   overlay layout keeps the deliberate full-bleed (the +1px kills a subpixel
-   edge gap). */
+/* Phones and tablets: gutters + clearance above the bottom-of-stack
+   wordmark. The 1440px+ overlay layout keeps the deliberate full-bleed (the
+   +1px kills a subpixel edge gap). */
 :deep(.icon-wordmark) {
   width: calc(100vw - var(--spacing-gutter) * 2);
   height: auto;
@@ -101,7 +103,7 @@ body.template-live footer {
   margin-top: var(--spacing-base);
   margin-inline: var(--spacing-gutter);
 
-  @media (min-width: 768px) {
+  @media (width >= 1440px) {
     width: calc(100vw + 1px);
     margin-top: 0;
     margin-inline: 0;
@@ -109,7 +111,7 @@ body.template-live footer {
 }
 
 .newsletter {
-  @media (min-width: 768px) {
+  @media (width >= 1440px) {
     padding-left: 8.1vw;
   }
 }
@@ -121,7 +123,7 @@ body.template-live footer {
 }
 
 .footer-links {
-  @media (min-width: 768px) {
+  @media (width >= 1440px) {
     padding-left: 11.4vw;
   }
 }
