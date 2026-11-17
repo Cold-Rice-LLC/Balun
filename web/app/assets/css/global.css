@@ -175,12 +175,30 @@ body {
   &.template-live {
     background-color: var(--color-black);
   }
+
+  &.template-newsletter {
+    background-color: var(--color-yellow);
+  }
+}
+
+/* The newsletter page has no content: the app root becomes one screen tall
+   and the empty main takes the slack, so the footer sits at the bottom
+   (the navs are fixed, out of the flow). */
+body.template-newsletter #__nuxt {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
 }
 
 main {
   min-height: 100svh;
   display: flex;
   flex-direction: column;
+
+  body.template-newsletter & {
+    min-height: 0;
+    flex-grow: 1;
+  }
 }
 
 button {

@@ -147,7 +147,8 @@
     "info": "Información",
     "product": "Producto",
     "live": "En vivo",
-    "shop": "Tienda"
+    "shop": "Tienda",
+    "newsletter": "Boletín"
   },
   "shop": {
     "empty": "Por ahora no hay productos en la tienda."

@@ -147,7 +147,8 @@
     "info": "Info",
     "product": "Product",
     "live": "Live",
-    "shop": "Shop"
+    "shop": "Shop",
+    "newsletter": "Newsletter"
   },
   "shop": {
     "empty": "Nothing in the shop right now."

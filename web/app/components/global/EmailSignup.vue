@@ -222,11 +222,13 @@ const submitPhone = async () => {
 <style scoped>
 /* The underline runs under the whole row (input + subscribe) while the
    label is sr-only; from lg, where the label joins the row, it's under the
-   input alone. Text fields match :focus-visible on click as well as on Tab
-   (the browser assumes typing follows), so the ring would box every click —
-   the underline brightens instead, still a visible indicator. */
+   input alone. Text and underline take the footer's text color, so they
+   follow it onto the yellow newsletter page. Text fields match
+   :focus-visible on click as well as on Tab (the browser assumes typing
+   follows), so the ring would box every click — the underline brightens
+   instead (darkens on yellow), still a visible indicator. */
 .email-signup {
-  border-bottom: 2px solid var(--color-grey-4);
+  border-bottom: 2px solid currentColor;
 
   &:has(input:focus-visible) {
     border-color: var(--color-grey-1);
@@ -237,11 +239,11 @@ const submitPhone = async () => {
   }
 
   input {
-    color: var(--color-grey-4);
+    color: inherit;
     text-transform: uppercase;
 
     &::placeholder {
-      color: var(--color-grey-4);
+      color: inherit;
     }
 
     &:focus-visible {
@@ -250,8 +252,15 @@ const submitPhone = async () => {
     }
 
     @media (width >= 1024px) {
-      border-bottom: 2px solid var(--color-grey-4);
+      border-bottom: 2px solid currentColor;
     }
+  }
+}
+
+body.template-newsletter .email-signup {
+  &:has(input:focus-visible),
+  input:focus-visible {
+    border-color: var(--color-black);
   }
 }
 

@@ -76,6 +76,12 @@ body.template-home footer {
   }
 }
 
+/* The yellow newsletter page: dark grey text (the wordmark and the signup
+   follow it), as on the yellow notch panels. */
+body.template-newsletter footer {
+  color: var(--color-grey-7);
+}
+
 body.template-pdp footer,
 body.template-shop footer,
 body.template-info footer,
@@ -132,6 +138,10 @@ body.template-live footer {
 
 .footer-links :deep(a:hover) {
   color: var(--color-grey-7);
+}
+
+body.template-newsletter .footer-links :deep(a:hover) {
+  color: var(--color-black);
 }
 
 /* The switchers' trigger is text-lg inside LocaleModal (right for desktop

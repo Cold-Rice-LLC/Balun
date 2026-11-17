@@ -92,3 +92,12 @@ SMS marketing consent, on the same list.
 4. The existing private key's scopes (`profiles:write`,
    `subscriptions:write`, `lists:write`) cover SMS.
 5. Set `NUXT_KLAVIYO_SMS_COUNTRIES` (e.g. `us`) in Vercel and redeploy.
+
+## /newsletter page
+
+`/{locale}/newsletter` (`web/app/pages/newsletter.vue`) is a landing for
+bios, QR codes and printed links: an empty yellow page one screen tall, with
+the footer and its signup at the bottom, above the shop and cart buttons.
+Bare `/newsletter` redirects to `/en-us/newsletter` (`routeRules` in
+nuxt.config.ts). The footer's text, wordmark and signup turn dark grey there
+(`template-newsletter` rules in global.css, MainFooter and EmailSignup).

@@ -64,6 +64,12 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/global.css'],
 
+  // Bare /newsletter (for printed links and bios) lands on the default
+  // locale's page; every other route carries its prefix.
+  routeRules: {
+    '/newsletter': { redirect: '/en-us/newsletter' },
+  },
+
   // Links prefetch a page's code and cached data (_payload.json) on hover,
   // focus or touch rather than as soon as they scroll into view: a product
   // grid would otherwise fetch a payload per card on every visit, each one a
