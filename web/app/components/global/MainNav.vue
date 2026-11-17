@@ -1,5 +1,10 @@
 <template>
-  <header class="fixed top-0 left-0 w-full grid grid-cols-3 py-base px-gutter">
+  <!-- Equal side columns that can't grow past their share (minmax 0), so
+       the pills wrap inside theirs instead of sliding under the logo — the
+       Spanish "novedades / información" pair is twice the English width. -->
+  <header
+    class="fixed top-0 left-0 w-full grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] py-base px-gutter"
+  >
     <!-- High-contrast switch, top left (only while Site Settings has it on). -->
     <ContrastToggle class="self-start lg:self-center" />
 
@@ -25,7 +30,7 @@
       class="flex justify-end items-start lg:items-center"
       :aria-label="$t('nav.primary')"
     >
-      <ul class="text-sm md:text-base lg:text-xs flex items-center gap-x-xs">
+      <ul class="text-sm md:text-base lg:text-xs flex flex-wrap justify-end items-center gap-xs">
         <!-- The bag opens and closes the cart drawer, same as the bottom
              nav's cart button, but never turns into its checkout. From
              768px: on phones the pills fill the column and the cart button
@@ -156,7 +161,9 @@ header {
     position: absolute;
     top: 0;
     left: 50%;
-    width: 11rem;
+    /* Shrinks under ~360px so it clears the pills (it hangs past the
+       logo's column into theirs): 7rem at 320. */
+    width: min(11rem, 100vw - 25rem);
     transform: translateX(-50%);
     opacity: 0;
     pointer-events: none;
@@ -235,7 +242,9 @@ body.template-pdp .cart-toggle.on-light {
 .live-link {
   position: absolute;
   right: 0;
-  top: 7.7rem;
+  /* 0.8rem up from the header's bottom (7.7rem on the usual 8.5rem
+     header), so it stays under the pills when they wrap to two rows. */
+  top: calc(100% - 0.8rem);
   background-color: var(--color-grey-1);
   padding: var(--spacing-base) var(--spacing-sm);
   display: flex;
