@@ -58,6 +58,17 @@
     >
       <p class="modal-label text-sm">{{ label }}</p>
 
+      <!-- A visible way out on touch, where there's no Escape and the
+           backdrop doesn't read as a button. Top-right, level with the label. -->
+      <button
+        type="button"
+        class="close absolute top-[0.6rem] right-[0.6rem] p-xs"
+        :aria-label="$t('locale.closePicker', { label: label.toLowerCase() })"
+        @click="open = false"
+      >
+        <IconsX class="w-[2.4rem]" />
+      </button>
+
       <!-- A plain list of links (no listbox: that promises arrow-key
            selection); the current locale carries aria-current. -->
       <ul class="text-lg">
@@ -181,6 +192,15 @@ useOverlayFocus(open, {
 
 .modal-label {
   color: var(--color-grey-5);
+}
+
+.close {
+  color: var(--color-grey-5);
+  transition: color 0.2s;
+
+  &:hover {
+    color: var(--color-grey-7);
+  }
 }
 
 ul {
