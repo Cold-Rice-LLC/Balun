@@ -240,15 +240,16 @@ const highlightTextStyle = (highlight) => {
       padding-inline: 0;
     }
 
-    /* Landscape crop: the frame's inline aspect-ratio (the asset's own) is
-       the preferred height, but the cap clamps squarish assets to ~5:3 and
-       the image cover-crops into it. */
+    /* Landscape box: the frame's inline aspect-ratio (the asset's own) is
+       the preferred height, but the cap clamps squarish assets (the
+       overhead shots) to ~5:3. The image is contained, not cropped, so
+       those shrink to fit the box instead of losing toe and heel. */
     .slide-frame {
       width: 100%;
       max-height: 60vw;
 
       img {
-        object-fit: cover;
+        object-fit: contain;
       }
     }
 

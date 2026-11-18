@@ -29,10 +29,10 @@
         </nav>
 
         <div class="flex items-end flex-col gap-y-sm">
-          <div class="flex items-end flex-col gap-y-xs md:gap-y-0">
-            <MarketSwitcher />
-            <LanguageSwitcher />
-          </div>
+          <!-- LanguageSwitcher is pulled for now (Spanish on hold); the
+               component, es locales and Sanity fields all remain — drop
+               <LanguageSwitcher /> back in beside MarketSwitcher to restore. -->
+          <MarketSwitcher />
 
           <nav
             class="text-right uppercase leading-none"
