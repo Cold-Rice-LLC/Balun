@@ -243,10 +243,13 @@ const highlightTextStyle = (highlight) => {
     /* Landscape box: the frame's inline aspect-ratio (the asset's own) is
        the preferred height, but the cap clamps squarish assets (the
        overhead shots) to ~5:3. The image is contained, not cropped, so
-       those shrink to fit the box instead of losing toe and heel. */
+       those shrink to fit the box instead of losing toe and heel. The 100%
+       keeps the base cap too: on short viewports (a phone with its browser
+       bars showing) the parent's region is shorter than 60vw, and the
+       overflow would be clipped by Swiper. */
     .slide-frame {
       width: 100%;
-      max-height: 60vw;
+      max-height: min(60vw, 100%);
 
       img {
         object-fit: contain;
