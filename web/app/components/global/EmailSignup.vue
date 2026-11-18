@@ -33,7 +33,7 @@
          (and its description, so it's read with it). -->
     <p
       :id="termsId"
-      class="text-xs mt-xs"
+      class="font-secondary text-xs mt-xs"
     >
       {{ $t('newsletter.smsTerms') }}
     </p>
