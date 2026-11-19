@@ -158,7 +158,7 @@
               :slides="doc.featureCarousel ?? []"
               sizes="50vw"
               mobile-nav-below
-              tall-on-mobile
+              tall
             />
           </div>
 
@@ -523,23 +523,18 @@ useHead({
   }
 }
 
-/* A FIXED height, not flex-1 — in an unconstrained column, flex leftover is
-   just the content's own size and the shared carousel's frames would never
-   cap (same trap as the featured module's min-height). Under 768px the
-   carousel's frame is a full-width 6:5 instead, so the region takes its
-   natural height. */
+/* The carousel's tall variant is a 6:5 frame sized by its width, so the
+   region takes the frame's height. From 768px the frame is capped at 40svh
+   tall, which keeps the buy row above the bottom bar down to 720px-tall
+   windows. */
 .carousel-region {
-  @media (width >= 768px) {
-    height: 32svh;
-  }
-
   /* Narrower arrows than the home module's — this carousel sits in a half
      -width column, so the full-size ones eat too much of the image. */
   --carousel-arrow-width: 3.4rem;
-}
 
-.carousel-region :deep(.highlight) {
-  font-size: 0.8rem;
+  @media (width >= 768px) {
+    --carousel-max-height: 40svh;
+  }
 }
 
 .tagline {
@@ -579,8 +574,7 @@ useHead({
    just grow it) and reserve the overhang plus the fixed bar's height below
    the row (the bar's base-gap clearance cancels against the row's own
    padding-bottom): the buy panel then rests exactly where the sticky
-   would pin it, with the carousel shrinking below 32svh to make the room
-   on shorter viewports. */
+   would pin it. */
 .details.no-description {
   @media (min-width: 768px) {
     max-height: 100svh;
@@ -590,15 +584,6 @@ useHead({
 .details.no-description .buy-row {
   @media (min-width: 768px) {
     margin-bottom: calc(var(--spacing-page-top) + var(--spacing-button-lg-height));
-  }
-}
-
-/* The flex minimum of the fixed-height region is its specified 32svh, which
-   would win over the cap and push the reserve below the fold invisibly —
-   zero it so the region actually yields. */
-.details.no-description .carousel-region {
-  @media (min-width: 768px) {
-    min-height: 0;
   }
 }
 

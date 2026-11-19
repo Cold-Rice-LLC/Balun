@@ -2,7 +2,7 @@
   <!-- Touch listeners: the browser's own pinch-zoom (useNativePinchZoom). -->
   <div
     class="feature-carousel"
-    :class="{ 'is-nav-below': mobileNavBelow, 'is-tall': tallOnMobile }"
+    :class="{ 'is-nav-below': mobileNavBelow, 'is-tall': tall }"
     @touchstart.passive="onTouchStart"
     @touchend.passive="onTouchEnd"
     @touchcancel.passive="onTouchEnd"
@@ -140,10 +140,11 @@ const props = defineProps({
   // Mobile variant (the home featured module): full-width slides with the
   // arrows and dot pagination in a row beneath. Desktop is unchanged.
   mobileNavBelow: { type: Boolean, default: false },
-  // With mobileNavBelow: a 6:5 frame under 768px instead of the ~5:3 cap
-  // (the PDP), so overhead slides crop their white sides and show bigger;
-  // other slides stay whole, contained in it.
-  tallOnMobile: { type: Boolean, default: false },
+  // With mobileNavBelow: a 6:5 frame at every width (the PDP) instead of
+  // the asset's own ratio, so overhead slides crop their white sides and
+  // show bigger; other slides stay whole, contained in it. Full width under
+  // 768px; above, capped by --carousel-max-height if the parent sets it.
+  tall: { type: Boolean, default: false },
   // Makes every slide a link here (the home module → its product). Unset on
   // the PDP, where the slides are plain figures.
   to: { type: String, default: undefined },
@@ -171,23 +172,27 @@ const onSwiper = (instance) => {
 // one finger still swipes. See useNativePinchZoom.
 const { pageZoomed, onTouchStart, onTouchEnd } = useNativePinchZoom(swiper)
 
-// The tall variant's frame ratio under 768px — keep in step with the CSS
-// aspect-ratio on .is-tall .slide-frame.
+// The tall variant's frame ratio — keep in step with the CSS aspect-ratio
+// on .is-tall .slide-frame.
 const TALL_RATIO = 6 / 5
 
+// A cover-cropped overhead slide in the tall frame is drawn wider than the
+// frame (its 2:1 image at the frame's height), so it asks for that many more
+// pixels or it upscales.
+const OVERHEAD_SCALE = Math.ceil((2 / TALL_RATIO) * 100) / 100
+
 // srcset `sizes` per slide. Under 768px the nav-below slides span the
-// viewport — but a cover-cropped overhead slide in the tall frame is drawn
-// wider than that (its 2:1 image at the frame's height, 2 / TALL_RATIO of
-// the width), so it asks for that many pixels or it upscales.
+// viewport; from 768px up they're `sizes` wide.
 const slideSizes = (slide) => {
-  if (!props.mobileNavBelow) return props.sizes
-  const mobile = props.tallOnMobile && slide.overhead ? `${Math.ceil((2 / TALL_RATIO) * 100)}vw` : '100vw'
-  return `(min-width: 768px) ${props.sizes}, ${mobile}`
+  const scale = props.tall && slide.overhead ? OVERHEAD_SCALE : 1
+  const desktop = scale === 1 ? props.sizes : `calc(${props.sizes} * ${scale})`
+  if (!props.mobileNavBelow) return desktop
+  return `(min-width: 768px) ${desktop}, ${Math.round(scale * 100)}vw`
 }
 
 // Sanity asset refs embed intrinsic dimensions (image-<id>-1600x900-jpg) —
-// the frame's CSS aspect-ratio comes from there (as --frame-ratio, so the
-// tall variant can override it under 768px).
+// the frame's CSS aspect-ratio comes from there (as --frame-ratio, which
+// the tall variant overrides).
 const frameRatio = (slide) => {
   const dims = slide.asset?._ref?.split('-')[2]?.split('x').map(Number)
   return dims?.[0] && dims?.[1] ? `${dims[0]} / ${dims[1]}` : undefined
@@ -378,28 +383,36 @@ const highlightTextStyle = (highlight) => {
   }
 }
 
-/* The tall variant (PDP, under 768px): a full-width 6:5 frame in place of
-   the asset's own ratio and the ~5:3 cap. The overhead shots carry wide white
-   margins either side of the pair (their content spans ~30–70% of the 2:1
-   asset; the 6:5 crop keeps 20–80%), so they cover-crop into it — about 1.7×
-   the size, nothing of the shoe lost. Every other slide stays contained,
-   whole. The region sizes to the frame here (see the PDP's
-   .carousel-region). Ratio mirrored in TALL_RATIO for the srcset sizes. */
+/* The tall variant (PDP): a 6:5 frame in place of the asset's own ratio and
+   the mobile ~5:3 cap — full width, sized by width rather than by the
+   parent's height, so the parent takes the frame's height. Above 768px the
+   parent can cap it with --carousel-max-height (unset, the max-width
+   declaration is dropped and the frame just spans the slide). The overhead
+   shots carry wide white margins either side of the pair (their content
+   spans ~30–70% of the 2:1 asset; the 6:5 crop keeps 20–80%), so they
+   cover-crop into it, nothing of the shoe lost. Every other slide stays
+   contained, whole. Ratio mirrored in TALL_RATIO for the srcset sizes.
+   Highlights are hidden at every width: their coordinates are true to the
+   asset's own ratio, so they'd drift in this frame. */
 .feature-carousel.is-nav-below.is-tall .slide-frame {
   aspect-ratio: 6 / 5;
+  width: 100%;
   max-height: none;
+
+  @media (width >= 768px) {
+    max-width: min(100%, var(--carousel-max-height) * 6 / 5);
+  }
+
+  img {
+    object-fit: contain;
+  }
 
   &.is-overhead img {
     object-fit: cover;
   }
 
-  @media (width >= 768px) {
-    aspect-ratio: var(--frame-ratio);
-    max-height: 100%;
-
-    &.is-overhead img {
-      object-fit: fill;
-    }
+  .highlight {
+    display: none;
   }
 }
 
