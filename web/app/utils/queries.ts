@@ -93,8 +93,12 @@ const sellableProducts = (field: string) =>
 
 // A product's feature carousel slides (shared by the home featured-product
 // module and the PDP), with each slide's alt and highlight text resolved.
+// `overhead` flags the top-down shot (the `…_T_…` file naming convention, as
+// in studio/scripts/replaceOverheadCarouselImages.mjs) — the mobile PDP's
+// taller frame crops its white sides to show the pair bigger.
 const featureCarouselProjection = `[]{
   ...,
+  "overhead": asset->originalFilename match "*_T_*",
   ${i18nField('alt')},
   highlights[]{
     ${i18nField('text')},

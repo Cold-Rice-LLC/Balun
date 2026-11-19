@@ -158,6 +158,7 @@
               :slides="doc.featureCarousel ?? []"
               sizes="50vw"
               mobile-nav-below
+              tall-on-mobile
             />
           </div>
 
@@ -524,9 +525,14 @@ useHead({
 
 /* A FIXED height, not flex-1 — in an unconstrained column, flex leftover is
    just the content's own size and the shared carousel's frames would never
-   cap (same trap as the featured module's min-height). */
+   cap (same trap as the featured module's min-height). Under 768px the
+   carousel's frame is a full-width 6:5 instead, so the region takes its
+   natural height. */
 .carousel-region {
-  height: 32svh;
+  @media (width >= 768px) {
+    height: 32svh;
+  }
+
   /* Narrower arrows than the home module's — this carousel sits in a half
      -width column, so the full-size ones eat too much of the image. */
   --carousel-arrow-width: 3.4rem;
