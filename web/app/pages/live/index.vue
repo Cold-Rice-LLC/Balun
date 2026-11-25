@@ -8,9 +8,10 @@
     <h1 class="sr-only">{{ $t('meta.live') }}</h1>
 
     <!-- Behind the YouTube embed, which sits centered with black around it:
-         the shoe outlines, filling the stage like a cover background. Mux
-         fills the stage edge to edge, so there's nothing to see behind it. -->
-    <IconsLiveOutlines
+         the info page's shoe outlines, filling the stage like a cover
+         background. Mux fills the stage edge to edge, so there's nothing to
+         see behind it. -->
+    <IconsShoeOutlines
       v-if="stream?.type === 'youtube'"
       class="absolute inset-0 size-full pointer-events-none"
       preserveAspectRatio="xMidYMid slice"
